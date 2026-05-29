@@ -2,10 +2,4 @@ streamlit
 bcrypt
 numpy
 pandas
-smtplib
-time
-os
-json
 requests
-datetime
-plotly
