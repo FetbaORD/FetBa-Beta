@@ -6,6 +6,5 @@ requests
 streamlit-autorefresh
 twilio
 plotly
-json
 datetime
 plotly.express
