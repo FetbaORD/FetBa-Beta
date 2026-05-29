@@ -1,0 +1,59 @@
+# ----- واجهات المستخدم المحسنة جمالياً -----
+
+def load_css():
+    """دالة لقراءة ملف التنسيق الخارجي وحقنه في Streamlit"""
+    try:
+        with open("style.css", "r", encoding="utf-8") as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    except FileNotFoundError:
+        pass
+
+def sign_in_page():
+    load_css() # استدعاء التنسيقات
+    
+    # عنوان علوي خارج البطاقة بتنسيق مخصص
+    st.markdown('<p class="main-title">🔑 مرحبًا بك مجددًا</p>', unsafe_allow_html=True)
+    
+    # وضع واجهة الدخول داخل حاوية (Card) لتطبيق الظلال والتأثيرات
+    with st.container(border=True):
+        st.markdown('<p class="form-label">سجل دخولك للمتابعة</p>', unsafe_allow_html=True)
+        
+        username = st.text_input("اسم المستخدم", key="login_user", placeholder="أدخل اسم المستخدم هنا")
+        password = st.text_input("كلمة المرور", type="password", key="login_pass", placeholder="••••••••")
+        
+        # إضافة فراغ جمالي
+        st.write("") 
+        
+        if st.button("تسجيل الدخول", use_container_width=True, type="primary"):
+            if login_user(username, password):
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.success("تم تسجيل الدخول بنجاح! جاري التوجيه...")
+                st.rerun()
+            else:
+                st.error("اسم المستخدم أو كلمة المرور غير صحيحة.")
+
+def sign_up_page():
+    load_css() # استدعاء التنسيقات
+    
+    st.markdown('<p class="main-title">📝 انضم إلينا</p>', unsafe_allow_html=True)
+    
+    with st.container(border=True):
+        st.markdown('<p class="form-label">أنشئ حسابك الجديد الآن</p>', unsafe_allow_html=True)
+        
+        new_username = st.text_input("اختر اسم مستخدم", key="reg_user", placeholder="مثال: admin123")
+        new_password = st.text_input("اختر كلمة مرور", type="password", key="reg_pass", placeholder="••••••••")
+        confirm_password = st.text_input("تأكيد كلمة المرور", type="password", key="reg_pass_conf", placeholder="••••••••")
+        
+        st.write("")
+        
+        if st.button("إنشاء الحساب بالكامل", use_container_width=True, type="primary"):
+            if not new_username or not new_password:
+                st.warning("يرجى ملء جميع الحقول النواقص.")
+            elif new_password != confirm_password:
+                st.error("كلمات المرور غير متطابقة، يرجى التثبت.")
+            else:
+                if add_user(new_username, new_password):
+                    st.success("تم إنشاء الحساب بنجاح! يمكنك الآن الانتقال لصفحة الدخول.")
+                else:
+                    st.error("اسم المستخدم هذا مسجل بالفعل، اختر اسماً آخر.")

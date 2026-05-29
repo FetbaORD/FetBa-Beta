@@ -1,0 +1,49 @@
+import streamlit as st
+from auth_pages import sign_in_page, sign_up_page, load_css
+
+# تهيئة حالة الجلسة (Session State) للتأكد من حالة الدخول فور تشغيل السيرفر
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+# دالة تسجيل الخروج وإعادة قفل الموقع
+def logout():
+    st.session_state.logged_in = False
+    st.session_state.username = None
+    st.rerun()
+
+# صفحة لوحة التحكم (المحتوى الخاص بكودك الأساسي والمحمي)
+def dashboard_page():
+    load_css() # استدعاء ملف style.css لتنسيق لوحة التحكم أيضاً
+    
+    st.markdown(f'<p class="main-title" style="text-align: right;">📊 لوحة التحكم الرئيسية</p>', unsafe_allow_html=True)
+    st.subheader(f"مرحباً بك، {st.session_state.username} 👋")
+    
+    st.write("ضع هنا كود مشروعك الأساسي، المخططات البيانية، أو الجداول والمستشعرات.")
+    
+    # مثال لعرض بيانات تفاعلية ومخططات داخل لوحة التحكم
+    import pandas as pd
+    import numpy as np
+    chart_data = pd.DataFrame(np.random.randn(20, 3), columns=['أ', 'ب', 'ج'])
+    st.line_chart(chart_data)
+    
+    # وضع زر تسجيل الخروج في القائمة الجانبية (Sidebar) بتنسيق منظم
+    st.sidebar.markdown(f"### الحساب الحالي: **{st.session_state.username}**")
+    st.sidebar.button("تسجيل الخروج", on_click=logout, use_container_width=True)
+
+# ---- إدارة التنقل الشرطي (Routing) ----
+
+if not st.session_state.logged_in:
+    # الصفحات المتاحة للمستخدِم غير المسجل (حائط الصد الأول)
+    login_page = st.Page(sign_in_page, title="تسجيل الدخول", icon="🔒")
+    register_page = st.Page(sign_up_page, title="إنشاء حساب جديد", icon="👤")
+    
+    # تشغيل نظام التنقل بين واجهات التسجيل فقط
+    pg = st.navigation([login_page, register_page])
+else:
+    # الصفحات المتاحة فقط وحصرياً بعد تسجيل الدخول بنجاح
+    main_page = st.Page(dashboard_page, title="لوحة التحكم", icon="📈")
+    
+    pg = st.navigation([main_page])
+
+# تشغيل الصفحة المختارة بناءً على صلاحية المستخدم
+pg.run()

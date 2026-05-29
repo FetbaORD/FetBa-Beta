@@ -1,0 +1,7 @@
+{
+    "t_limit": 64,
+    "h_limit": 100,
+    "p_limit": 15.0,
+    "v_limit": 10.0,
+    "c_limit": 50
+}

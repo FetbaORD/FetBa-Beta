@@ -1,0 +1,38 @@
+{
+    "حرارة": {
+        "name": "Technicien de Temperature",
+        "telegram_id": "5496414934",
+        "email": "bachirhabchi3@gmail.com",
+        "phone": "+213541445824"
+    },
+    "رطوبة": {
+        "name": "Technicien de Humidite",
+        "telegram_id": "998765432",
+        "email": "MohamedAmineAbdellatif@gmail.com",
+        "phone": "+9999999999999"
+    },
+    "ضغط": {
+        "name": "Technicien de Pression",
+        "telegram_id": "887654321",
+        "email": "YassineSebaa@gmail.com",
+        "phone": "+213541445826"
+    },
+    "اهتزاز": {
+        "name": "Technicien de Vibration",
+        "telegram_id": "776543210",
+        "email": "HamidSoukeur@gmail.com",
+        "phone": "+213541445827"
+    },
+    "تيار": {
+        "name": "Technicien de Electricite",
+        "telegram_id": "665432109",
+        "email": "bachirhabchi3@gmail.com",
+        "phone": "+213541445828"
+    },
+    "عام/احتياطي": {
+        "name": "Technicien Generale",
+        "telegram_id": "554321098",
+        "email": "BoulilaMohamedTaher@gmail.com",
+        "phone": "+213541445829"
+    }
+}

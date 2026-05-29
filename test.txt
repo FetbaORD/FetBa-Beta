@@ -1,0 +1,149 @@
+import streamlit as st
+from datetime import datetime
+from streamlit_autorefresh import st_autorefresh
+
+# 1. قاعدة بيانات المفاتيح (في الواقع يفضل استخدام قاعدة بيانات حقيقية أو ملف خارجي)
+# المفتاح : عدد الأجهزة الحالية التي استخدمته
+if "activation_db" not in st.session_state:
+    st.session_state.activation_db = {
+        f"KEY-{i:03d}": 0 for i in range(1, 11)
+    }
+
+
+# 2. التحقق من حالة التفعيل للجلسة الحالية
+if "is_activated" not in st.session_state:
+    st.session_state.is_activated = False
+
+# دالة التحقق من المفتاح
+def verify_key(key):
+    db = st.session_state.activation_db
+    if key in db:
+        if db[key] < 2:  # شرط عدم تجاوز جهازين
+            db[key] += 1
+            st.session_state.is_activated = True
+            st.success("✅ تم التفعيل بنجاح!")
+            st.rerun()
+        else:
+            st.error("❌ هذا المفتاح تم استخدامه على جهازين بالفعل!")
+    else:
+        st.error("❌ مفتاح التفعيل غير صحيح!")
+
+# 3. واجهة القفل (تظهر إذا لم يتم التفعيل)
+if not st.session_state.is_activated:
+    st.title("🔒 نظام محمي")
+    st.warning("يرجى إدخال مفتاح التفعيل للوصول إلى النظام.")
+    
+    # استخدام st.form لجعل الإدخال يبدو كنافذة مركزة
+    with st.container():
+        input_key = st.text_input("مفتاح التفعيل (Activation Key):", type="password")
+        submit_btn = st.button("تفعيل الآن")
+        
+        if submit_btn:
+            verify_key(input_key)
+    
+    # أهم سطر: يمنع ظهور أي محتوى آخر في الصفحة أو التنقل
+    st.stop() 
+
+# =========================
+# المحتوى الأصلي للصفحة (لا يظهر إلا بعد التفعيل)
+# =========================
+st.success("🔐 النظام مفعل وجاهز للاستخدام")
+if st.button("ابدأ المحاكاة"):
+    from datetime import datetime
+    st.session_state.sim_start_time = datetime.now()
+    st.info("تم بدء توقيت المحاكاة!")
+
+
+
+st_autorefresh(interval=1000, key="refresh_clock")
+
+st.set_page_config(
+    page_title="Industrial AI Control Center",
+    layout="wide",
+    page_icon="🏭"
+)
+
+# =========================
+# HEADER
+# =========================
+st.title("🏭 Industrial AI Control Center")
+st.markdown("### Smart Factory Monitoring & Scheduling System")
+
+st.markdown("---")
+
+if "sim_start_time" not in st.session_state:
+    st.session_state.sim_start_time = datetime.now()
+
+
+
+from datetime import datetime
+
+sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
+
+minutes = int(sim_duration // 60)
+seconds = int(sim_duration % 60)
+
+st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
+
+# =========================
+# LIVE SYSTEM STATUS
+# =========================
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric("🟢 System Status", "Online")
+
+with col2:
+    st.metric("⏱️ Server Time", datetime.now().strftime("%H:%M:%S"))
+
+with col3:
+    st.metric("⚙️ Modules", "Monitoring | Scheduling | Analytics")
+
+st.markdown("---")
+
+# =========================
+# QUICK OVERVIEW DASHBOARD
+# =========================
+st.subheader("📊 Quick Overview")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.info("""
+    🔹 Monitoring System  
+    - Real-time machine tracking  
+    - Sensor alerts (temperature, vibration...)  
+    - Maintenance logs  
+    """)
+
+with col2:
+    st.info("""
+    🔹 Production Scheduling  
+    - Flow Shop Optimization  
+    - Genetic Algorithm (GA)  
+    - Re-scheduling after breakdowns  
+    """)
+
+st.markdown("---")
+
+# =========================
+# SYSTEM ARCHITECTURE VIEW
+# =========================
+st.subheader("🏗️ System Architecture")
+
+st.code("""
+User Interface (Streamlit)
+        ↓
+Monitoring System  ←→  Scheduling Engine (GA)
+        ↓                     ↓
+Sensor Simulation      Optimization Results
+        ↓                     ↓
+     Alerts System ←→ Maintenance & Logs
+""")
+
+st.markdown("---")
+
+# =========================
+# FOOTER
+# =========================
+st.caption("Industrial AI System v1.0 | Designed for Smart Manufacturing Optimization")
