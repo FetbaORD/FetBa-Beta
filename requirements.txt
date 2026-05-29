@@ -2,7 +2,6 @@ streamlit
 bcrypt
 numpy
 pandas
-threading
 smtplib
 time
 os
