@@ -331,7 +331,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 
 
 # ==========================================
-# 🎯 الجزء المصحح والمطور: حساب وعرض الكامل والثابت باستخدام Plotly السريعة والمستقرة
+#  الجزء المصحح والمطور: حساب وعرض الكامل والثابت باستخدام Plotly السريعة والمستقرة
 # ==========================================
 st.write("")
 
@@ -355,7 +355,7 @@ with col_gantt_btn2:
 # 3. إذا كانت الحالة True، يتم رسم المخطط الكامل فوراً
 if st.session_state.show_complete_gantt:
     
-    # دالة حساب الجدولة الكاملة الثابتة (بدون اقتطاع الوقت الحالي)
+    # دالة حساب الجدولة الكاملة الثابتة
     def solve_flow_shop_static_plotly(pij, ts, job_sequence):
         n_jobs, m_machines = pij.shape
         st_times = np.zeros((n_jobs, m_machines))
@@ -380,7 +380,7 @@ if st.session_state.show_complete_gantt:
                 en_times[job_idx, m] = st_times[job_idx, m] + p_time
                 machine_free_time[m] = en_times[job_idx, m]
 
-        return st_times, en_times, n_jobs, m_machines
+        return st_times, e_times, n_jobs, m_machines
 
     # جلب البيانات الحية وتمريرها للحساب
     static_pij = st.session_state.Pij.values
@@ -406,26 +406,35 @@ if st.session_state.show_complete_gantt:
                             Start=pd.to_datetime(setup_start, unit='s'),
                             Finish=pd.to_datetime(s_times[job_idx, m], unit='s'),
                             Type="Temps d'opération (Setup)",
-                            Duration=setup_duration,
-                            TaskInfo=f"Setup avant Job {job_idx + 1}"
+                            Duration=f"{int(setup_duration)}s",
+                            Details=f"Préparation entre Job {prev_job_idx+1} et Job {job_idx+1}"
                         ))
             
             # 2. إضافة فترة تشغيل المنتج العادية
-            proc_duration = e_times[job_idx, m] - s_times[job_idx, m]
+            job_duration = e_times[job_idx, m] - s_times[job_idx, m]
             static_gantt_data.append(dict(
                 Machine=f"Machine {m+1}",
                 Start=pd.to_datetime(s_times[job_idx, m], unit='s'),
                 Finish=pd.to_datetime(e_times[job_idx, m], unit='s'),
                 Type=f"Job {job_idx + 1}",
-                Duration=proc_duration,
-                TaskInfo=f"Exécution du Job {job_idx + 1}"
+                Duration=f"{int(job_duration)}s",
+                Details=f"Exécution standard du Job {job_idx + 1}"
             ))
             
     if static_gantt_data:
         df_static_gantt = pd.DataFrame(static_gantt_data)
         
-        # لوحة ألوان حديثة واحترافية للمنتجات (لوحة مريحة للعين ومتناسقة)
-        color_map = {"🧪 Temps d'opération (Setup)": "#4A5568"} # رمادي داكن أنيق للإعداد
+        # خريطة ألوان احترافية (لوحة ألوان متناسقة للـ Jobs والرمادي للإعداد)
+        professional_palette = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#bcbd22", "#17becf"]
+        color_map = {"Temps d'opération (Setup)": "#4A5568"} # رمادي داكن عصري
+        
+        # تعيين بقية الألوان للوظائف ديناميكياً
+        unique_types = df_static_gantt["Type"].unique()
+        job_count = 0
+        for t in unique_types:
+            if t != "Temps d'opération (Setup)":
+                color_map[t] = professional_palette[job_count % len(professional_palette)]
+                job_count += 1
         
         fig_static = px.timeline(
             df_static_gantt,
@@ -434,40 +443,37 @@ if st.session_state.show_complete_gantt:
             y="Machine",
             color="Type",
             color_discrete_map=color_map,
-            color_discrete_sequence=px.colors.qualitative.Safe, # ألوان جميلة واحترافية تلقائية للمنتجات
-            title=f"📋 Diagramme de Gantt Complet Static | Makespan (Cmax) = {int(np.max(e_times))} s",
-            hover_name="TaskInfo"
-        )
-        
-        # تخصيص نافذة الـ Hover لتظهر بشكل منسق وجذاب جداً بالفرنسية/الإنجليزية
-        fig_static.update_traces(
-            hovertemplate="<b>%{hovertext}</b><br><br>📍 Machine: %{y}<br>⏱️ Durée: %{customdata[0]} secondes<br><extra></extra>",
-            customdata=df_static_gantt[["Duration"]].values
+            title=f"📊 Diagramme de Gantt Complet Static | Makespan (Cmax) = {int(np.max(e_times))} ثانية",
+            hover_data={"Machine": True, "Duration": True, "Details": True, "Start": False, "Finish": False}
         )
         
         fig_static.update_yaxes(autorange="reversed")
+        
+        # تحسين المؤثرات البصرية والـ Hover داخل المخطط نفسه
         fig_static.update_layout(
-            xaxis_title="Temps Global (Minutes:Secondes)",
+            xaxis_title="الزمن الكلي للجدولة (دقائق:ثواني)",
             xaxis=dict(tickformat="%M:%S", gridcolor="#E2E8F0"),
             yaxis=dict(gridcolor="#E2E8F0"),
-            plot_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)", # خلفية شفافة لتتداخل مع الـ CSS الخارجي
             paper_bgcolor="rgba(0,0,0,0)",
             showlegend=True,
             height=420,
-            title_font=dict(size=18, family="Arial", color="#2D3748"),  # 🎯 تم التصحيح هنا
             hoverlabel=dict(
-                bgcolor="#1A202C", 
-                font_size=13, 
-                font_family="Arial",
-                font_color="white"
-            )
-        )       
-        # تغليف المخطط داخل HTML Container لتطبيق تأثيرات الـ CSS الخارجي
+                bgcolor="#1A202C", # لون خلفية الـ Hover داكن واحترافي
+                font_size=13,
+                font_color="#FFFFFF",
+                font_family="Arial"
+            ),
+            margin=dict(l=20, r=20, t=60, b=20)
+        )
+        
+        # تزيين حدود الأشرطة لجعلها تبدو مستديرة قليلاً عبر التحديث
+        fig_static.update_traces(marker_line_color="#FFFFFF", marker_line_width=1.5, opacity=0.9)
+        
+        # وضع المخطط داخل حاوية (div) مخصصة لنتمكن من استهدافها بملف الـ CSS الخارجي
         st.markdown('<div class="custom-gantt-container">', unsafe_allow_html=True)
-        st.plotly_chart(fig_static, use_container_width=True, key="static_gantt_plotly")
+        st.plotly_chart(fig_static, use_container_width=True, key="static_gantt_plotly", config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
-
-
 
 
 
