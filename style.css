@@ -568,16 +568,3 @@ button[kind="secondary"]:hover {
     border-radius: 8px;
 }
 
-/* تحسين شكل أزرار التحكم بـ Gantt وجعلها متناسقة مع التأثيرات الجميلة */
-div[data-testid="stColumn"] button {
-    width: 100%;
-    border-radius: 8px !important;
-    transition: all 0.2s ease !important;
-    font-weight: 600 !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-}
-
-div[data-testid="stColumn"] button:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-}
