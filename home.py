@@ -186,7 +186,7 @@ st.sidebar.markdown(
     """
     <div style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e0e0e0;">
         <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="https://iconscout.com/fr/3d-icon/ordonnance-3d-icon_12131991" width="40" style="object-fit: contain;">
+            <img src="https://github.com/FetbaORD/FetBa-Beta/blob/app/%E2%80%94Pngtree%E2%80%94task%20schedule%20with%20stopwatch%20icon_20956305.png" width="40" style="object-fit: contain;">
             <h1 style="font-family: 'Poppins', 'Helvetica Neue', sans-serif; font-size: 24px; font-weight: 700; color: #1E3A8A; margin: 0; padding: 0;">
                 Fetba Platform
             </h1>
