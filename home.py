@@ -146,7 +146,7 @@ def show_contact_dialog():
         </a>
         
         <!-- خيار التلغرام -->
-        <a href="https://t.me/YourTelegramUsername" target="_blank" class="contact-card telegram-card">
+        <a href="https://t.me/CCryptomic" target="_blank" class="contact-card telegram-card">
             <span class="material-icons icon-box">telegram</span>
             <div class="contact-text">
                 <span class="contact-label">Telegram Support</span>
