@@ -358,9 +358,9 @@ button[kind="secondary"] {
 /* تأثير الـ Hover على الزر */
 button[kind="secondary"]:hover {
     background-color: #fff !important; /* لون أغمق قليلاً عند التحويم */
+    color: Black !important;
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
     transform: scale(1.01); /* تكبير طفيف جداً للزر */
-	color: Black;
 }
 
 /* 1. إعداد التنسيق الافتراضي لعناصر القائمة الجانبية وإضافة النعومة الحركية (Transition) */
