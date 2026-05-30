@@ -542,3 +542,33 @@ button[kind="secondary"]:hover {
     background-color: #f2fbf5;
 }
 .whatsapp-card:hover .icon-box { color: #25d366; }
+
+
+
+/* تخصيص حاوية مخطط غانت الكامل */
+.custom-gantt-container {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    /* إعطاء المخطط ظل ناعم ثقيل واحترافي */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+    border: 1px solid #edf2f7;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    /* إضافة خاصية الانسيابية عند حدوث تأثير */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* تأثير هندسي وجمالي ساحر عند تمرير الفأرة فوق حاوية المخطط */
+.custom-gantt-container:hover {
+    /* تعميق وتكبير جودة الظل لإعطاء إيحاء ثلاثي الأبعاد بالارتفاع عن الصفحة */
+    box-shadow: 0 20px 30px -4px rgba(0, 0, 0, 0.12), 0 10px 15px -5px rgba(0, 0, 0, 0.06);
+    /* إزاحة خفيفة جداً للأعلى بمقدار 4 بكسل لتعزيز تأثير الصعود */
+    transform: translateY(-4px);
+    border-color: #e2e8f0;
+}
+
+/* تحسين المظهر الداخلي لعناصر الرسم لتبدو بحواف ناعمة بداخل المتصفح */
+.custom-gantt-container .js-plotly-plot .main-svg {
+    border-radius: 12px;
+}
