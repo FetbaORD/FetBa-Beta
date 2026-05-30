@@ -662,7 +662,7 @@ h1, h2, h3 {
 
 /* تحسين شكل الـ Expander وحقول الإدخال لتتناسق مع الأزرار */
 [data-testid="stSidebar"] .stMarkdown h2, [data-testid="stSidebar"] .stMarkdown h1 {
-    color: #4F46E5 !important;
+    color: #4F46E5;
     border-bottom: 2px solid #E2E8F0;
     padding-bottom: 5px;
 }
@@ -686,6 +686,7 @@ h1, h2, h3 {
     background-color: #0782d9 !important; /* تحويل الخلفية للأبيض */
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35) !important; /* الظل المضيء */
     transform: translateY(-2px) !important; /* الحركة للأعلى */
+	color: #000000;
 }
 
 
@@ -695,9 +696,10 @@ h1, h2, h3 {
 /* ======================================================== */
 [data-testid="stSidebar"] .stExpander[open] {
     background-color: #0782d9 !important; /* الحفاظ على الخلفية الأصلية عند الفتح */
+	color: #000000;
     transform: none !important; /* إلغاء الحركة للأعلى لكي لا تهتز الأزرار بالداخل */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
-	color: #000;
+
 }
 
 
