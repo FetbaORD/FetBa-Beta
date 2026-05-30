@@ -151,16 +151,7 @@ h1, h2, h3 {
     transform: translateY(-2px) !important; /* الحركة للأعلى */
 }
 
-/* ======================================================== */
-/* 2. حماية الـ Expander عندما يتم فتحه (حتى لا تلتصق الأزرار) */
-/* ======================================================== */
-[data-testid="stSidebar"] .stExpander[open] {
-    background-color: #0782d9 !important; /* الحفاظ على الخلفية الأصلية عند الفتح */
-	color: #000000 !important;
-    transform: none !important; /* إلغاء الحركة للأعلى لكي لا تهتز الأزرار بالداخل */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
 
-}
 
 
 
@@ -1116,25 +1107,32 @@ button[kind="primary"]:hover {
 
 
 
+/* ========================================== */
+/* تنظيف وتثبيت لون الـ Expander المفتوح فقط  */
+/* ========================================== */
 
-
-/* 1. إجبار النص (اسم الموظف أو العنوان) على لون محدد عندما يكون الـ Expander مفتوحاً */
-[data-testid="stSidebar"] .stExpander[open] summary span, 
-[data-testid="stSidebar"] .stExpander[open] summary p {
-    color: #000000 !important; /* 👈 غير اللون هنا للون الذي تريده (مثلاً الأسود ليكون واضحاً) */
+/* 1. استهداف النص بأعلى دقة ممكنة داخل الـ Expander المفتوح */
+[data-testid="stSidebar"] div.stExpander[open] summary div[data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] div.stExpander[open] summary div[data-testid="stMarkdownContainer"] span,
+[data-testid="stSidebar"] div.stExpander[open] summary span,
+[data-testid="stSidebar"] div.stExpander[open] summary p {
+    color: #000000 !important; /* 👈 غيره إلى #ffffff إذا كانت خلفيتك زرقاء داكنة وتريد خطاً أبيض */
+    font-weight: bold !important;
 }
 
-/* 2. إجبار أيقونة السهم الجانبي للـ Expander على أخذ نفس اللون عند الفتح حتى لا تختفي */
-[data-testid="stSidebar"] .stExpander[open] summary svg {
-    fill: #000000 !important;   /* لتلوين السهم الافتراضي لستريمليت */
+/* 2. منع تأثير الـ Hover من إرجاع اللون للأبيض عند حركة الماوس فوقه وهو مفتوح */
+[data-testid="stSidebar"] div.stExpander[open] summary:hover div[data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] div.stExpander[open] summary:hover div[data-testid="stMarkdownContainer"] span,
+[data-testid="stSidebar"] div.stExpander[open] summary:hover span,
+[data-testid="stSidebar"] div.stExpander[open] summary:hover p {
+    color: #000000 !important; /* 👈 يجب أن يطابق نفس اللون في الأعلى تماماً */
+}
+
+/* 3. تلوين سهم التمدد الجانبي ومنعه من الاختفاء */
+[data-testid="stSidebar"] div.stExpander[open] summary svg,
+[data-testid="stSidebar"] div.stExpander[open] summary svg * {
+    fill: #000000 !important; /* 👈 يطابق نفس اللون أيضاً */
     color: #000000 !important;
 }
 
-/* 3. تأكيد ثبات اللون حتى لو تحرك الماوس فوق العنوان وهو مفتوح ( لمنع تداخل الـ Hover ) */
-[data-testid="stSidebar"] .stExpander[open] summary:hover span,
-[data-testid="stSidebar"] .stExpander[open] summary:hover p,
-[data-testid="stSidebar"] .stExpander[open] summary:hover svg {
-    color: #000000 !important;
-    fill: #000000 !important;
-}
 
