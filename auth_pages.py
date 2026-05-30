@@ -92,20 +92,25 @@ def sign_in_page():
                 
         st.write("") # فراغ جمالي بسيط
         
-        # تقسيم المساحة إلى 3 أعمدة (الأطراف متساوية، والأوسط عريض بما يكفي للزر)
+        # تقسيم المساحة إلى 3 أعمدة
         col_left, col_center, col_right = st.columns([1, 1.5, 1])
         
         with col_center:
-            # 👈 السحر هنا: ألغينا تماماً use_container_width ليأخذ الزر حجمه الاحترافي الافتراضي
-            if st.button("Se connecter", type="primary"):
-                if login_user(username, password):
-                    st.session_state.logged_in = True
-                    st.session_state.username = username
-                    st.success("Connexion réussie ! Redirection en cours...")
-                    st.rerun()
-                else:
+            # زر تسجيل الدخول العادي بنفس الستايل والحجم الاحترافي
+            login_button = st.button("Se connecter", type="primary")
+        
+        # 🌟 السحر هنا: التحقق من الضغط على الزر أو الضغط على Enter
+        # الشرط الثاني يتأكد أن المستخدم كتب بالفعل في الخانات وضغط Enter في حقل كلمة المرور
+        if login_button or (username and password and st.session_state.login_pass):
+            if login_user(username, password):
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.success("Connexion réussie ! Redirection en cours...")
+                st.rerun()
+            else:
+                # نضع شرطاً إضافياً هنا حتى لا تظهر رسالة الخطأ مباشرة عند فتح الصفحة لأول مرة
+                if login_button or (username and password):
                     st.error("Nom d'utilisateur ou mot de passe incorrect.")
-
 
 
 
