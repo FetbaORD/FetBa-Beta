@@ -1,0 +1,574 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+
+
+
+if is_danger and can_send_alert(machine, key):
+            send_telegram_msg(CONTACTS.get(label, CONTACTS["عام/احتياطي"]), f"🚨 {machine}\n{label}: {val}")
+            
+            # السطر الجديد المسؤول عن تغيير الحالة تلقائياً:
+            if st.session_state.machine_status[machine] == "Running":
+                toggle_machine(machine, source="آلي 🤖", fault_type=label)
+
+            st.session_state.alerts_sent[machine][key] = True
+			
+			
+/* تحسين الخطوط والخلفية العامة */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+html, body, [data-testid="stAppViewContainer"] {
+    font-family: 'Cairo', sans-serif;
+    background-color: #f4f7f6;
+}
+
+/* تصميم البطاقات المخصصة للآلات */
+.machine-card {
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #eef2f3;
+    margin-bottom: 20px;
+}
+
+.machine-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+    border-color: #3498db;
+
+}
+
+/* تنسيق العناوين والـ Bold */
+h1, h2, h3 {
+    color: #2c3e50;
+    font-weight: 700 !important;
+}
+
+/* تحسين شكل الـ Metrics */
+[data-testid="stMetricValue"] {
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    color: #1e88e5 !important;
+}
+
+/* تنسيق أزرار Streamlit */
+.stButton>button {
+    width: 200%;
+    font-size: 30px;
+    border-radius: 8px;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    font-weight: bold;
+    padding: 10px 0;
+    transition: all 0.3s ease;
+}
+
+.stButton>button:hover {
+    background-color: #²;
+    color: red;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+
+}
+
+/* شريط الحالة المخصص */
+.health-bar-container {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 50px;
+    height: 12px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.health-bar-fill {
+    height: 100%;
+    border-radius: 50px;
+    transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+
+
+
+/* تنسيق الأزرار وحقول الإدخال داخل الـ Sidebar */
+[data-testid="stSidebar"] button {
+    background-color: #FFFFFF !important; /* لون خلفية الزر الأساسي */
+    color: #FFFFFF !important; /* لون النص */
+    border: 1px solid #3A3A55 !important; /* إطار خفيف */
+    border-radius: 8px !important; /* انحناء الحواف */
+    padding: 10px 20px !important; /* المسافات الداخلية */
+    font-size: 15px !important;
+    font-weight: bold !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease-in-out !important; /* حركة سلسة عند الـ Hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important; /* الظل الأساسي */
+    cursor: pointer;
+    width: 100%;
+}
+
+
+/* تأثير الـ Hover (عند تمرير الماوس فوق الزر) */
+[data-testid="stSidebar"] button:hover {
+	background-color: #4F46E5 !important;
+    border-color: #6366F1 !important;
+    box-shadow: 0 8px 15px rgba(99, 102, 241, 0.4) !important; /* ظل مضيء ملون */
+    transform: translateY(-2px) !important; /* تحريك الزر لأعلى قليلاً */
+}
+
+
+/* تأثير الـ Active (عند الضغط على الزر) */
+[data-testid="stSidebar"] button:active {
+    transform: translateY(1px) !important; /* تأثير ارتدادي لأسفل عند الضغط */
+	color: #FFFFFF !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* تحسين شكل الـ Expander وحقول الإدخال لتتناسق مع الأزرار */
+[data-testid="stSidebar"] .stMarkdown h2, [data-testid="stSidebar"] .stMarkdown h1 {
+    color: #4F46E5 !important;
+    border-bottom: 2px solid #E2E8F0;
+    padding-bottom: 5px;
+}
+
+
+
+
+/* ======================================================== */
+/* 1. التنسيق الأساسي للـ Expander (وهو في الحالة العادية) */
+/* ======================================================== */
+[data-testid="stSidebar"] .stExpander {
+    background-color: #9cdeff !important; /* لون الخلفية الأساسي */
+    border: 1px solid #3A3A55 !important;
+    border-radius: 8px !important;
+    margin-bottom: 12px !important; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important; 
+    transition: all 0.3s ease-in-out !important;
+}
+
+/* 🎯 السحر هنا: تأثير الـ Hover الفعال والآمن */
+/* نطبقه فقط عندما يكون الـ Expander مغلقاً :not([open]) لمنع المشاكل */
+[data-testid="stSidebar"] .stExpander:not([open]):hover {
+    background-color: #FFFFFF !important; /* تحويل الخلفية للأبيض */
+    border-color: Red !important; /* تغيير لون الإطار */
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35) !important; /* الظل المضيء */
+    transform: translateY(-2px) !important; /* الحركة للأعلى */
+}
+
+
+
+/* ======================================================== */
+/* 2. حماية الـ Expander عندما يتم فتحه (حتى لا تلتصق الأزرار) */
+/* ======================================================== */
+[data-testid="stSidebar"] .stExpander[open] {
+    background-color: #FFFFFF !important; /* الحفاظ على الخلفية الأصلية عند الفتح */
+    transform: none !important; /* إلغاء الحركة للأعلى لكي لا تهتز الأزرار بالداخل */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+
+
+
+
+/* تحسين شكل عنوان الموظف والنص داخل الـ Expander (الحالة العادية) */
+[data-testid="stSidebar"] .stExpander summary {
+    padding: 10px 15px !important;
+    color: #FFFFFF;
+}
+
+/* استهداف النص (اسم الموظف) مباشرة في الحالة العادية */
+[data-testid="stSidebar"] .stExpander summary span, 
+[data-testid="stSidebar"] .stExpander summary p {
+    color: Black !important; /* اختياري: تغيير لون النص أيضاً إلى الأزرق المضيء ليزيد جمالاً */
+    font-size: 15px !important;
+    font-weight: bold !important; /* خط عادي في البداية */
+    transition: font-weight 0.2s ease-in-out, color 0.2s ease-in-out !important; /* جعل تحول الخط ناعماً */
+}
+
+
+
+
+/* 🎯 الحل الصحيح: الـ Hover يتم على الـ summary نفسه للعنصر المحدد فقط */
+[data-testid="stSidebar"] .stExpander summary:hover span,
+[data-testid="stSidebar"] .stExpander summary:hover p {
+    color: Red !important;
+    font-weight: bold !important; /* لجعل النص Bold عند الـ Hover عليه تحديداً */
+}
+
+
+
+
+
+/* ======================================================== */
+/* 2. تزيين حقول إدخال البيانات (st.text_input) داخل القائمة */
+/* ======================================================== */
+[data-testid="stSidebar"] .stTextInput input {
+    background-color: #2D2D44 !important; /* خلفية الحقل */
+    color: #E2E8F0 !important; /* لون النص داخل الحقل */
+    border: 1px solid #4A4A6A !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* تأثير التركيز (Focus) عند الضغط والكتابة داخل الحقل */
+[data-testid="stSidebar"] .stTextInput input:focus {
+    border-color: #4F46E5 !important;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5) !important; /* توهج حول الحقل */
+    background-color: #252538 !important;
+}
+
+/* تلوين عناوين الحقول (رقم الهاتف، البريد، إلخ) */
+[data-testid="stSidebar"] .stTextInput label {
+    color: #A0AEC0 !important;
+    font-size: 13px !important;
+    margin-bottom: 4px !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* تنسيق العناوين المخصصة */
+.main-title {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    color: #1E293B;
+    text-align: center;
+    margin-bottom: 5px !important;
+}
+
+.form-label {
+    font-size: 1.1rem !important;
+    color: #64748B;
+    text-align: center;
+    margin-bottom: 20px !important;
+}
+
+/* 1. إضافة ظلال وتأثيرات حركية على الحاوية (Card) */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background-color: #ffffff !important;
+    border-radius: 16px !important;
+    border: 1px solid #E2E8F0 !important;
+    padding: 30px !important;
+    /* الظل الافتراضي الخفيف للبطاقة */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.4s ease-in-out !important;
+}
+
+/* تأثير تحويم الفأرة فوق البطاقة لتأثير الارتفاع */
+div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    border-color: #CBD5E1 !important;
+}
+
+/* 2. تحسين حقول الإدخال (Inputs) عند التركيز عليها */
+div[data-testid="stTextInput"] input {
+    border-radius: 10px !important;
+    border: 1px solid #CBD5E1 !important;
+    padding: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+div[data-testid="stTextInput"] input:focus {
+    border-color: #4F46E5 !important; /* لون أزرق/بنفسجي عند الضغط */
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+}
+
+/* 3. زر التشغيل الأساسي (Primary Button) مع تأثير الـ Hover والـ Shadows */
+button[kind="primary"] {
+    background-color: #4F46E5 !important;
+    color: white !important;
+    border-radius: 10px !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer;
+}
+
+/* تأثير الـ Hover على الزر */
+button[kind="primary"]:hover {
+    background-color: #4338CA !important; /* لون أغمق قليلاً عند التحويم */
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
+    transform: scale(1.01); /* تكبير طفيف جداً للزر */
+}
+
+/* تأثير عند الضغط الفعلي على الزر Active/Click */
+button[kind="primary"]:active {
+    transform: scale(0.98);
+}
+
+
+
+
+/* 3. زر التشغيل الأساسي وزر الـ Form مع تأثير الـ Hover والـ Shadows */
+button[kind="primary"], div.stFormSubmitButton > button {
+    background-color: #4F46E5 !important;
+    color: white !important;
+    border-radius: 10px !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer;
+}
+
+/* تأثير الـ Hover على الأزرار */
+button[kind="primary"]:hover, div.stFormSubmitButton > button:hover {
+    background-color: #4338CA !important; /* لون أغمق قليلاً عند التحويم */
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
+    transform: scale(1.01) !important; /* تكبير طفيف جداً للزر */
+}
+
+/* تأثير عند الضغط الفعلي على الزر Active/Click */
+button[kind="primary"]:active, div.stFormSubmitButton > button:active {
+    transform: scale(0.98) !important;
+}
+
+
+
+
+
+/* تأثير الـ Hover على الزر */
+button[kind="secondary"]:hover {
+    background-color: #4338CA !important; /* لون أغمق قليلاً عند التحويم */
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
+    transform: scale(1.01); /* تكبير طفيف جداً للزر */
+	color: white;
+}
+
+/* 1. إعداد التنسيق الافتراضي لعناصر القائمة الجانبية وإضافة النعومة الحركية (Transition) */
+[data-testid="stSidebarNav"] ul li a {
+    display: flex !important;
+    align-items: center !important;
+    padding: 10px 16px !important;
+    border-radius: 8px !important; /* حواف دائرية أنيقة عند تحديد الصفحة */
+    text-decoration: none !important;
+    
+    /* 👈 إضافة الترانزيشن لجعل التأثير ناعماً ومريحاً للعين وليس مفاجئاً */
+    transition: all 0.3s ease-in-out !important; 
+}
+
+
+/* 5. تأثير لحظة النقر الفعلي بالماوس (Active / On Click) */
+[data-testid="stSidebarNav"] ul li a:active {
+    background-color: #cbd5e1 !important; /* تحويل الخلفية إلى لون رمادي أعمق لحظة الضغط */
+    transform: scale(0.97) !important;     /* تصغير حجم الزر بنسبة 3% ليعطي إيحاءً بصرياً بأنه "انضغط" للداخل */
+    transition: transform 0.05s ease !important; /* سرعة فائقة جداً للاستجابة اللحظية عند النقر */
+    display: flex !important;
+    align-items: center !important;
+    padding: 10px 16px !important;
+    border-radius: 8px !important; /* حواف دائرية أنيقة عند تحديد الصفحة */
+    text-decoration: none !important;
+	border-color: #000 !important; /* لون أزرق/بنفسجي عند الضغط */
+
+}
+
+
+/* 1. تكبير خطوط عناوين الصفحات والتنقل داخل السلايدر الجانبي */
+[data-testid="stSidebarNav"] ul li a span {
+    font-size: 18px !important; /* تكبير حجم خط أسماء الصفحات */
+    font-weight: 600 !important; /* جعل الخط سميك واحترافي */
+    color: #333333 !important;   /* لون مريح للعين (يمكنك تغييره حسب ثيم موقعك) */
+}
+
+/* 2. تحسين خطوط العناوين وتجهيزها للحركة */
+[data-testid="stSidebarNav"] ul li a span {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: #4a5568 !important; /* لون رمادي احترافي هادئ */
+    transition: color 0.2s ease !important;
+}
+
+/* 3. زيادة التباعد الرأسي بين أزرار الصفحات لتبدو مريحة وليست متكدسة */
+[data-testid="stSidebarNav"] ul li {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    border-radius: 8px !important; /* جعل حواف التحديد دائرية واحترافية */
+}
+
+
+/* 3. تأثير الـ Hover عند تمرير مؤشر الماوس فوق اسم الصفحة */
+[data-testid="stSidebarNav"] ul li a:hover {
+    background-color: #cc0014 !important; /* تغيير خلفية الزر إلى لون أزرق فاتح خفيف جداً */
+    padding-right: 24px !important;     /* حيلة ذكية: دفع النص قليلاً لليسار عند التمرير كحركة تفاعلية */
+    box-shadow: inset 4px 0px 0px 0px #4A90E2 !important; /* إظهار خط عمودي أزرق أنيق على جانب الزر */
+}
+
+
+/* تغيير لون النص والأيقونة تلقائياً إلى اللون الأزرق الاحترافي عند عمل Hover */
+[data-testid="stSidebarNav"] ul li a:hover span {
+    color: #fff !important; /* تحويل لون الخط للأزرق */
+}
+
+
+/* 4. إضفاء تأثير مميز على الصفحة النشطة حالياً (Active Page) لتتميز عن بقية الصفحات */
+[data-testid="stSidebarNav"] ul li a[aria-current="page"] {
+    background-color: #e1e9f5 !important; /* خلفية مميزة للصفحة المفتوحة حالياً */
+    box-shadow: inset 4px 0px 0px 0px #4A90E2 !important; /* خط جانبي ثابت */
+}
+
+[data-testid="stSidebarNav"] ul li a[aria-current="page"] span {
+    color: #4A90E2 !important; /* خط سميك ملون للصفحة النشطة */
+    font-weight: bold !important;
+}
+
+/* 4. تكبير عنوان القسم الرئيسي (المشروع الأساسي) */
+[data-testid="stSidebarNavBoldText"] {
+    font-size: 20px !important;
+    color: #4A90E2 !important; /* لون مميز للعنوان الرئيسي */
+    font-weight: bold !important;
+    margin-bottom: 12px !important;
+}
+
+/* 5. تحسين شكل وزر "تسجيل الخروج" وجعله كبيراً واحترافياً */
+[data-testid="stSidebar"] button {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    padding: 12px 20px !important; /* زيادة الحشو الداخلي للزر ليكون كبيراً وضخماً */
+    border-radius: 10px !important; /* حواف دائرية مودرن */
+    background-color: #ff4b4b !important; /* خلفية حمراء مميزة لزر الخروج */
+    color: white !important;
+    border: none !important;
+    transition: 0.3s ease !important;
+}
+
+/* تأثير التمرير (Hover) فوق زر تسجيل الخروج */
+[data-testid="stSidebar"] button:hover {
+    background-color: #d32f2f !important; /* درجة أغمق عند تمرير الماوس */
+    box-shadow: 0px 4px 10px rgba(255, 75, 75, 0.3) !important; /* ظل مضيء خلف الزر */
+}
+
+
+
+/* تنسيق حاوية بطاقات الاتصال داخل النافذة */
+.contact-card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* التنسيق الأساسي للبطاقة */
+.contact-card {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    border-radius: 12px;
+    text-decoration: none !important;
+    color: #31333F !important; /* لون الخط الافتراضي لستريمليت */
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+/* تأثير تحريك البطاقة عند تمرير الماوس */
+.contact-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* صندوق الأيقونة الجانبية */
+.icon-box {
+    font-size: 28px !important;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* نصوص البطاقة الداخلية */
+.contact-text {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.contact-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #808495;
+}
+
+.contact-value {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* أيقونة السهم أقصى اليمين */
+.arrow-box {
+    font-size: 18px !important;
+    color: #bfbfbf;
+    transition: color 0.3s ease;
+}
+
+.contact-card:hover .arrow-box {
+    color: #4f46e5;
+}
+
+/* تخصيص تأثيرات بلمسة ألوان هادئة لكل منصة عند الـ Hover */
+.email-card:hover {
+    border-left: 5px solid #ea4335;
+    background-color: #fdf2f2;
+}
+.email-card:hover .icon-box { color: #ea4335; }
+
+.telegram-card:hover {
+    border-left: 5px solid #0088cc;
+    background-color: #f0f7fa;
+}
+.telegram-card:hover .icon-box { color: #0088cc; }
+
+.whatsapp-card:hover {
+    border-left: 5px solid #25d366;
+    background-color: #f2fbf5;
+}
+.whatsapp-card:hover .icon-box { color: #25d366; }
+
+
+
+/* تخصيص حاوية مخطط غانت الكامل */
+.custom-gantt-container {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    /* إعطاء المخطط ظل ناعم ثقيل واحترافي */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+    border: 1px solid #edf2f7;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    /* إضافة خاصية الانسيابية عند حدوث تأثير */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* تأثير هندسي وجمالي ساحر عند تمرير الفأرة فوق حاوية المخطط */
+.custom-gantt-container:hover {
+    /* تعميق وتكبير جودة الظل لإعطاء إيحاء ثلاثي الأبعاد بالارتفاع عن الصفحة */
+    box-shadow: 0 20px 30px -4px rgba(0, 0, 0, 0.12), 0 10px 15px -5px rgba(0, 0, 0, 0.06);
+    /* إزاحة خفيفة جداً للأعلى بمقدار 4 بكسل لتعزيز تأثير الصعود */
+    transform: translateY(-4px);
+    border-color: #e2e8f0;
+}
+
+/* تحسين المظهر الداخلي لعناصر الرسم لتبدو بحواف ناعمة بداخل المتصفح */
+.custom-gantt-container .js-plotly-plot .main-svg {
+    border-radius: 12px;
+}
