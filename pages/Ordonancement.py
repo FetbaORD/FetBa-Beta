@@ -359,7 +359,7 @@ if st.session_state.show_complete_gantt:
     def solve_flow_shop_static_plotly(pij, ts, job_sequence):
         n_jobs, m_machines = pij.shape
         st_times = np.zeros((n_jobs, m_machines))
-        en_times = np.zeros((n_jobs, m_machines))
+        e_times = np.zeros((n_jobs, m_machines))
         machine_free_time = np.zeros(m_machines)
         
         for i, job_idx in enumerate(job_sequence):
@@ -375,10 +375,10 @@ if st.session_state.show_complete_gantt:
                 if m == 0:
                     st_times[job_idx, m] = ready_after_setup
                 else:
-                    st_times[job_idx, m] = max(ready_after_setup, en_times[job_idx, m-1])
+                    st_times[job_idx, m] = max(ready_after_setup, e_times[job_idx, m-1])
                 
-                en_times[job_idx, m] = st_times[job_idx, m] + p_time
-                machine_free_time[m] = en_times[job_idx, m]
+                e_times[job_idx, m] = st_times[job_idx, m] + p_time
+                machine_free_time[m] = e_times[job_idx, m]
 
         return st_times, e_times, n_jobs, m_machines
 
