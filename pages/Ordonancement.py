@@ -326,12 +326,22 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 
 
 # ==========================================
-    # 🎯 الجزء الجديد: زر عرض المخطط الكامل المعتمد على matplotlib
+    # 🎯 الجزء المطور: استخدام Session State لإظهار المخطط الكامل وثباته
     # ==========================================
     st.write("")
+    
+    # 1. تهيئة متغير الحالة في الجلسة إذا لم يكن موجوداً
+    if "show_complete_gantt" not in st.session_state:
+        st.session_state.show_complete_gantt = False
+
+    # 2. زر التبديل (عند الضغط عليه تتغير الحالة)
     if st.button("📊 Afficher Diagramme de gantt complete"):
+        st.session_state.show_complete_gantt = True
+
+    # 3. إذا كانت الحالة True، يتم حساب ورسم المخطط بشكل ثابت
+    if st.session_state.show_complete_gantt:
         
-        # دالة حساب الجدولة الكاملة (بدون التوقف عند الوقت اللحظي الحالي)
+        # دالة حساب الجدولة الكاملة
         def solve_flow_shop_with_setup_static(pij, ts, job_sequence):
             n_jobs, m_machines = pij.shape
             st_times = np.zeros((n_jobs, m_machines))
@@ -358,7 +368,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 
             return st_times, en_times, np.max(en_times), n_jobs, m_machines
 
-        # دالة الرسم المباشر داخل واجهة Streamlit
+        # دالة الرسم داخل واجهة Streamlit
         def render_static_gantt(st_times, en_times, n_jobs, m_machines, job_sequence, ts, xticks_step=5):
             fig, ax = plt.subplots(figsize=(12, 6))
             colors = plt.colormaps.get_cmap('tab20').resampled(n_jobs)
@@ -383,10 +393,10 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 
                     # رسم فترات تشغيل العمليات الكاملة
                     if duration > 0:
-                        bar = ax.broken_barh([(start, duration)], 
-                                             (m - 0.4, 0.8), 
-                                             facecolors=colors(job_idx % 20), 
-                                             edgecolor='black')
+                        ax.broken_barh([(start, duration)], 
+                                       (m - 0.4, 0.8), 
+                                       facecolors=colors(job_idx % 20), 
+                                       edgecolor='black')
                         
                         if n_jobs <= 20:
                             ax.text(start + duration/2, m, f'J{job_idx+1}', 
@@ -403,17 +413,20 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
             ax.grid(True, axis='x', linestyle='--', alpha=0.6)
             plt.tight_layout()
             
-            # عرض المخطط مباشرة داخل تطبيق الـ Streamlit
             st.pyplot(fig)
+            
+            # زر إضافي لإخفاء المخطط إن رغب المستخدم
+            if st.button("❌ Masquer le Diagramme"):
+                st.session_state.show_complete_gantt = False
+                st.rerun()
 
-        # استدعاء الدوال وتمرير البيانات الحية من الـ session_state
+        # جلب البيانات وتمريرها للدوال
         static_pij = st.session_state.Pij.values
         static_ts = st.session_state.Ts.values
         static_seq = [int(x) - 1 for x in st.session_state.sequence]
         
         s_times, e_times, cmax, nj, nm = solve_flow_shop_with_setup_static(static_pij, static_ts, static_seq)
         render_static_gantt(s_times, e_times, nj, nm, static_seq, static_ts)
-
 
 
 # =========================
