@@ -83,8 +83,8 @@ def sign_in_page():
     """
     st.markdown(title_html, unsafe_allow_html=True)
     
-    # Conteneur (Card) pour structurer l'interface
-    with st.container(border=True):
+    # 💡 التغيير هنا: استخدمنا st.form وأعطيناه مفتاحاً خاصاً مع إخفاء زر السيرفر الافتراضي البشع
+    with st.form(key="login_form", clear_on_submit=False, border=True):
         st.markdown('<p class="form-label">Connectez-vous pour continuer</p>', unsafe_allow_html=True)
         
         username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
@@ -92,12 +92,13 @@ def sign_in_page():
                 
         st.write("") # فراغ جمالي بسيط
         
-        # تقسيم المساحة إلى 3 أعمدة
+        # تقسيم المساحة إلى 3 أعمدة (الأطراف متساوية، والأوسط عريض بما يكفي للزر)
         col_left, col_center, col_right = st.columns([1, 1.5, 1])
         
         with col_center:
-            # عُدنا إلى الـ st.button الأصلي الخاص بك تماماً لحماية الـ CSS
-            if st.button("Se connecter", type="primary"):
+            # 💡 التغيير هنا: حوّلنا st.button إلى st.form_submit_button بنفس الخصائص تماماً
+            # هذا التغيير لن يؤثر على كود الـ CSS الخاص بك لأن Streamlit يعامل الزرين بنفس الـ HTML Tags تقريباً
+            if st.form_submit_button("Se connecter", type="primary"):
                 if login_user(username, password):
                     st.session_state.logged_in = True
                     st.session_state.username = username
@@ -105,51 +106,6 @@ def sign_in_page():
                     st.rerun()
                 else:
                     st.error("Nom d'utilisateur ou mot de passe incorrect.")
-
-    # 🛠️ سحر الـ JavaScript لحل مشكلة الـ Enter نهائياً وبشكل غير مرئي
-    st.components.v1.html("""
-    <script>
-        // دالة للبحث عن حقول الإدخال والزر وربطهم ببعض
-        function setupEnterKey() {
-            // جلب عناصر الإدخال داخل تطبيق Streamlit في المتصفح
-            const inputs = parent.document.querySelectorAll('input[data-testid="stTextInputRootElement"]');
-            // جلب زر الدخول المخصص الخاص بك (الذي يحتوي على النص Se connecter)
-            const buttons = parent.document.querySelectorAll('button');
-            let targetButton = null;
-            
-            // تحديد الزر الصحيح بناءً على النص بداخله
-            buttons.forEach(btn => {
-                if (btn.innerText && btn.innerText.includes("Se connecter")) {
-                    targetButton = btn;
-                }
-            });
-
-            if (inputs.length > 0 && targetButton) {
-                const handleEnter = (event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault(); // منع السلوك الافتراضي لستريمليت
-                        targetButton.click();  // محاكاة ضغطة الفأرة الحقيقية على زرك المزين
-                    }
-                };
-
-                // ربط الحدث بحقلي اسم المستخدم وكلمة المرور
-                inputs.forEach(input => {
-                    // نتحقق أولاً أنه لم يتم ربطه سابقاً لمنع التكرار
-                    if (!input.dataset.enterBound) {
-                        input.addEventListener('keydown', handleEnter);
-                        input.dataset.enterBound = "true";
-                    }
-                });
-            }
-        }
-        
-        // تشغيل السكريبت بانتظار تحميل واجهة المستخدم بالكامل
-        setTimeout(setupEnterKey, 500);
-        // إعادة الفحص كل ثانية للتأكد من بقاء الربط فعالاً في حال حدوث Rerun للمتصفح
-        setInterval(setupEnterKey, 1000);
-    </script>
-    """, height=0, width=0) # نجعله بحجم 0 ليكون مخفياً تماماً عن أعين المستخدم
-
 
 
 def sign_up_page():
