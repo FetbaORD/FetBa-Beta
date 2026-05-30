@@ -1107,32 +1107,5 @@ button[kind="primary"]:hover {
 
 
 
-/* ========================================== */
-/* تنظيف وتثبيت لون الـ Expander المفتوح فقط  */
-/* ========================================== */
-
-/* 1. استهداف النص بأعلى دقة ممكنة داخل الـ Expander المفتوح */
-[data-testid="stSidebar"] div.stExpander[open] summary div[data-testid="stMarkdownContainer"] p,
-[data-testid="stSidebar"] div.stExpander[open] summary div[data-testid="stMarkdownContainer"] span,
-[data-testid="stSidebar"] div.stExpander[open] summary span,
-[data-testid="stSidebar"] div.stExpander[open] summary p {
-    color: #000000 !important; /* 👈 غيره إلى #ffffff إذا كانت خلفيتك زرقاء داكنة وتريد خطاً أبيض */
-    font-weight: bold !important;
-}
-
-/* 2. منع تأثير الـ Hover من إرجاع اللون للأبيض عند حركة الماوس فوقه وهو مفتوح */
-[data-testid="stSidebar"] div.stExpander[open] summary:hover div[data-testid="stMarkdownContainer"] p,
-[data-testid="stSidebar"] div.stExpander[open] summary:hover div[data-testid="stMarkdownContainer"] span,
-[data-testid="stSidebar"] div.stExpander[open] summary:hover span,
-[data-testid="stSidebar"] div.stExpander[open] summary:hover p {
-    color: #000000 !important; /* 👈 يجب أن يطابق نفس اللون في الأعلى تماماً */
-}
-
-/* 3. تلوين سهم التمدد الجانبي ومنعه من الاختفاء */
-[data-testid="stSidebar"] div.stExpander[open] summary svg,
-[data-testid="stSidebar"] div.stExpander[open] summary svg * {
-    fill: #000000 !important; /* 👈 يطابق نفس اللون أيضاً */
-    color: #000000 !important;
-}
 
 
