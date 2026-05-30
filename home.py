@@ -21,30 +21,47 @@ if "is_activated" not in st.session_state or not st.session_state.is_activated:
 # ----------------------------------------------------------------
 # 3. جلب قاعدة بيانات المفاتيح والتواريخ من Google Sheets أونلاين
 # ----------------------------------------------------------------
+# ----------------------------------------------------------------
+# 3. جلب قاعدة بيانات المفاتيح والتواريخ من Google Sheets أونلاين (نسخة محدثة ومستقرة)
+# ----------------------------------------------------------------
 def load_licenses_from_sheets():
     try:
         # قراءة الرابط الآمن من الـ Secrets
         sheet_url = st.secrets["public_gsheet_url"]
         
-        # تحويل الرابط ليقرا كـ CSV تلقائياً
-        csv_url = sheet_url.replace('/edit?usp=sharing', '/gviz/tq?tqx=out:csv')
-        csv_url = csv_url.replace('/edit#gid=', '/gviz/tq?tqx=out:csv&gid=')
+        # استخراج المعرّف الفريد للجدول (ID) برمجياً لضمان دقة التحويل
+        # هذا الأسلوب يتفوق على الاستبدال النصي التقليدي ويمنع مشاكل روابط usp=drivesdk
+        if "/d/" in sheet_url:
+            sheet_id = sheet_url.split("/d/")[1].split("/")[0]
+        else:
+            sheet_id = sheet_url
+            
+        # الرابط المباشر والأكثر استقراراً لتصدير البيانات بصيغة CSV
+        csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
         
-        # قراءة البيانات وتحويلها لقاموس (Dictionary)
-        df = pd.read_csv(csv_url)
+        # قراءة البيانات مع تحديد نوع البيانات كنصوص لمنع أخطاء تحويل الأرقام
+        df = pd.read_csv(csv_url, dtype=str)
         
-        # تنظيف البيانات وتحويلها لشكل برمي يسهل التعامل معه
+        # تنظيف البيانات وتحويلها لقاموس (Dictionary)
         db = {}
         for _, row in df.iterrows():
-            db[str(row['key']).strip()] = {
+            # التأكد من عدم وجود حقول فارغة في السطر
+            if pd.isna(row['key']) or pd.isna(row['expire_date']):
+                continue
+                
+            key_name = str(row['key']).strip()
+            db[key_name] = {
                 "expire_date": str(row['expire_date']).strip(),
-                "max_devices": int(row['max_devices']),
-                "used_devices": int(row['used_devices'])
+                "max_devices": int(row['max_devices']) if 'max_devices' in row and not pd.isna(row['max_devices']) else 2,
+                "used_devices": int(row['used_devices']) if 'used_devices' in row and not pd.isna(row['used_devices']) else 0
             }
         return db
     except Exception as e:
-        st.error("خطأ في الاتصال بخادم التفعيل أونلاين. يرجى المحاولة لاحقاً.")
+        # يفضل طباعة الخطأ الحقيقي في الـ Console للمطور لمعرفة السبب بدقة دون إظهاره للمستخدم
+        print(f"Error connecting to Google Sheets: {e}")
+        st.error("خطأ في الاتصال بخادم التفعيل أونلاين. يرجى التحقق من جودة الإنترنت لديك والمحاولة لاحقاً.")
         st.stop()
+
 
 if "is_activated" not in st.session_state:
     st.session_state.is_activated = False
