@@ -159,7 +159,7 @@ if not st.session_state.is_activated:
             
             sub_b1, sub_b2, sub_b3 = st.columns([0.5, 2, 0.5])
             with sub_b2:
-                if st.button("Acheter une Clé / Support", type="secondary", use_container_width=True):
+                if st.button("Acheter une Clé / Support", type="secondary"):
                     st.toast("💡 Redirection vers le support commercial...", icon="ℹ️")
                     show_contact_dialog() 
                     
