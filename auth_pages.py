@@ -90,26 +90,31 @@ def sign_in_page():
         # 1. 👈 قمنا بإنشاء نموذج (Form) هنا
         with st.form("login_form", clear_on_submit=False, border=False): # جعلنا الـ border مخفي لكي لا يخرب تصميم الـ container الأصلي
             
-            username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
-            password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
-                
-            st.write("") # فراغ جمالي بسيط
-            
-            # تقسيم المساحة إلى 3 أعمدة
-            col_left, col_center, col_right = st.columns([1, 1.5, 1])
-            
-            with col_center:
-                # 2. 👈 تحويل الزر إلى زر إرسال النموذج (يأخذ نفس الـ CSS الخاص بالـ st.button تماماً)
-                submit_button = st.form_submit_button("Se connecter", type="primary")
-                
-                if submit_button:
-                    if login_user(username, password):
-                        st.session_state.logged_in = True
-                        st.session_state.username = username
-                        st.success("Connexion réussie ! Redirection en cours...")
-                        st.rerun()
-                    else:
-                        st.error("Nom d'utilisateur ou mot de passe incorrect.")
+# ... بقية كود الحقول كما هو تماماً ...
+username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
+
+# قمنا بإضافة متغير لمراقبة الحقل، الضغط على Enter هنا سيعيد تشغيل السكربت
+password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
+        
+st.write("") 
+
+col_left, col_center, col_right = st.columns([1, 1.5, 1])
+
+with col_center:
+    # الزر الخاص بك كما هو (st.button) وبنفس الستايل الأصلي دون أي تغيير
+    button_clicked = st.button("Se connecter", type="primary")
+    
+    # 👈 السحر هنا: التحقق إذا تم الضغط على الزر "أو" إذا قام المستخدم بملء الحقول واضغط Enter
+    if button_clicked or (username and password and st.session_state.login_pass):
+        if login_user(username, password):
+            st.session_state.logged_in = True
+            st.session_state.username = username
+            st.success("Connexion réussie ! Redirection en cours...")
+            st.rerun()
+        else:
+            # نضع هذا الشرط فقط عند الضغط الفعلي على الزر حتى لا يظهر الخطأ فوراً أثناء الكتابة
+            if button_clicked:
+                st.error("Nom d'utilisateur ou mot de passe incorrect.")
 
 def sign_up_page():
     load_css() # Chargement du style CSS
