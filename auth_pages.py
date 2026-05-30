@@ -81,31 +81,61 @@ def sign_in_page():
     """
     st.markdown(title_html, unsafe_allow_html=True)
     
-    # 1. إنشاء الـ Form هنا (أعطيناه clear_on_submit=False وبدون إطار لتعتمد على تنسيق الـ Container الخاص بك)
-    with st.form(key="login_form", border=False):
+    # Conteneur (Card) pour structurer l'interface
+    with st.container(border=True):
+        st.markdown('<p class="form-label">Connectez-vous pour continuer</p>', unsafe_allow_html=True)
         
-        # Conteneur (Card) pour structurer l'interface
-        with st.container(border=True):
-            st.markdown('<p class="form-label">Connectez-vous pour continuer</p>', unsafe_allow_html=True)
+        username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
+        password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
+                
+        st.write("") # فراغ جمالي بسيط
+        
+        # تقسيم المساحة إلى 3 أعمدة
+        col_left, col_center, col_right = st.columns([1, 1.5, 1])
+        
+        with col_center:
+            # عودة إلى st.button الأصلي ليعود الاستايل الخاص بك فوراً كما كان
+            if st.button("Se connecter", type="primary", key="submit_btn"):
+                if login_user(username, password):
+                    st.session_state.logged_in = True
+                    st.session_state.username = username
+                    st.success("Connexion réussie ! Redirection en cours...")
+                    st.rerun()
+                else:
+                    st.error("Nom d'utilisateur ou mot de passe incorrect.")
+
+    # 👈 السحر هنا: كود جافا سكريبت يراقب ضغطة الـ Enter ويضغط على الزر تلقائياً
+    st.components.v1.html("""
+    <script>
+        // دالة للبحث عن حقول الإدخال والزر والربط بينهما
+        function setupEnterKey() {
+            const inputs = window.parent.document.querySelectorAll('input[type="text"], input[type="password"]');
             
-            username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
-            password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
-                    
-            st.write("") # فراغ جمالي بسيط
-            
-            # تقسيم المساحة إلى 3 أعمدة
-            col_left, col_center, col_right = st.columns([1, 1.5, 1])
-            
-            with col_center:
-                # 2. 👈 استبدال الزر العادي بزر إرسال النموذج (سيحافظ على ستايل الـ CSS الخاص بك تماماً)
-                if st.form_submit_button("Se connecter", type="primary"):
-                    if login_user(username, password):
-                        st.session_state.logged_in = True
-                        st.session_state.username = username
-                        st.success("Connexion réussie ! Redirection en cours...")
-                        st.rerun()
-                    else:
-                        st.error("Nom d'utilisateur ou mot de passe incorrect.")
+            inputs.forEach(input => {
+                // منع تكرار إضافة المراقب
+                if (!input.dataset.enterBound) {
+                    input.dataset.enterBound = "true";
+                    input.addEventListener("keydown", function(event) {
+                        if (event.key === "Enter") {
+                            event.preventDefault();
+                            // البحث عن زر تسجيل الدخول بواسطة النص الخاص به ومحاكاة النقر عليه
+                            const buttons = window.parent.document.querySelectorAll('button');
+                            for (let btn of buttons) {
+                                if (btn.textContent.includes("Se connecter")) {
+                                    btn.click();
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        
+        // تشغيل السكريبت بانتظار تحميل عناصر الصفحة
+        setTimeout(setupEnterKey, 500);
+    </script>
+    """, height=0, width=0) # مخفي تماماً ولا يؤثر على التصميم
 def sign_up_page():
     load_css() # Chargement du style CSS
     
