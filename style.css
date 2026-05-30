@@ -286,7 +286,7 @@ div[data-testid="stTextInput"] input:focus {
 
 /* 3. زر التشغيل الأساسي (Primary Button) مع تأثير الـ Hover والـ Shadows */
 button[kind="primary"] {
-    background-color: #4F46E5 !important;
+    background-color: #26a5ff !important;
     color: white !important;
     border-radius: 10px !important;
     border: none !important;
@@ -300,7 +300,7 @@ button[kind="primary"] {
 
 /* تأثير الـ Hover على الزر */
 button[kind="primary"]:hover {
-    background-color: #4338CA !important; /* لون أغمق قليلاً عند التحويم */
+    background-color: #0782d9 !important; /* لون أغمق قليلاً عند التحويم */
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
     transform: scale(1.01); /* تكبير طفيف جداً للزر */
 }
