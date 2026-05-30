@@ -132,20 +132,20 @@ def sign_up_page():
         is_email_valid = False
         if email: # يبدأ الفحص فقط إذا كتب المستخدم شيئاً
             if re.match(r"[^@]+@[^@]+\.[^@]+", email):
-                st.markdown('<p style="color: #28a745; font-size: 13px; margin-top: -10px;">✅ Format de l\'e-mail valide</p>', unsafe_allow_html=True)
+                st.markdown('<p style="color: #28a745; font-size: 13px; margin-top: -10px;">Format de l\'e-mail valide</p>', unsafe_allow_html=True)
                 is_email_valid = True
             else:
-                st.markdown('<p style="color: #dc3545; font-size: 13px; margin-top: -10px;">❌ Format invalide (ex: nom@domaine.com)</p>', unsafe_allow_html=True)
+                st.markdown('<p style="color: #dc3545; font-size: 13px; margin-top: -10px;">Format invalide (ex: nom@domaine.com)</p>', unsafe_allow_html=True)
         
         # 3. حقل رقم الهاتف مع التحقق الملون
         phone = st.text_input("Numéro de téléphone *", key="reg_phone", placeholder="Ex: +33612345678")
         is_phone_valid = False
         if phone:
             if re.match(r"^\+?[0-9\s]{7,15}$", phone):
-                st.markdown('<p style="color: #28a745; font-size: 13px; margin-top: -10px;">✅ Numéro de téléphone valide</p>', unsafe_allow_html=True)
+                st.markdown('<p style="color: #28a745; font-size: 13px; margin-top: -10px;">Numéro de téléphone valide</p>', unsafe_allow_html=True)
                 is_phone_valid = True
             else:
-                st.markdown('<p style="color: #dc3545; font-size: 13px; margin-top: -10px;">❌ Uniquement des chiffres (7 à 15 caractères)</p>', unsafe_allow_html=True)
+                st.markdown('<p style="color: #dc3545; font-size: 13px; margin-top: -10px;">Uniquement des chiffres (7 à 15 caractères)</p>', unsafe_allow_html=True)
         
         # 4. حقول كلمة المرور
         new_password = st.text_input("Choisissez un mot de passe *", type="password", key="reg_pass", placeholder="••••••••")
@@ -155,10 +155,10 @@ def sign_up_page():
         is_password_matching = False
         if new_password and confirm_password:
             if new_password == confirm_password:
-                st.markdown('<p style="color: #28a745; font-size: 13px; margin-top: -10px;">✅ Les mots de passe correspondent</p>', unsafe_allow_html=True)
+                st.markdown('<p style="color: #28a745; font-size: 13px; margin-top: -10px;">Les mots de passe correspondent</p>', unsafe_allow_html=True)
                 is_password_matching = True
             else:
-                st.markdown('<p style="color: #dc3545; font-size: 13px; margin-top: -10px;">❌ Les mots de passe ne correspondent pas</p>', unsafe_allow_html=True)
+                st.markdown('<p style="color: #dc3545; font-size: 13px; margin-top: -10px;">Les mots de passe ne correspondent pas</p>', unsafe_allow_html=True)
 
         st.write("")
         
