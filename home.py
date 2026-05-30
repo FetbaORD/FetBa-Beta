@@ -1,6 +1,8 @@
 import streamlit as st
 from datetime import datetime
 import pandas as pd
+from streamlit_autorefresh import st_autorefresh 
+
 
 # 1. إعدادات الصفحة
 st.set_page_config(
