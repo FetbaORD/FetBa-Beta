@@ -126,19 +126,18 @@ if not st.session_state.is_activated:
             st.caption("Note: La clé est valide pour une utilisation sur deux appareils maximum.")
 
 
-# 1. تعريف النافذة المنبثقة الاحترافية لمعلومات التواصل
+# 1. تعريف النافذة المنبثقة واستخدام st.html لتنفيذ كود الـ HTML
 @st.dialog("📱 Support & Achat de Clé", width="medium")
 def show_contact_dialog():
-    st.markdown("""
+    # استخدام st.html يضمن أن الـ Streamlit سيقوم بتشغيل الكود وليس طباعته كنص
+    st.html("""
     <p style='color: #666; font-size: 14px; margin-bottom: 20px;'>
-        Choisissez و votre moyen de communication préféré pour obtenir votre clé d'activation rapidement :
+        Choisissez votre moyen de communication préféré pour obtenir votre clé d'activation rapidement :
     </p>
     
-    <!-- رابط لجلب أيقونات جوجل المدعومة -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <div class="contact-card-container">
-        <!-- خيار الإيميل -->
         <a href="mailto:Markandreas03@gmail.com" target="_blank" class="contact-card email-card">
             <span class="material-icons icon-box">email</span>
             <div class="contact-text">
@@ -148,18 +147,16 @@ def show_contact_dialog():
             <span class="material-icons arrow-box">open_in_new</span>
         </a>
         
-        <!-- خيار التلغرام -->
         <a href="https://t.me/CCryptomic" target="_blank" class="contact-card telegram-card">
             <span class="material-icons icon-box">telegram</span>
             <div class="contact-text">
                 <span class="contact-label">Telegram Support</span>
-                <span class="contact-value">@YourTelegramUsername</span>
+                <span class="contact-value">@CCryptomic</span>
             </div>
             <span class="material-icons arrow-box">open_in_new</span>
         </a>
         
-        <!-- خيار الواتساب -->
-        <a href="https://wa.me/+213541445824" target="_blank" class="contact-card whatsapp-card">
+        <a href="https://wa.me/213541445824" target="_blank" class="contact-card whatsapp-card">
             <span class="material-icons icon-box">chat</span>
             <div class="contact-text">
                 <span class="contact-label">WhatsApp Business</span>
@@ -168,9 +165,9 @@ def show_contact_dialog():
             <span class="material-icons arrow-box">open_in_new</span>
         </a>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
-
+# 2. قسم الكود الخاص بك المرتبط بالزر (بدون تعديل، فقط استدعاء الدالة)
 with col_right:
     st.subheader("🛒 Achat d'une Clé d'Activation")
     with st.container(border=True):
@@ -181,10 +178,9 @@ with col_right:
         
         sub_b1, sub_b2, sub_b3 = st.columns([0.5, 2, 0.5])
         with sub_b2:
-            # عند الضغط على الزر يتم استدعاء الدالة المنبثقة مباشرة
             if st.button("Acheter une Clé / Support", type="secondary", use_container_width=True):
                 st.toast("💡 Redirection vers le support commercial...", icon="ℹ️")
-                show_contact_dialog() # استدعاء القائمة هنا
+                show_contact_dialog() # استدعاء النافذة المنبثقة
                 
         st.write("")
         st.caption("Pour toute urgence, contactez : Markandreas03@gmail.com")
