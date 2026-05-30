@@ -172,9 +172,6 @@ if not st.session_state.is_activated:
 # المحتوى الأصلي (يظهر فقط بعد التفعيل الناجح)
 # =========================================================
 
-from datetime import datetime
-import streamlit as st
-from streamlit_autorefresh import st_autorefresh
 
 # تحديث تلقائي كل ثانية
 st_autorefresh(interval=1000, key="refresh_clock")
@@ -185,7 +182,7 @@ st.title(":material/factory: Industrial AI Control Center")
 # حساب الوقت المتبقي لانتهاء الترخيص
 # =========================================================================
 try:
-    # تحويل تاريخ انتهاء الترخيص من نص إلى كائن datetime (تأكد أن الصيغة مطابقة لـ YYYY-MM-DD)
+    # تحويل التاريخ (تأكد أن الصيغة في السيرفر تطابق YYYY-MM-DD)
     expiry_date = datetime.strptime(st.session_state.license_expiry, "%Y-%m-%d")
     now = datetime.now()
     
@@ -193,28 +190,27 @@ try:
     time_remaining = expiry_date - now
     days_remaining = time_remaining.days
     
-    # تحضير النص واللون بناءً على الأيام المتبقية
+    # تحضير النص والأيقونة بناءً على حالة الترخيص
     if days_remaining > 0:
-        license_status_text = f"⏳ Temps restant : {days_remaining} jours"
-        # إذا فاضل أقل من 7 أيام يظهر تحذير أصفر، غير ذلك يظهر أخضر
+        license_status_text = f":material/hourglass_top: Temps restant : {days_remaining} jours"
+        # إذا كان متبقي أقل من 7 أيام يظهر تنبيه أصفر، وإلا يظهر أخضر نجاح
         sidebar_status = st.sidebar.warning if days_remaining <= 7 else st.sidebar.success
     else:
-        license_status_text = "❌ Licence expirée !"
+        license_status_text = ":material/gpp_bad: Licence expirée !"
         sidebar_status = st.sidebar.error
         
 except Exception:
-    # في حال حدوث خطأ في صيغة التاريخ أو عدم وجوده
-    license_status_text = "⏳ Temps restant : Indisponible"
+    license_status_text = ":material/hourglass_empty: Temps restant : Indisponible"
     sidebar_status = st.sidebar.info
 
 # =========================================================================
-# عرض البيانات في القائمة الجانبية والصفحة الرئيسية
+# عرض البيانات في القائمة الجانبية (Sidebar) بأيقونات Material الرسمية
 # =========================================================================
 
-# الخانة الأولى (تاريخ الانتهاء)
-sidebar_status(f"🔐 Version sous licence jusqu'au : {st.session_state.license_expiry}")
+# الخانة الأولى: تاريخ انتهاء الترخيص مع أيقونة القفل الذكي (verified_user)
+sidebar_status(f":material/verified_user: Version sous licence jusqu'au : {st.session_state.license_expiry}")
 
-# الخانة الثانية الجديدة (الوقت المتبقي بالأيام)
+# الخانة الثانية: الوقت المتبقي بالأيام (تأخذ لون الحالة وتأتي بأيقونة الساعة تلقائياً من الشرط)
 st.sidebar.info(license_status_text)
 
 
