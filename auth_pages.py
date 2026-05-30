@@ -70,76 +70,7 @@ def load_css():
         pass
 
 
-def sign_in_page():
-    load_css() # Chargement du style CSS
-    
-    # Titre avec icône officielle Google Material Icons (login)
-    title_html = """
-    <p class="main-title">
-        <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">login</i>Connexion
-    </p>
-    """
-    st.markdown(title_html, unsafe_allow_html=True)
-    
-    # Conteneur (Card) pour structurer l'interface
-    with st.container(border=True):
-        st.markdown('<p class="form-label">Connectez-vous pour continuer</p>', unsafe_allow_html=True)
-        
-        username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
-        password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
-                
-        st.write("") # فراغ جمالي بسيط
-        
-        # تقسيم المساحة إلى 3 أعمدة
-        col_left, col_center, col_right = st.columns([1, 1.5, 1])
-        
-        with col_center:
-            # عودة إلى الزر الأصلي تماماً لضمان بقاء الـ ستايل كما هو
-            if st.button("Se connecter", type="primary", key="submit_btn"):
-                if login_user(username, password):
-                    st.session_state.logged_in = True
-                    st.session_state.username = username
-                    st.success("Connexion réussie ! Redirection en cours...")
-                    st.rerun()
-                else:
-                    st.error("Nom d'utilisateur ou mot de passe incorrect.")
 
-    # 👈 السحر هنا: كود جافاسكريبت مخفي لربط زر Enter بالزر الخاص بك برمجياً
-    st.components.v1.html("""
-    <script>
-        // دالة للبحث عن حقول الإدخال والزر داخل صفحة ستريمليت
-        const mainDocs = window.parent.document;
-        
-        // جلب حقول الإدخال عن طريق الـ key المخصص لها
-        const inputs = mainDocs.querySelectorAll('input[data-testid="stTextInputInput"]');
-        
-        // جلب زر تسجيل الدخول المصمم بواسطة الـ CSS الخاص بك
-        // يبحث عن الزر الذي يحتوي على النص Se connecter
-        const buttons = mainDocs.querySelectorAll('button');
-        let loginBtn = null;
-        buttons.forEach(btn => {
-            if(btn.innerText && btn.innerText.includes("Se connecter")) {
-                loginBtn = btn;
-            }
-        });
-
-        // إذا تم العثور على الحقول والزر، نقوم بربط حدث الضغط على Enter
-        if(inputs.length > 0 && loginBtn) {
-            inputs.forEach(input => {
-                // منع التكرار
-                if(!input.dataset.enterBound) {
-                    input.dataset.enterBound = "true";
-                    input.addEventListener('keydown', function(e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            loginBtn.click(); // نقر برميي على الزر بالفأرة
-                        }
-                    });
-                }
-            });
-        }
-    </script>
-    """, height=0, width=0) # أبعاد صفرية ليبقى المخفي تماماً ولا يؤثر على التصميم
 
 
 
