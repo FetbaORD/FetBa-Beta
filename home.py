@@ -68,19 +68,19 @@ def verify_key(key):
         current_date = datetime.now()
         
         if current_date > expire_date:
-            st.error(f"❌ هذا المفتاح انتهت صلاحيته بتاريخ: {key_info['expire_date']}")
+            st.error(f" هذا المفتاح انتهت صلاحيته بتاريخ: {key_info['expire_date']}")
             return
             
         if key_info["used_devices"] >= key_info["max_devices"]:
-            st.error("❌ هذا المفتاح مستخدم على أقصى عدد مسموح به من الأجهزة!")
+            st.error(" هذا المفتاح مستخدم على أقصى عدد مسموح به من الأجهزة!")
             return
             
         st.session_state.is_activated = True
         st.session_state.license_expiry = key_info["expire_date"]
-        st.success("✔️ تم التفعيل بنجاح!")
+        st.success(" تم التفعيل بنجاح!")
         st.rerun()
     else:
-        st.error("❌ مفتاح التفعيل غير صحيح!")
+        st.error(" مفتاح التفعيل غير صحيح!")
 
 
 # 1. تعريف النافذة المنبثقة خارج الشروط (لتكون متاحة للاستدعاء)
