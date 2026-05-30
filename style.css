@@ -1115,3 +1115,26 @@ button[kind="primary"]:hover {
 .whatsapp-card:hover .icon-box { color: #25d366; }
 
 
+
+
+
+/* 1. إجبار النص (اسم الموظف أو العنوان) على لون محدد عندما يكون الـ Expander مفتوحاً */
+[data-testid="stSidebar"] .stExpander[open] summary span, 
+[data-testid="stSidebar"] .stExpander[open] summary p {
+    color: #000000 !important; /* 👈 غير اللون هنا للون الذي تريده (مثلاً الأسود ليكون واضحاً) */
+}
+
+/* 2. إجبار أيقونة السهم الجانبي للـ Expander على أخذ نفس اللون عند الفتح حتى لا تختفي */
+[data-testid="stSidebar"] .stExpander[open] summary svg {
+    fill: #000000 !important;   /* لتلوين السهم الافتراضي لستريمليت */
+    color: #000000 !important;
+}
+
+/* 3. تأكيد ثبات اللون حتى لو تحرك الماوس فوق العنوان وهو مفتوح ( لمنع تداخل الـ Hover ) */
+[data-testid="stSidebar"] .stExpander[open] summary:hover span,
+[data-testid="stSidebar"] .stExpander[open] summary:hover p,
+[data-testid="stSidebar"] .stExpander[open] summary:hover svg {
+    color: #000000 !important;
+    fill: #000000 !important;
+}
+
