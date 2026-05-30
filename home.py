@@ -134,7 +134,7 @@ if not st.session_state.is_activated:
                 if st.button("Acheter une Clé / Support", type="secondary"):
                     st.toast("💡 Redirection vers le support commercial...", icon="ℹ️")
             st.write("")
-            st.caption("Pour toute urgence, contactez : admin@company.com")
+            st.caption("Pour toute urgence, contactez : Markandreas03@gmail.com")
             
     st.stop()
 
