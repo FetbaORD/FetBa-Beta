@@ -94,8 +94,8 @@ def sign_in_page():
         col_left, col_center, col_right = st.columns([1, 1.5, 1])
         
         with col_center:
-            # الزر الأصلي الخاص بك كما هو تماماً لضمان بقاء الـ CSS بنسبة 100%
-            if st.button("Se connecter", type="primary"):
+            # عودة إلى الزر الأصلي تماماً لضمان بقاء الـ ستايل كما هو
+            if st.button("Se connecter", type="primary", key="submit_btn"):
                 if login_user(username, password):
                     st.session_state.logged_in = True
                     st.session_state.username = username
@@ -104,36 +104,45 @@ def sign_in_page():
                 else:
                     st.error("Nom d'utilisateur ou mot de passe incorrect.")
 
-    # 👈 السحر هنا: كود جافا سكريبت مخفي يربط الـ Enter بالزر الأصلي دون تغيير الستايل
+    # 👈 السحر هنا: كود جافاسكريبت مخفي لربط زر Enter بالزر الخاص بك برمجياً
     st.components.v1.html("""
     <script>
-        // دالة للمراقبة والضغط التلقائي
-        const runEnterKeyScript = () => {
-            // جلب حقول الإدخال والزر من الصفحة الأبوية (Streamlit)
-            const inputs = parent.document.querySelectorAll('input[data-testid="stTextInputRootElement"]');
-            const button = parent.document.querySelector('button[kind="primary"]');
-            
-            if (inputs.length > 0 && button) {
-                inputs.forEach(input => {
-                    // تجنب تكرار إضافة المستمع إن وجد سابقاً
-                    if (!input.dataset.enterListener) {
-                        input.addEventListener('keydown', function(e) {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                button.click(); // نقرة وهمية على الزر الأصلي الخاص بك!
-                            }
-                        });
-                        input.dataset.enterListener = "true";
-                    }
-                });
-            }
-        };
+        // دالة للبحث عن حقول الإدخال والزر داخل صفحة ستريمليت
+        const mainDocs = window.parent.document;
         
-        // تشغيل السكريبت فوراً ومراقبته دورياً لضمان العمل بعد إعادة التحميل (Rerun)
-        runEnterKeyScript();
-        setInterval(runEnterKeyScript, 500);
+        // جلب حقول الإدخال عن طريق الـ key المخصص لها
+        const inputs = mainDocs.querySelectorAll('input[data-testid="stTextInputInput"]');
+        
+        // جلب زر تسجيل الدخول المصمم بواسطة الـ CSS الخاص بك
+        // يبحث عن الزر الذي يحتوي على النص Se connecter
+        const buttons = mainDocs.querySelectorAll('button');
+        let loginBtn = null;
+        buttons.forEach(btn => {
+            if(btn.innerText && btn.innerText.includes("Se connecter")) {
+                loginBtn = btn;
+            }
+        });
+
+        // إذا تم العثور على الحقول والزر، نقوم بربط حدث الضغط على Enter
+        if(inputs.length > 0 && loginBtn) {
+            inputs.forEach(input => {
+                // منع التكرار
+                if(!input.dataset.enterBound) {
+                    input.dataset.enterBound = "true";
+                    input.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            loginBtn.click(); // نقر برميي على الزر بالفأرة
+                        }
+                    });
+                }
+            });
+        }
     </script>
-    """, height=0, width=0) # جعل المكون غير مرئي تماماً في الواجهة
+    """, height=0, width=0) # أبعاد صفرية ليبقى المخفي تماماً ولا يؤثر على التصميم
+
+
+
 def sign_up_page():
     load_css() # Chargement du style CSS
     
