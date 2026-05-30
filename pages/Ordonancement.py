@@ -10,7 +10,7 @@ from datetime import datetime
 st_autorefresh(interval=2000, key="refresh_clock")
 st.set_page_config(page_title="Ordonancement de la production", layout="wide")
 
-st.title("📦 Ordonancement de la production")
+st.title("Ordonancement de la production")
 
 
 if "sim_start_time" in st.session_state:
@@ -328,7 +328,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 
 
 # ==========================================
-#  الجزء المصحح والمطور: حساب وعرض المخطط الكامل باستخدام Plotly السريعة والمستقرة
+# 🎯 الجزء المصحح والمطور: حساب وعرض الكامل والثابت باستخدام Plotly السريعة والمستقرة
 # ==========================================
 st.write("")
 
@@ -337,16 +337,15 @@ if "show_complete_gantt" not in st.session_state:
     st.session_state.show_complete_gantt = False
 
 # 2. أزرار التحكم بالعرض في سطر أنيق ومتباعد
-# أضفنا gap="large" لضمان وجود مسافة أمان واضحة بين الأعمدة
 col_gantt_btn1, col_gantt_btn2 = st.columns([1, 1], gap="large")
 
 with col_gantt_btn1:
-    if st.button("Afficher Gantt Complete", type="primary"):
+    if st.button("📊 Afficher Gantt Complete", type="primary", use_container_width=True):
         st.session_state.show_complete_gantt = True
 
 with col_gantt_btn2:
     if st.session_state.show_complete_gantt:
-        if st.button("Masquer le Diagramme" ):
+        if st.button("❌ Masquer le Diagramme", use_container_width=True):
             st.session_state.show_complete_gantt = False
             st.rerun()
 
@@ -392,34 +391,38 @@ if st.session_state.show_complete_gantt:
     
     for i, job_idx in enumerate(static_seq):
         for m in range(nm):
-            # 1. إضافة وقت الإعداد (Setup Time) باللون الرمادي إذا وجد
+            # 1. إضافة وقت الإعداد (Setup Time)
             if i > 0:
                 prev_job_idx = static_seq[i-1]
                 setup_duration = static_ts[prev_job_idx, job_idx]
                 if setup_duration > 0:
-                    # وقت بداية الإعداد هو وقت فراغ الآلة السابق (والذي يساوي وقت بدء المهمة الحالية ناقص وقت الإعداد)
                     setup_start = s_times[job_idx, m] - setup_duration
                     if setup_start >= 0:
                         static_gantt_data.append(dict(
                             Machine=f"Machine {m+1}",
                             Start=pd.to_datetime(setup_start, unit='s'),
                             Finish=pd.to_datetime(s_times[job_idx, m], unit='s'),
-                            Type="Temps d'opération (Setup)"
+                            Type="🧪 Temps d'opération (Setup)",
+                            Duration=setup_duration,
+                            TaskInfo=f"Setup avant Job {job_idx + 1}"
                         ))
             
             # 2. إضافة فترة تشغيل المنتج العادية
+            proc_duration = e_times[job_idx, m] - s_times[job_idx, m]
             static_gantt_data.append(dict(
                 Machine=f"Machine {m+1}",
                 Start=pd.to_datetime(s_times[job_idx, m], unit='s'),
                 Finish=pd.to_datetime(e_times[job_idx, m], unit='s'),
-                Type=f"Job {job_idx + 1}"
+                Type=f"Job {job_idx + 1}",
+                Duration=proc_duration,
+                TaskInfo=f"Exécution du Job {job_idx + 1}"
             ))
             
     if static_gantt_data:
         df_static_gantt = pd.DataFrame(static_gantt_data)
         
-        # خريطة ألوان مخصصة: تجعل وقت الإعداد رمادياً داكناً ومميزاً والمنتجات بألوانها المعتادة
-        color_map = {"Temps d'opération (Setup)": "#555555"}
+        # لوحة ألوان حديثة واحترافية للمنتجات (لوحة مريحة للعين ومتناسقة)
+        color_map = {"🧪 Temps d'opération (Setup)": "#4A5568"} # رمادي داكن أنيق للإعداد
         
         fig_static = px.timeline(
             df_static_gantt,
@@ -428,20 +431,39 @@ if st.session_state.show_complete_gantt:
             y="Machine",
             color="Type",
             color_discrete_map=color_map,
-            title=f"Diagramme de Gantt Complet Static | Makespan (Cmax) = {int(np.max(e_times))} ثانية"
+            color_discrete_sequence=px.colors.qualitative.Safe, # ألوان جميلة واحترافية تلقائية للمنتجات
+            title=f"📋 Diagramme de Gantt Complet Static | Makespan (Cmax) = {int(np.max(e_times))} s",
+            hover_name="TaskInfo"
+        )
+        
+        # تخصيص نافذة الـ Hover لتظهر بشكل منسق وجذاب جداً بالفرنسية/الإنجليزية
+        fig_static.update_traces(
+            hovertemplate="<b>%{hovertext}</b><br><br>📍 Machine: %{y}<br>⏱️ Durée: %{customdata[0]} secondes<br><extra></extra>",
+            customdata=df_static_gantt[["Duration"]].values
         )
         
         fig_static.update_yaxes(autorange="reversed")
         fig_static.update_layout(
-            xaxis_title="الزمن الكلي للجدولة (دقائق:ثواني)",
-            xaxis=dict(tickformat="%M:%S"),
+            xaxis_title="Temps Global (Minutes:Secondes)",
+            xaxis=dict(tickformat="%M:%S", gridcolor="#E2E8F0"),
+            yaxis=dict(gridcolor="#E2E8F0"),
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
             showlegend=True,
-            height=400
+            height=420,
+            title_font=dict(size=18, face="Arial", color="#2D3748"),
+            hoverlabel=dict(
+                bgcolor="#1A202C", 
+                font_size=13, 
+                font_family="Arial",
+                font_color="white"
+            )
         )
         
-        # عرض المخطط فوراً وبثبات كامل
+        # تغليف المخطط داخل HTML Container لتطبيق تأثيرات الـ CSS الخارجي
+        st.markdown('<div class="custom-gantt-container">', unsafe_allow_html=True)
         st.plotly_chart(fig_static, use_container_width=True, key="static_gantt_plotly")
-
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 
