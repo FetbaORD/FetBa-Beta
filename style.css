@@ -93,7 +93,7 @@ h1, h2, h3 {
 /* تنسيق الأزرار وحقول الإدخال داخل الـ Sidebar */
 [data-testid="stSidebar"] button {
     background-color: #FFFFFF !important; /* لون خلفية الزر الأساسي */
-    color: #FFFFFF !important; /* لون النص */
+    color: #000000 !important; /* لون النص */
     border: 1px solid #3A3A55 !important; /* إطار خفيف */
     border-radius: 8px !important; /* انحناء الحواف */
     padding: 10px 20px !important; /* المسافات الداخلية */
