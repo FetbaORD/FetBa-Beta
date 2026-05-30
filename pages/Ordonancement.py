@@ -12,6 +12,9 @@ st.set_page_config(page_title="Ordonancement de la production", layout="wide")
 
 st.title("Ordonancement de la production")
 
+# 🎨 استدعاء ملف الـ CSS الخارجي لتطبيق الظلال والمؤثرات الجمالية
+with open("style.css", "r", encoding="utf-8") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 if "sim_start_time" in st.session_state:
 
