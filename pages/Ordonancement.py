@@ -180,7 +180,7 @@ if "machine_faults" not in st.session_state:
     st.session_state.machine_faults = {f"Machine {i+1}": [] for i in range(5)}
 
 if "Pij" in st.session_state and "sequence" in st.session_state:
-    st.subheader("⏳ Gantt Chart (Progressif avec gestion des pannes)")
+    st.subheader("Gantt Chart (Progressif avec gestion des pannes)")
 
     # استخراج البيانات من session_state
     pij_data = st.session_state.Pij.values
