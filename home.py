@@ -178,6 +178,29 @@ st_autorefresh(interval=1000, key="refresh_clock")
 
 st.title(":material/factory: Industrial AI Control Center")
 
+
+# =========================================================================
+# شعار المنصة في أعلى الـ Sidebar الجانبي
+# =========================================================================
+st.sidebar.markdown(
+    """
+    <div style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e0e0e0;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="ضع_رابط_الأيقونة_هنا.png" width="40" style="object-fit: contain;">
+            <h1 style="font-family: 'Poppins', 'Helvetica Neue', sans-serif; font-size: 24px; font-weight: 700; color: #1E3A8A; margin: 0; padding: 0;">
+                Fetba Platform
+            </h1>
+        </div>
+        <p style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; color: #6B7280; margin: 5px 0 0 0; line-height: 1.3;">
+            Une plateforme professionnelle pour la planification de la production
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
 # =========================================================================
 # حساب الوقت المتبقي لانتهاء الترخيص
 # =========================================================================
