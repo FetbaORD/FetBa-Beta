@@ -6,5 +6,6 @@ requests
 streamlit-autorefresh
 twilio
 plotly
+re
 datetime
 plotly.express
