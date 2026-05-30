@@ -137,7 +137,7 @@ h1, h2, h3 {
 /* 1. التنسيق الأساسي للـ Expander (وهو في الحالة العادية) */
 /* ======================================================== */
 [data-testid="stSidebar"] .stExpander {
-    background-color: #9cdeff !important; /* لون الخلفية الأساسي */
+    background-color: #26a5ff !important; /* لون الخلفية الأساسي */
     border: 1px solid #3A3A55 !important;
     border-radius: 8px !important;
     margin-bottom: 12px !important; 
@@ -148,7 +148,7 @@ h1, h2, h3 {
 /* 🎯 السحر هنا: تأثير الـ Hover الفعال والآمن */
 /* نطبقه فقط عندما يكون الـ Expander مغلقاً :not([open]) لمنع المشاكل */
 [data-testid="stSidebar"] .stExpander:not([open]):hover {
-    background-color: #FFFFFF !important; /* تحويل الخلفية للأبيض */
+    background-color: #0782d9 !important; /* تحويل الخلفية للأبيض */
     border-color: Red !important; /* تغيير لون الإطار */
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35) !important; /* الظل المضيء */
     transform: translateY(-2px) !important; /* الحركة للأعلى */
@@ -160,7 +160,7 @@ h1, h2, h3 {
 /* 2. حماية الـ Expander عندما يتم فتحه (حتى لا تلتصق الأزرار) */
 /* ======================================================== */
 [data-testid="stSidebar"] .stExpander[open] {
-    background-color: #FFFFFF !important; /* الحفاظ على الخلفية الأصلية عند الفتح */
+    background-color: #0782d9 !important; /* الحفاظ على الخلفية الأصلية عند الفتح */
     transform: none !important; /* إلغاء الحركة للأعلى لكي لا تهتز الأزرار بالداخل */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
 }
