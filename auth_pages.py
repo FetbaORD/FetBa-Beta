@@ -28,7 +28,7 @@ def check_password(password, hashed_password):
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
 
 # Fonction pour ajouter un nouvel utilisateur
-def add_user(username, password):
+def add_user(username, password, email="", phone=""):
     create_usertable()
     conn = get_db_connection()
     c = conn.cursor()
