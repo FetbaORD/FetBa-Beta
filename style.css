@@ -160,7 +160,6 @@ h1, h2, h3 {
     background-color: #0782d9 !important; /* الحفاظ على الخلفية الأصلية عند الفتح */
     transform: none !important; /* إلغاء الحركة للأعلى لكي لا تهتز الأزرار بالداخل */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
-	color: Black !important;
 }
 
 
@@ -170,7 +169,7 @@ h1, h2, h3 {
 /* تحسين شكل عنوان الموظف والنص داخل الـ Expander (الحالة العادية) */
 [data-testid="stSidebar"] .stExpander summary {
     padding: 10px 15px !important;
-    color: #FFFFFF;
+    color: #000000;
 }
 
 /* استهداف النص (اسم الموظف) مباشرة في الحالة العادية */
