@@ -349,7 +349,7 @@ with col_gantt_btn1:
 
 with col_gantt_btn2:
     if st.session_state.show_complete_gantt:
-        if st.button("Masquer le Diagramme", type="Trially"):
+        if st.button("Masquer le Diagramme", type="trially"):
             st.session_state.show_complete_gantt = False
             st.rerun()
 
