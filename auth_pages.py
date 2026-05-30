@@ -119,7 +119,36 @@ def sign_in_page():
             
             // تحديد الزر الصحيح بناءً على النص بداخله
             buttons.forEach(btn => {
-                if (btn.innerText
+                if (btn.innerText && btn.innerText.includes("Se connecter")) {
+                    targetButton = btn;
+                }
+            });
+
+            if (inputs.length > 0 && targetButton) {
+                const handleEnter = (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault(); // منع السلوك الافتراضي لستريمليت
+                        targetButton.click();  // محاكاة ضغطة الفأرة الحقيقية على زرك المزين
+                    }
+                };
+
+                // ربط الحدث بحقلي اسم المستخدم وكلمة المرور
+                inputs.forEach(input => {
+                    // نتحقق أولاً أنه لم يتم ربطه سابقاً لمنع التكرار
+                    if (!input.dataset.enterBound) {
+                        input.addEventListener('keydown', handleEnter);
+                        input.dataset.enterBound = "true";
+                    }
+                });
+            }
+        }
+        
+        // تشغيل السكريبت بانتظار تحميل واجهة المستخدم بالكامل
+        setTimeout(setupEnterKey, 500);
+        // إعادة الفحص كل ثانية للتأكد من بقاء الربط فعالاً في حال حدوث Rerun للمتصفح
+        setInterval(setupEnterKey, 1000);
+    </script>
+    """, height=0, width=0) # نجعله بحجم 0 ليكون مخفياً تماماً عن أعين المستخدم
 
 
 
