@@ -476,8 +476,6 @@ if st.session_state.show_complete_gantt:
         st.markdown('</div>', unsafe_allow_html=True)
 
 
-
-
 # =========================
 # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
 # =========================
