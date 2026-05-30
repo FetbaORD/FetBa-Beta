@@ -166,7 +166,7 @@ def show_contact_dialog():
         </a>
     </div>
     """)
-
+col_left, col_right = st.columns([1, 1]) # يمكنك تعديل النسب [1, 1] حسب رغبتك لتقسيم الشاشة
 # 2. قسم الكود الخاص بك المرتبط بالزر (بدون تعديل، فقط استدعاء الدالة)
 with col_right:
     st.subheader("🛒 Achat d'une Clé d'Activation")
