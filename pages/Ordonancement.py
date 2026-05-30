@@ -23,7 +23,7 @@ if "sim_start_time" in st.session_state:
     st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
 
 else:
-    st.warning("⚠️ لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
+    st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
 
 
 
@@ -40,7 +40,7 @@ n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
 # =========================
 # 2. زر إنشاء الجداول
 # =========================
-if st.button("🧱 إنشاء الجداول"):
+if st.button("إنشاء الجداول"):
 
     # حفظ الحجم
     st.session_state.n_jobs = n_jobs
@@ -84,7 +84,7 @@ if st.button("🧱 إنشاء الجداول"):
     # تخزين في session_state
     st.session_state.Pij = Pij
     st.session_state.Ts = Ts
-    st.success("✅ تم إنشاء الجداول بنجاح")
+    st.success("تم إنشاء الجداول بنجاح")
 
 # =========================
 # 6. عرض الجداول
@@ -105,7 +105,7 @@ if "Pij" in st.session_state:
     
 if "Ts" in st.session_state:
 
-    st.subheader("🧪 Ts (Setup / Sterilization Time)")
+    st.subheader("Ts (Setup / Sterilization Time)")
     edited_ts = st.data_editor(
         st.session_state.Ts,
         key="Ts_editor",
@@ -124,7 +124,7 @@ if "sequence_df" in st.session_state:
     col_title, col_btn = st.columns([3, 1])
     
     with col_title:
-        st.subheader("✏️ Modifier la Séquence")
+        st.subheader("Modifier la Séquence")
     
     with col_btn:
         # استخدام popover لإنشاء قائمة منسدلة تحتوي على الخوارزميات
@@ -222,7 +222,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
             else: 
                 s_t = max(end_times[j_idx-1, m] + setup_time, end_times[j_idx, m-1])
             
-            # 2. حـسـاب تأثير الأعطال المـتداخلة وإزاحـة الـوقـت (الجديد ومربط الفرس 🎯)
+            # 2. حـسـاب تأثير الأعطال المـتداخلة وإزاحـة الـوقـت (الجديد ومربط الفرس)
             machine_key = f"Machine {m+1}"
             if "machine_faults" in st.session_state and machine_key in st.session_state.machine_faults:
                 faults = st.session_state.machine_faults[machine_key]
@@ -304,7 +304,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
         df_gantt['Finish'] = pd.to_datetime(df_gantt['Finish'], unit='s')
 
         # تخصيص الألوان (الوظائف ألوان عشوائية، والعطل أحمر دائماً)
-        color_discrete_map = {"⚠️ عطل الآلة (Breakdown)": "#ff0000"}
+        color_discrete_map = {" عطل الآلة (Breakdown)": "#ff0000"}
 
         fig = px.timeline(
             df_gantt, 
@@ -322,13 +322,13 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
         
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.write("⏳ بانتظار بدء المحاكاة أو وصول الوقت للوظيفة الأولى...")
+        st.write("بانتظار بدء المحاكاة أو وصول الوقت للوظيفة الأولى...")
 
 
 
 
 # ==========================================
-# 🎯 الجزء المصحح والمطور: حساب وعرض المخطط الكامل باستخدام Plotly السريعة والمستقرة
+#  الجزء المصحح والمطور: حساب وعرض المخطط الكامل باستخدام Plotly السريعة والمستقرة
 # ==========================================
 st.write("")
 
@@ -404,7 +404,7 @@ if st.session_state.show_complete_gantt:
                             Machine=f"Machine {m+1}",
                             Start=pd.to_datetime(setup_start, unit='s'),
                             Finish=pd.to_datetime(s_times[job_idx, m], unit='s'),
-                            Type="🧪 Temps d'opération (Setup)"
+                            Type="Temps d'opération (Setup)"
                         ))
             
             # 2. إضافة فترة تشغيل المنتج العادية
@@ -419,7 +419,7 @@ if st.session_state.show_complete_gantt:
         df_static_gantt = pd.DataFrame(static_gantt_data)
         
         # خريطة ألوان مخصصة: تجعل وقت الإعداد رمادياً داكناً ومميزاً والمنتجات بألوانها المعتادة
-        color_map = {"🧪 Temps d'opération (Setup)": "#555555"}
+        color_map = {"Temps d'opération (Setup)": "#555555"}
         
         fig_static = px.timeline(
             df_static_gantt,
