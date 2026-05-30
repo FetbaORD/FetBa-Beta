@@ -188,7 +188,7 @@ st.sidebar.markdown(
         <div style="display: flex; align-items: center; gap: 10px;">
             <img src="https://raw.githubusercontent.com/FetbaORD/FetBa-Beta/refs/heads/app/%E2%80%94Pngtree%E2%80%94task%20schedule%20with%20stopwatch%20icon_20956305.png" width="40" style="object-fit: contain;">
             <h1 style="font-family: 'Poppins', 'Helvetica Neue', sans-serif; font-size: 24px; font-weight: 700; color: #1E3A8A; margin: 0; padding: 0;">
-                Fetba Platform
+                FetBa Platform
             </h1>
         </div>
         <p style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; color: #6B7280; margin: 5px 0 0 0; line-height: 1.3;">
