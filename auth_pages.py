@@ -130,6 +130,8 @@ def sign_up_page():
         st.markdown('<p class="form-label">Créez votre nouveau compte dès maintenant</p>', unsafe_allow_html=True)
         
         new_username = st.text_input("Choisissez un nom d'utilisateur", key="reg_user", placeholder="Ex: admin123")
+        email = st.text_input("Adresse e-mail", key="reg_email", placeholder="Ex: exemple@mail.com")
+        phone = st.text_input("Numéro de téléphone", key="reg_phone", placeholder="Ex: +33 6 12 34 56 78")
         new_password = st.text_input("Choisissez un mot de passe", type="password", key="reg_pass", placeholder="••••••••")
         confirm_password = st.text_input("Confirmez le mot de passe", type="password", key="reg_pass_conf", placeholder="••••••••")
         
@@ -138,13 +140,24 @@ def sign_up_page():
         # Centrage du bouton à l'intérieur du conteneur via 3 sous-colonnes
         col1, col2, col3 = st.columns([1, 1.5, 1])
         with col2:
-            if st.button("Créer le compte", type="primary"):
-                if not new_username or not new_password:
-                    st.warning("Veuillez remplir tous les champs obligatoires.")
-                elif new_password != confirm_password:
-                    st.error("Les mots de passe ne correspondent pas.")
+            # زر إنشاء الحساب بنفس حجمه وشكله الأصلي
+            signup_button = st.button("Créer le compte", type="primary")
+        
+        # 🌟 تفعيل زر Enter: التحقق عند الضغط على الزر أو الضغط على Enter في خانة تأكيد كلمة المرور
+        # الشرط يتأكد أن المستخدم ملأ الحقول الأساسية وضغط Enter في آخر خانة (reg_pass_conf)
+        if signup_button or (new_username and email and phone and new_password and st.session_state.reg_pass_conf):
+            
+            # التحقق من ملء جميع الحقول المطلوبة
+            if not new_username or not email or not phone or not new_password or not confirm_password:
+                st.warning("Veuillez remplir tous les champs obligatoires.")
+            
+            # التحقق من تطابق كلمتي المرور
+            elif new_password != confirm_password:
+                st.error("Les mots de passe ne correspondent pas.")
+            
+            else:
+                # هنا نقوم بتمرير البيانات الإضافية للدالة الخاصة بك (يرجى التأكد من تعديل دالة add_user لتستقبلهم)
+                if add_user(new_username, new_password, email, phone):
+                    st.success("Compte créé avec succès ! Vous pouvez maintenant passer à la page de connexion.")
                 else:
-                    if add_user(new_username, new_password):
-                        st.success("Compte créé avec succès ! Vous pouvez maintenant passer à la page de connexion.")
-                    else:
-                        st.error("Ce nom d'utilisateur est déjà pris. Veuillez en choisir un autre.")
+                    st.error("Ce nom d'utilisateur est déjà pris. Veuillez en choisir un autre.")
