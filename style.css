@@ -342,7 +342,7 @@ button[kind="primary"]:active, div.stFormSubmitButton > button:active {
 
 
 /* 3. زر التشغيل الأساسي (Primary Button) مع تأثير الـ Hover والـ Shadows */
-button[kind="trially"] {
+button[kind="secondary"] {
     background-color: #ff0037 !important;
     color: white !important;
     border-radius: 10px !important;
@@ -356,7 +356,7 @@ button[kind="trially"] {
 }
 
 /* تأثير الـ Hover على الزر */
-button[kind="trially"]:hover {
+button[kind="secondary"]:hover {
     background-color: #fff !important; /* لون أغمق قليلاً عند التحويم */
     color: Black !important;
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
