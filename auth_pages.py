@@ -72,6 +72,55 @@ def load_css():
 
 
 
+def sign_in_page():
+    load_css() # Chargement du style CSS
+    
+    # Titre avec icône officielle Google Material Icons (login)
+    title_html = """
+    <p class="main-title">
+        <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">login</i>Connexion
+    </p>
+    """
+    st.markdown(title_html, unsafe_allow_html=True)
+    
+    # Conteneur (Card) pour structurer l'interface
+    with st.container(border=True):
+        st.markdown('<p class="form-label">Connectez-vous pour continuer</p>', unsafe_allow_html=True)
+        
+        username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
+        password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
+                
+        st.write("") # فراغ جمالي بسيط
+        
+        # تقسيم المساحة إلى 3 أعمدة
+        col_left, col_center, col_right = st.columns([1, 1.5, 1])
+        
+        with col_center:
+            # عُدنا إلى الـ st.button الأصلي الخاص بك تماماً لحماية الـ CSS
+            if st.button("Se connecter", type="primary"):
+                if login_user(username, password):
+                    st.session_state.logged_in = True
+                    st.session_state.username = username
+                    st.success("Connexion réussie ! Redirection en cours...")
+                    st.rerun()
+                else:
+                    st.error("Nom d'utilisateur ou mot de passe incorrect.")
+
+    # 🛠️ سحر الـ JavaScript لحل مشكلة الـ Enter نهائياً وبشكل غير مرئي
+    st.components.v1.html("""
+    <script>
+        // دالة للبحث عن حقول الإدخال والزر وربطهم ببعض
+        function setupEnterKey() {
+            // جلب عناصر الإدخال داخل تطبيق Streamlit في المتصفح
+            const inputs = parent.document.querySelectorAll('input[data-testid="stTextInputRootElement"]');
+            // جلب زر الدخول المخصص الخاص بك (الذي يحتوي على النص Se connecter)
+            const buttons = parent.document.querySelectorAll('button');
+            let targetButton = null;
+            
+            // تحديد الزر الصحيح بناءً على النص بداخله
+            buttons.forEach(btn => {
+                if (btn.innerText
+
 
 
 def sign_up_page():
