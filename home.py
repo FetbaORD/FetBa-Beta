@@ -156,11 +156,11 @@ def show_contact_dialog():
         </a>
         
         <!-- خيار الواتساب -->
-        <a href="https://wa.me/YourPhoneNumber" target="_blank" class="contact-card whatsapp-card">
+        <a href="https://wa.me/+213541445824" target="_blank" class="contact-card whatsapp-card">
             <span class="material-icons icon-box">chat</span>
             <div class="contact-text">
                 <span class="contact-label">WhatsApp Business</span>
-                <span class="contact-value">+213 XX XX XX XX</span>
+                <span class="contact-value">+213 5 41 44 58 24</span>
             </div>
             <span class="material-icons arrow-box">open_in_new</span>
         </a>
