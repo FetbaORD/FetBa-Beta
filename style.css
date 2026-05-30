@@ -425,3 +425,90 @@ button[kind="secondary"]:hover {
 
 
 
+/* تنسيق حاوية بطاقات الاتصال داخل النافذة */
+.contact-card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* التنسيق الأساسي للبطاقة */
+.contact-card {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    border-radius: 12px;
+    text-decoration: none !important;
+    color: #31333F !important; /* لون الخط الافتراضي لستريمليت */
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+/* تأثير تحريك البطاقة عند تمرير الماوس */
+.contact-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* صندوق الأيقونة الجانبية */
+.icon-box {
+    font-size: 28px !important;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* نصوص البطاقة الداخلية */
+.contact-text {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.contact-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #808495;
+}
+
+.contact-value {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* أيقونة السهم أقصى اليمين */
+.arrow-box {
+    font-size: 18px !important;
+    color: #bfbfbf;
+    transition: color 0.3s ease;
+}
+
+.contact-card:hover .arrow-box {
+    color: #4f46e5;
+}
+
+/* تخصيص تأثيرات بلمسة ألوان هادئة لكل منصة عند الـ Hover */
+.email-card:hover {
+    border-left: 5px solid #ea4335;
+    background-color: #fdf2f2;
+}
+.email-card:hover .icon-box { color: #ea4335; }
+
+.telegram-card:hover {
+    border-left: 5px solid #0088cc;
+    background-color: #f0f7fa;
+}
+.telegram-card:hover .icon-box { color: #0088cc; }
+
+.whatsapp-card:hover {
+    border-left: 5px solid #25d366;
+    background-color: #f2fbf5;
+}
+.whatsapp-card:hover .icon-box { color: #25d366; }
