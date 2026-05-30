@@ -301,6 +301,7 @@ button[kind="secondary"] {
 /* تأثير الـ Hover على الزر */
 button[kind="secondary"]:hover {
     background-color: #fff !important; /* لون أغمق قليلاً عند التحويم */
+	color: Black !important;
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
     transform: scale(1.01); /* تكبير طفيف جداً للزر */
 }
@@ -330,6 +331,7 @@ button[kind="secondary"], div.stFormSubmitButton > button {
 /* تأثير الـ Hover على الأزرار */
 button[kind="secondary"]:hover, div.stFormSubmitButton > button:hover {
     background-color: #fff !important; /* لون أغمق قليلاً عند التحويم */
+	color: Black !important;
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
     transform: scale(1.01) !important; /* تكبير طفيف جداً للزر */
 }
