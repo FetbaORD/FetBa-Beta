@@ -388,7 +388,7 @@ if st.session_state.show_complete_gantt:
     static_ts = st.session_state.Ts.values
     static_seq = [int(x) - 1 for x in st.session_state.sequence]
     
-    s_times, e_times, nj, nm = solve_flow_shop_static_plotly(static_pij, static_ts, static_seq)
+    s_times, en_times, nj, nm = solve_flow_shop_static_plotly(static_pij, static_ts, static_seq)
     
     # بناء مصفوفة البيانات الرسمية لـ Plotly
     static_g
