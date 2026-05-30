@@ -97,18 +97,16 @@ def sign_in_page():
             # تقسيم المساحة إلى 3 أعمدة
             col_left, col_center, col_right = st.columns([1, 1.5, 1])
             
-            with col_center:
-                # 2. تغيير الزر العادي إلى زر إرسال خاص بالنموذج (form_submit_button)
-                submit_button = st.form_submit_button("Se connecter", type="primary")
-                
-                if submit_button:
-                    if login_user(username, password):
-                        st.session_state.logged_in = True
-                        st.session_state.username = username
-                        st.success("Connexion réussie ! Redirection en cours...")
-                        st.rerun()
-                    else:
-                        st.error("Nom d'utilisateur ou mot de passe incorrect.")
+            submit_button = st.form_submit_button("Se connecter", type="primary", use_container_width=True)
+            
+            if submit_button:
+                if login_user(username, password):
+                    st.session_state.logged_in = True
+                    st.session_state.username = username
+                    st.success("Connexion réussie ! Redirection en cours...")
+                    st.rerun()
+                else:
+                    st.error("Nom d'utilisateur ou mot de passe incorrect.")
 
 
 
