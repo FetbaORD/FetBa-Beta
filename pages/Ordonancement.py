@@ -443,7 +443,7 @@ if st.session_state.show_complete_gantt:
         )
         
         fig_static.update_yaxes(autorange="reversed")
-    fig_static.update_layout(
+        fig_static.update_layout(
             xaxis_title="Temps Global (Minutes:Secondes)",
             xaxis=dict(tickformat="%M:%S", gridcolor="#E2E8F0"),
             yaxis=dict(gridcolor="#E2E8F0"),
