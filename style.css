@@ -92,8 +92,8 @@ h1, h2, h3 {
 
 /* تنسيق الأزرار وحقول الإدخال داخل الـ Sidebar */
 [data-testid="stSidebar"] button {
-    background-color: #FFFFFF !important; /* لون خلفية الزر الأساسي */
-    color: #000000 !important; /* لون النص */
+    background-color: Black !important; /* لون خلفية الزر الأساسي */
+    color: #FFF !important; /* لون النص */
     border: 1px solid #3A3A55 !important; /* إطار خفيف */
     border-radius: 8px !important; /* انحناء الحواف */
     padding: 10px 20px !important; /* المسافات الداخلية */
@@ -118,6 +118,7 @@ h1, h2, h3 {
 
 /* تأثير الـ Active (عند الضغط على الزر) */
 [data-testid="stSidebar"] button:active {
+	background-color: #4F46E5 !important;
     transform: translateY(1px) !important; /* تأثير ارتدادي لأسفل عند الضغط */
 	color: #000000 !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
@@ -138,7 +139,8 @@ h1, h2, h3 {
 /* ======================================================== */
 [data-testid="stSidebar"] .stExpander {
     background-color: #26a5ff !important; /* لون الخلفية الأساسي */
-    margin-bottom: 12px !important; 
+    margin-bottom: 12px !important;
+	color: Black !important;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important; 
     transition: all 0.3s ease-in-out !important;
 }
@@ -147,6 +149,7 @@ h1, h2, h3 {
 /* نطبقه فقط عندما يكون الـ Expander مغلقاً :not([open]) لمنع المشاكل */
 [data-testid="stSidebar"] .stExpander:not([open]):hover {
     background-color: #0782d9 !important; /* تحويل الخلفية للأبيض */
+	color: Black !important;
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35) !important; /* الظل المضيء */
     transform: translateY(-2px) !important; /* الحركة للأعلى */
 }
@@ -191,7 +194,7 @@ h1, h2, h3 {
 /* تحسين شكل عنوان الموظف والنص داخل الـ Expander (الحالة العادية) */
 [data-testid="stSidebar"] .stExpander summary {
     padding: 10px 15px !important;
-    color: #000;
+    color: Black;
 }
 
 /* استهداف النص (اسم الموظف) مباشرة في الحالة العادية */
@@ -209,7 +212,7 @@ h1, h2, h3 {
 /* 🎯 الحل الصحيح: الـ Hover يتم على الـ summary نفسه للعنصر المحدد فقط */
 [data-testid="stSidebar"] .stExpander summary:hover span,
 [data-testid="stSidebar"] .stExpander summary:hover p {
-    color: white !important;
+    color: Black !important;
     font-weight: bold !important; /* لجعل النص Bold عند الـ Hover عليه تحديداً */
 }
 
