@@ -3,7 +3,10 @@ from datetime import datetime
 import pandas as pd
 from streamlit_autorefresh import st_autorefresh 
 
-
+# تأكد من وجود هذا السطر في أعلى ملف التطبيق لقراءة الـ CSS
+with open("style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    
 # 1. إعدادات الصفحة
 st.set_page_config(
     page_title="Industrial AI Control Center",
