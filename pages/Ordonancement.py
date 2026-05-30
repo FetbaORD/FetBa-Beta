@@ -443,7 +443,7 @@ if st.session_state.show_complete_gantt:
         )
         
         fig_static.update_yaxes(autorange="reversed")
-        fig_static.update_layout(
+    fig_static.update_layout(
             xaxis_title="Temps Global (Minutes:Secondes)",
             xaxis=dict(tickformat="%M:%S", gridcolor="#E2E8F0"),
             yaxis=dict(gridcolor="#E2E8F0"),
@@ -451,15 +451,14 @@ if st.session_state.show_complete_gantt:
             paper_bgcolor="rgba(0,0,0,0)",
             showlegend=True,
             height=420,
-            title_font=dict(size=18, face="Arial", color="#2D3748"),
+            title_font=dict(size=18, family="Arial", color="#2D3748"),  # 🎯 تم التصحيح هنا
             hoverlabel=dict(
                 bgcolor="#1A202C", 
                 font_size=13, 
                 font_family="Arial",
                 font_color="white"
             )
-        )
-        
+        )       
         # تغليف المخطط داخل HTML Container لتطبيق تأثيرات الـ CSS الخارجي
         st.markdown('<div class="custom-gantt-container">', unsafe_allow_html=True)
         st.plotly_chart(fig_static, use_container_width=True, key="static_gantt_plotly")
