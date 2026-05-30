@@ -344,7 +344,7 @@ if "show_complete_gantt" not in st.session_state:
 col_gantt_btn1, col_gantt_btn2 = st.columns([1, 1], gap="large")
 
 with col_gantt_btn1:
-    if st.button("Afficher Gantt Complete", type="primary"):
+    if st.button("Afficher Gantt Complete"):
         st.session_state.show_complete_gantt = True
 
 with col_gantt_btn2:
