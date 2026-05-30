@@ -87,19 +87,17 @@ def sign_in_page():
     with st.container(border=True):
         st.markdown('<p class="form-label">Connectez-vous pour continuer</p>', unsafe_allow_html=True)
         
-        # 1. تحويل المدخلات والزر إلى نموذج (Form) ليفعل خاصية الـ Enter
-        with st.form(key="login_form", clear_on_submit=False):
-            username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
-            password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
-                    
-            st.write("") # فراغ جمالي بسيط
-            
-            # تقسيم المساحة إلى 3 أعمدة
-            col_left, col_center, col_right = st.columns([1, 1.5, 1])
-            
-            submit_button = st.form_submit_button("Se connecter", type="primary", use_container_width=True)
-            
-            if submit_button:
+        username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
+        password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
+                
+        st.write("") # فراغ جمالي بسيط
+        
+        # تقسيم المساحة إلى 3 أعمدة (الأطراف متساوية، والأوسط عريض بما يكفي للزر)
+        col_left, col_center, col_right = st.columns([1, 1.5, 1])
+        
+        with col_center:
+            # 👈 السحر هنا: ألغينا تماماً use_container_width ليأخذ الزر حجمه الاحترافي الافتراضي
+            if st.button("Se connecter", type="primary"):
                 if login_user(username, password):
                     st.session_state.logged_in = True
                     st.session_state.username = username
@@ -107,6 +105,7 @@ def sign_in_page():
                     st.rerun()
                 else:
                     st.error("Nom d'utilisateur ou mot de passe incorrect.")
+
 
 
 
