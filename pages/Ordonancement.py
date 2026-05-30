@@ -325,108 +325,124 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
         st.write("⏳ بانتظار بدء المحاكاة أو وصول الوقت للوظيفة الأولى...")
 
 
+
+
 # ==========================================
-    # 🎯 الجزء المطور: استخدام Session State لإظهار المخطط الكامل وثباته
-    # ==========================================
-    st.write("")
-    
-    # 1. تهيئة متغير الحالة في الجلسة إذا لم يكن موجوداً
-    if "show_complete_gantt" not in st.session_state:
-        st.session_state.show_complete_gantt = False
+# 🎯 الجزء المصحح والمطور: حساب وعرض المخطط الكامل باستخدام Plotly السريعة والمستقرة
+# ==========================================
+st.write("")
 
-    # 2. زر التبديل (عند الضغط عليه تتغير الحالة)
-    if st.button("📊 Afficher Diagramme de gantt complete"):
+# 1. تهيئة متغير الحالة في الجلسة إذا لم يكن موجوداً
+if "show_complete_gantt" not in st.session_state:
+    st.session_state.show_complete_gantt = False
+
+# 2. أزرار التحكم بالعرض في سطر أنيق
+col_gantt_btn1, col_gantt_btn2 = st.columns([1, 4])
+with col_gantt_btn1:
+    if st.button("📊 Afficher Gantt Complete", type="primary"):
         st.session_state.show_complete_gantt = True
-
-    # 3. إذا كانت الحالة True، يتم حساب ورسم المخطط بشكل ثابت
+with col_gantt_btn2:
     if st.session_state.show_complete_gantt:
+        if st.button("❌ Masquer le Diagramme"):
+            st.session_state.show_complete_gantt = False
+            st.rerun()
+
+# 3. إذا كانت الحالة True، يتم رسم المخطط الكامل فوراً
+if st.session_state.show_complete_gantt:
+    
+    # دالة حساب الجدولة الكاملة الثابتة (بدون اقتطاع الوقت الحالي)
+    def solve_flow_shop_static_plotly(pij, ts, job_sequence):
+        n_jobs, m_machines = pij.shape
+        st_times = np.zeros((n_jobs, m_machines))
+        en_times = np.zeros((n_jobs, m_machines))
+        machine_free_time = np.zeros(m_machines)
         
-        # دالة حساب الجدولة الكاملة
-        def solve_flow_shop_with_setup_static(pij, ts, job_sequence):
-            n_jobs, m_machines = pij.shape
-            st_times = np.zeros((n_jobs, m_machines))
-            en_times = np.zeros((n_jobs, m_machines))
-            machine_free_time = np.zeros(m_machines)
-            
-            for i, job_idx in enumerate(job_sequence):
-                for m in range(m_machines):
-                    p_time = pij[job_idx, m]
-                    setup_time = 0
-                    if i > 0:
-                        prev_job_idx = job_sequence[i-1]
-                        setup_time = ts[prev_job_idx, job_idx]
-                    
-                    ready_after_setup = machine_free_time[m] + setup_time
-                    
-                    if m == 0:
-                        st_times[job_idx, m] = ready_after_setup
-                    else:
-                        st_times[job_idx, m] = max(ready_after_setup, en_times[job_idx, m-1])
-                    
-                    en_times[job_idx, m] = st_times[job_idx, m] + p_time
-                    machine_free_time[m] = en_times[job_idx, m]
-
-            return st_times, en_times, np.max(en_times), n_jobs, m_machines
-
-        # دالة الرسم داخل واجهة Streamlit
-        def render_static_gantt(st_times, en_times, n_jobs, m_machines, job_sequence, ts, xticks_step=5):
-            fig, ax = plt.subplots(figsize=(12, 6))
-            colors = plt.colormaps.get_cmap('tab20').resampled(n_jobs)
-            
+        for i, job_idx in enumerate(job_sequence):
             for m in range(m_machines):
-                last_machine_free_time = 0
-                for i, job_idx in enumerate(job_sequence):
-                    start = st_times[job_idx, m]
-                    duration = en_times[job_idx, m] - start
-                    
-                    # رسم وقت الإعداد Ts
-                    if i > 0:
-                        prev_job_idx = job_sequence[i-1]
-                        setup_duration = ts[prev_job_idx, job_idx]
-                        if setup_duration > 0:
-                            ax.broken_barh([(last_machine_free_time, setup_duration)], 
-                                           (m - 0.4, 0.8), 
-                                           facecolors='gray', alpha=0.2, 
-                                           hatch='///',
-                                           edgecolor='black', linestyle=':')
-                    last_machine_free_time = en_times[job_idx, m]
+                p_time = pij[job_idx, m]
+                setup_time = 0
+                if i > 0:
+                    prev_job_idx = job_sequence[i-1]
+                    setup_time = ts[prev_job_idx, job_idx]
+                
+                ready_after_setup = machine_free_time[m] + setup_time
+                
+                if m == 0:
+                    st_times[job_idx, m] = ready_after_setup
+                else:
+                    st_times[job_idx, m] = max(ready_after_setup, en_times[job_idx, m-1])
+                
+                en_times[job_idx, m] = st_times[job_idx, m] + p_time
+                machine_free_time[m] = en_times[job_idx, m]
 
-                    # رسم فترات تشغيل العمليات الكاملة
-                    if duration > 0:
-                        ax.broken_barh([(start, duration)], 
-                                       (m - 0.4, 0.8), 
-                                       facecolors=colors(job_idx % 20), 
-                                       edgecolor='black')
-                        
-                        if n_jobs <= 20:
-                            ax.text(start + duration/2, m, f'J{job_idx+1}', 
-                                    ha='center', va='center', color='white', fontweight='bold', fontsize=8)
+        return st_times, en_times, n_jobs, m_machines
 
-            max_time = int(np.max(en_times))
-            ax.set_xticks(range(0, max_time + xticks_step, xticks_step))
-            ax.set_xlabel('Time (Seconds)')
-            ax.set_ylabel('Machines')
-            ax.set_yticks(range(m_machines))
-            ax.set_yticklabels([f'Machine {m+1}' for m in range(m_machines)])
+    # جلب البيانات الحية وتمريرها للحساب
+    static_pij = st.session_state.Pij.values
+    static_ts = st.session_state.Ts.values
+    static_seq = [int(x) - 1 for x in st.session_state.sequence]
+    
+    s_times, e_times, nj, nm = solve_flow_shop_static_plotly(static_pij, static_ts, static_seq)
+    
+    # بناء مصفوفة البيانات الرسمية لـ Plotly
+    static_gantt_data = []
+    
+    for i, job_idx in enumerate(static_seq):
+        for m in range(nm):
+            # 1. إضافة وقت الإعداد (Setup Time) باللون الرمادي إذا وجد
+            if i > 0:
+                prev_job_idx = static_seq[i-1]
+                setup_duration = static_ts[prev_job_idx, job_idx]
+                if setup_duration > 0:
+                    # وقت بداية الإعداد هو وقت فراغ الآلة السابق (والذي يساوي وقت بدء المهمة الحالية ناقص وقت الإعداد)
+                    setup_start = s_times[job_idx, m] - setup_duration
+                    if setup_start >= 0:
+                        static_gantt_data.append(dict(
+                            Machine=f"Machine {m+1}",
+                            Start=pd.to_datetime(setup_start, unit='s'),
+                            Finish=pd.to_datetime(s_times[job_idx, m], unit='s'),
+                            Type="🧪 Temps d'opération (Setup)"
+                        ))
             
-            ax.set_title(f'Complete Gantt Chart | Cmax = {max_time}')
-            ax.grid(True, axis='x', linestyle='--', alpha=0.6)
-            plt.tight_layout()
+            # 2. إضافة فترة تشغيل المنتج العادية
+            static_gantt_data.append(dict(
+                Machine=f"Machine {m+1}",
+                Start=pd.to_datetime(s_times[job_idx, m], unit='s'),
+                Finish=pd.to_datetime(e_times[job_idx, m], unit='s'),
+                Type=f"Job {job_idx + 1}"
+            ))
             
-            st.pyplot(fig)
-            
-            # زر إضافي لإخفاء المخطط إن رغب المستخدم
-            if st.button("❌ Masquer le Diagramme"):
-                st.session_state.show_complete_gantt = False
-                st.rerun()
-
-        # جلب البيانات وتمريرها للدوال
-        static_pij = st.session_state.Pij.values
-        static_ts = st.session_state.Ts.values
-        static_seq = [int(x) - 1 for x in st.session_state.sequence]
+    if static_gantt_data:
+        df_static_gantt = pd.DataFrame(static_gantt_data)
         
-        s_times, e_times, cmax, nj, nm = solve_flow_shop_with_setup_static(static_pij, static_ts, static_seq)
-        render_static_gantt(s_times, e_times, nj, nm, static_seq, static_ts)
+        # خريطة ألوان مخصصة: تجعل وقت الإعداد رمادياً داكناً ومميزاً والمنتجات بألوانها المعتادة
+        color_map = {"🧪 Temps d'opération (Setup)": "#555555"}
+        
+        fig_static = px.timeline(
+            df_static_gantt,
+            x_start="Start",
+            x_end="Finish",
+            y="Machine",
+            color="Type",
+            color_discrete_map=color_map,
+            title=f"Diagramme de Gantt Complet Static | Makespan (Cmax) = {int(np.max(e_times))} ثانية"
+        )
+        
+        fig_static.update_yaxes(autorange="reversed")
+        fig_static.update_layout(
+            xaxis_title="الزمن الكلي للجدولة (دقائق:ثواني)",
+            xaxis=dict(tickformat="%M:%S"),
+            showlegend=True,
+            height=400
+        )
+        
+        # عرض المخطط فوراً وبثبات كامل
+        st.plotly_chart(fig_static, use_container_width=True, key="static_gantt_plotly")
+
+
+
+
+
 
 
 # =========================
