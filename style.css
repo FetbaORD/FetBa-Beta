@@ -286,7 +286,7 @@ div[data-testid="stTextInput"] input:focus {
 
 /* 3. زر التشغيل الأساسي (secondary Button) مع تأثير الـ Hover والـ Shadows */
 button[kind="secondary"] {
-    background-color: #26a5ff !important;
+    background-color: #ff0037 !important;
     color: white !important;
     border-radius: 10px !important;
     border: none !important;
@@ -300,7 +300,7 @@ button[kind="secondary"] {
 
 /* تأثير الـ Hover على الزر */
 button[kind="secondary"]:hover {
-    background-color: #0782d9 !important; /* لون أغمق قليلاً عند التحويم */
+    background-color: #fff !important; /* لون أغمق قليلاً عند التحويم */
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
     transform: scale(1.01); /* تكبير طفيف جداً للزر */
 }
@@ -315,7 +315,7 @@ button[kind="secondary"]:active {
 
 /* 3. زر التشغيل الأساسي وزر الـ Form مع تأثير الـ Hover والـ Shadows */
 button[kind="secondary"], div.stFormSubmitButton > button {
-    background-color: #26a5ff !important;
+    background-color: #ff0037 !important;
     color: white !important;
     border-radius: 10px !important;
     border: none !important;
@@ -329,7 +329,7 @@ button[kind="secondary"], div.stFormSubmitButton > button {
 
 /* تأثير الـ Hover على الأزرار */
 button[kind="secondary"]:hover, div.stFormSubmitButton > button:hover {
-    background-color: #0782d9 !important; /* لون أغمق قليلاً عند التحويم */
+    background-color: #fff !important; /* لون أغمق قليلاً عند التحويم */
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
     transform: scale(1.01) !important; /* تكبير طفيف جداً للزر */
 }
@@ -343,7 +343,7 @@ button[kind="secondary"]:active, div.stFormSubmitButton > button:active {
 
 /* 3. زر التشغيل الأساسي (secondary Button) مع تأثير الـ Hover والـ Shadows */
 button[kind="primary"] {
-    background-color: #ff0037 !important;
+    background-color: #26a5ff !important;
     color: white !important;
     border-radius: 10px !important;
     border: none !important;
@@ -357,7 +357,7 @@ button[kind="primary"] {
 
 /* تأثير الـ Hover على الزر */
 button[kind="primary"]:hover {
-    background-color: #fff !important; /* لون أغمق قليلاً عند التحويم */
+    background-color: #0782d9 !important; /* لون أغمق قليلاً عند التحويم */
     color: Black !important;
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
     transform: scale(1.01); /* تكبير طفيف جداً للزر */
