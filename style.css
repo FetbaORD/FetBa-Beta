@@ -149,7 +149,6 @@ h1, h2, h3 {
 /* نطبقه فقط عندما يكون الـ Expander مغلقاً :not([open]) لمنع المشاكل */
 [data-testid="stSidebar"] .stExpander:not([open]):hover {
     background-color: #0782d9 !important; /* تحويل الخلفية للأبيض */
-    border-color: Red !important; /* تغيير لون الإطار */
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35) !important; /* الظل المضيء */
     transform: translateY(-2px) !important; /* الحركة للأعلى */
 }
@@ -190,7 +189,7 @@ h1, h2, h3 {
 /* 🎯 الحل الصحيح: الـ Hover يتم على الـ summary نفسه للعنصر المحدد فقط */
 [data-testid="stSidebar"] .stExpander summary:hover span,
 [data-testid="stSidebar"] .stExpander summary:hover p {
-    color: Red !important;
+    color: white !important;
     font-weight: bold !important; /* لجعل النص Bold عند الـ Hover عليه تحديداً */
 }
 
