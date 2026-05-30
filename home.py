@@ -122,7 +122,6 @@ if not st.session_state.is_activated:
             st.write("") 
             st.caption("Note: La clé est valide pour une utilisation sur deux appareils maximum.")
 
-import streamlit as st
 
 # 1. تعريف النافذة المنبثقة الاحترافية لمعلومات التواصل
 @st.dialog("📱 Support & Achat de Clé", width="medium")
@@ -169,7 +168,6 @@ def show_contact_dialog():
     """, unsafe_allow_html=True)
 
 
-# 2. الكود الخاص بك بعد التعديل لربطه بالنافذة
 with col_right:
     st.subheader("🛒 Achat d'une Clé d'Activation")
     with st.container(border=True):
