@@ -360,7 +360,7 @@ button[kind="primary"] {
 /* تأثير الـ Hover على الزر */
 button[kind="primary"]:hover {
     background-color: #0782d9 !important; /* لون أغمق قليلاً عند التحويم */
-    color: Black !important;
+    color: white !important;
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
     transform: scale(1.01); /* تكبير طفيف جداً للزر */
 }
