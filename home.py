@@ -80,7 +80,7 @@ def verify_key(key):
         st.success(" تم التفعيل بنجاح!")
         st.rerun()
     else:
-        st.error(" مفتاح التفعيل غير صحيح!")
+        st.error(" Clé d'activation invalide !")
 
 
 # 1. تعريف النافذة المنبثقة خارج الشروط (لتكون متاحة للاستدعاء)
@@ -176,7 +176,7 @@ if not st.session_state.is_activated:
 st_autorefresh(interval=1000, key="refresh_clock")
 
 st.title(":material/factory: Industrial AI Control Center")
-st.sidebar.success(f"🔐 نسخة مرخصة حتى: {st.session_state.license_expiry}")
+st.sidebar.success(f" Version sous licence jusqu'au: {st.session_state.license_expiry}")
 st.markdown("### Smart Factory Monitoring & Scheduling System")
 
 st.markdown("---")
