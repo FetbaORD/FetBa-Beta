@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import matplotlib.pyplot as plt
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 
@@ -322,7 +323,99 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.write("⏳ بانتظار بدء المحاكاة أو وصول الوقت للوظيفة الأولى...")
-    
+
+
+# ==========================================
+    # 🎯 الجزء الجديد: زر عرض المخطط الكامل المعتمد على matplotlib
+    # ==========================================
+    st.write("")
+    if st.button("📊 Afficher Diagramme de gantt complete"):
+        
+        # دالة حساب الجدولة الكاملة (بدون التوقف عند الوقت اللحظي الحالي)
+        def solve_flow_shop_with_setup_static(pij, ts, job_sequence):
+            n_jobs, m_machines = pij.shape
+            st_times = np.zeros((n_jobs, m_machines))
+            en_times = np.zeros((n_jobs, m_machines))
+            machine_free_time = np.zeros(m_machines)
+            
+            for i, job_idx in enumerate(job_sequence):
+                for m in range(m_machines):
+                    p_time = pij[job_idx, m]
+                    setup_time = 0
+                    if i > 0:
+                        prev_job_idx = job_sequence[i-1]
+                        setup_time = ts[prev_job_idx, job_idx]
+                    
+                    ready_after_setup = machine_free_time[m] + setup_time
+                    
+                    if m == 0:
+                        st_times[job_idx, m] = ready_after_setup
+                    else:
+                        st_times[job_idx, m] = max(ready_after_setup, en_times[job_idx, m-1])
+                    
+                    en_times[job_idx, m] = st_times[job_idx, m] + p_time
+                    machine_free_time[m] = en_times[job_idx, m]
+
+            return st_times, en_times, np.max(en_times), n_jobs, m_machines
+
+        # دالة الرسم المباشر داخل واجهة Streamlit
+        def render_static_gantt(st_times, en_times, n_jobs, m_machines, job_sequence, ts, xticks_step=5):
+            fig, ax = plt.subplots(figsize=(12, 6))
+            colors = plt.colormaps.get_cmap('tab20').resampled(n_jobs)
+            
+            for m in range(m_machines):
+                last_machine_free_time = 0
+                for i, job_idx in enumerate(job_sequence):
+                    start = st_times[job_idx, m]
+                    duration = en_times[job_idx, m] - start
+                    
+                    # رسم وقت الإعداد Ts
+                    if i > 0:
+                        prev_job_idx = job_sequence[i-1]
+                        setup_duration = ts[prev_job_idx, job_idx]
+                        if setup_duration > 0:
+                            ax.broken_barh([(last_machine_free_time, setup_duration)], 
+                                           (m - 0.4, 0.8), 
+                                           facecolors='gray', alpha=0.2, 
+                                           hatch='///',
+                                           edgecolor='black', linestyle=':')
+                    last_machine_free_time = en_times[job_idx, m]
+
+                    # رسم فترات تشغيل العمليات الكاملة
+                    if duration > 0:
+                        bar = ax.broken_barh([(start, duration)], 
+                                             (m - 0.4, 0.8), 
+                                             facecolors=colors(job_idx % 20), 
+                                             edgecolor='black')
+                        
+                        if n_jobs <= 20:
+                            ax.text(start + duration/2, m, f'J{job_idx+1}', 
+                                    ha='center', va='center', color='white', fontweight='bold', fontsize=8)
+
+            max_time = int(np.max(en_times))
+            ax.set_xticks(range(0, max_time + xticks_step, xticks_step))
+            ax.set_xlabel('Time (Seconds)')
+            ax.set_ylabel('Machines')
+            ax.set_yticks(range(m_machines))
+            ax.set_yticklabels([f'Machine {m+1}' for m in range(m_machines)])
+            
+            ax.set_title(f'Complete Gantt Chart | Cmax = {max_time}')
+            ax.grid(True, axis='x', linestyle='--', alpha=0.6)
+            plt.tight_layout()
+            
+            # عرض المخطط مباشرة داخل تطبيق الـ Streamlit
+            st.pyplot(fig)
+
+        # استدعاء الدوال وتمرير البيانات الحية من الـ session_state
+        static_pij = st.session_state.Pij.values
+        static_ts = st.session_state.Ts.values
+        static_seq = [int(x) - 1 for x in st.session_state.sequence]
+        
+        s_times, e_times, cmax, nj, nm = solve_flow_shop_with_setup_static(static_pij, static_ts, static_seq)
+        render_static_gantt(s_times, e_times, nj, nm, static_seq, static_ts)
+
+
+
 # =========================
 # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
 # =========================
