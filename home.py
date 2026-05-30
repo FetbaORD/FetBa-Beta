@@ -1,8 +1,8 @@
 import streamlit as st
 from datetime import datetime
-from streamlit_autorefresh import st_autorefresh
+import pandas as pd
 
-# 1. إعدادات الصفحة (يجب أن تكون في البداية تماماً)
+# 1. إعدادات الصفحة
 st.set_page_config(
     page_title="Industrial AI Control Center",
     layout="wide",
@@ -18,98 +18,112 @@ if "is_activated" not in st.session_state or not st.session_state.is_activated:
         </style>
     """, unsafe_allow_html=True)
 
-# 3. قاعدة بيانات المفاتيح في الـ Session
-if "activation_db" not in st.session_state:
-    # قائمة بـ 10 مفاتيح مخصصة من اختيارك
-    custom_keys = [
-        "HY2qFJz5Hy",
-        "rL1KYJ2VmO",
-        "e25S2Fk5n1",
-        "Z3KtgCU2SX",
-        "09mTViNJEe",
-        "8fB1Cy92XM",
-        "U61R9aqx1N",
-        "7Cj2ycuB9W",
-        "imc3VxT773",
-        "lBgYz7JyW6",
-    ]
-    
-    # تحويل القائمة إلى قاموس مع وضع عداد الأجهزة 0 لكل مفتاح
-    st.session_state.activation_db = {key: 0 for key in custom_keys}
+# ----------------------------------------------------------------
+# 3. جلب قاعدة بيانات المفاتيح والتواريخ من Google Sheets أونلاين
+# ----------------------------------------------------------------
+def load_licenses_from_sheets():
+    try:
+        # قراءة الرابط الآمن من الـ Secrets
+        sheet_url = st.secrets["public_gsheet_url"]
+        
+        # تحويل الرابط ليقرا كـ CSV تلقائياً
+        csv_url = sheet_url.replace('/edit?usp=sharing', '/gviz/tq?tqx=out:csv')
+        csv_url = csv_url.replace('/edit#gid=', '/gviz/tq?tqx=out:csv&gid=')
+        
+        # قراءة البيانات وتحويلها لقاموس (Dictionary)
+        df = pd.read_csv(csv_url)
+        
+        # تنظيف البيانات وتحويلها لشكل برمي يسهل التعامل معه
+        db = {}
+        for _, row in df.iterrows():
+            db[str(row['key']).strip()] = {
+                "expire_date": str(row['expire_date']).strip(),
+                "max_devices": int(row['max_devices']),
+                "used_devices": int(row['used_devices'])
+            }
+        return db
+    except Exception as e:
+        st.error("خطأ في الاتصال بخادم التفعيل أونلاين. يرجى المحاولة لاحقاً.")
+        st.stop()
 
 if "is_activated" not in st.session_state:
     st.session_state.is_activated = False
 
-# دالة التحقق
+# دالة التحقق الذكية من المفتاح والوقت
 def verify_key(key):
-    db = st.session_state.activation_db
+    # جلب أحدث البيانات من الجدول أونلاين في تلك اللحظة
+    db = load_licenses_from_sheets()
+    
     if key in db:
-        if db[key] < 2: 
-            db[key] += 1
-            st.session_state.is_activated = True
-            st.success(":material/check_circle: تم التفعيل بنجاح!")
-            st.rerun()
-        else:
-            st.error(":material/error: هذا المفتاح تم استخدامه على جهازين بالفعل!")
+        key_info = db[key]
+        
+        # تحويل نصوص التواريخ إلى صيغة وقت للمقارنة
+        expire_date = datetime.strptime(key_info["expire_date"], '%Y-%m-%d')
+        current_date = datetime.now()
+        
+        # 1. التحقق من تاريخ انتهاء الصلاحية المخصص الذي حددته أنت في الجدول
+        if current_date > expire_date:
+            st.error(f"❌ هذا المفتاح انتهت صلاحيته بتاريخ: {key_info['expire_date']}")
+            return
+            
+        # 2. التحقق من عدد الأجهزة
+        if key_info["used_devices"] >= key_info["max_devices"]:
+            st.error("❌ هذا المفتاح مستخدم على أقصى عدد مسموح به من الأجهزة!")
+            return
+            
+        # إذا كان كل شيء تمام يتم التفعيل
+        st.session_state.is_activated = True
+        st.session_state.license_expiry = key_info["expire_date"]
+        st.success("✔️ تم التفعيل بنجاح!")
+        st.rerun()
     else:
-        st.error(":material/cancel: مفتاح التفعيل غير صحيح!")
-# 4. واجهة القفل (موزعة ومقسمة بين التفعيل والشراء في منتصف الشاشة)
+        st.error("❌ مفتاح التفعيل غير صحيح!")
+
+# ----------------------------------------------------------------
+# 4. واجهة قفل التطبيق
+# ----------------------------------------------------------------
 if not st.session_state.is_activated:
     st.markdown("<br><br>", unsafe_allow_html=True)
-    
-    # عنوان الواجهة الرئيسي في المنتصف
     st.markdown("<h1 style='text-align: center;'>🔒 Activation du Système</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: #666;'>Le système de contrôle industriel est protégé. Veuillez activer votre produit.</p>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # إنشاء عمودين رئيسيين متساويين لتوزيع الواجهة (تفعيل | شراء)
     col_left, col_right = st.columns([1, 1])
     
-    # -------------------------------------------------------------
-    # الجانب الأيمن: كرت التفعيل الافتراضي (Activation)
-    # -------------------------------------------------------------
     with col_left:
         st.subheader("🔑 Activation du Produit")
         with st.container(border=True):
             input_key = st.text_input("Clé de Produit (Product Key)", type="password", placeholder="XXXX-XXXX-XXXX")
             st.write("") 
             
-            # زر التفعيل متناسق وموسط داخل عموده
             sub_col1, sub_col2, sub_col3 = st.columns([1, 1.5, 1])
             with sub_col2:
                 if st.button("Activer le Système", type="primary"): 
                     verify_key(input_key)
-            
             st.write("") 
             st.caption("Note: La clé est valide pour une utilisation sur deux appareils maximum.")
 
-    # -------------------------------------------------------------
-    # الجانب الأيسر: كرت شراء مفتاح جديد (Achat de clé)
-    # -------------------------------------------------------------
     with col_right:
         st.subheader("🛒 Achat d'une Clé d'Activation")
         with st.container(border=True):
             st.markdown("""
             **Besoin d'une clé de produit valide ?** Vous pouvez obtenir une nouvelle clé d'activation immédiatement en contactant notre service commercial ou via notre plateforme sécurisée.
-            
-            * ⚡ **Livraison Instantanée** par Email.
-            * 🛠️ **Support Technique 24/7** inclus.
-            * 💻 **Licence Officielle** pour 2 appareils.
             """)
-            
-            st.write("") # فراغ جمالي
-            
-            # زر توجيهي للشراء أو الدعم
+            st.write("") 
             sub_b1, sub_b2, sub_b3 = st.columns([0.5, 2, 0.5])
             with sub_b2:
-                # يمكنك ربطه برابط خارجي أو تركه كزر تواصل
                 if st.button("Acheter une Clé / Support", type="secondary"):
                     st.toast("💡 Redirection vers le support commercial...", icon="ℹ️")
-            
             st.write("")
             st.caption("Pour toute urgence, contactez : admin@company.com")
             
     st.stop()
+
+# =========================================================
+# المحتوى الأصلي (يظهر فقط بعد التفعيل)
+# =========================================================
+st.title(":material/factory: Industrial AI Control Center")
+st.sidebar.success(f"🔐 نسخة مرخصة حتى: {st.session_state.license_expiry}")
 # =========================================================
 # المحتوى الأصلي (يظهر فقط بعد التفعيل)
 # =========================================================
