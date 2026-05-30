@@ -172,13 +172,53 @@ if not st.session_state.is_activated:
 # المحتوى الأصلي (يظهر فقط بعد التفعيل الناجح)
 # =========================================================
 
+from datetime import datetime
+import streamlit as st
+from streamlit_autorefresh import st_autorefresh
+
 # تحديث تلقائي كل ثانية
 st_autorefresh(interval=1000, key="refresh_clock")
 
 st.title(":material/factory: Industrial AI Control Center")
-st.sidebar.success(f" Version sous licence jusqu'au: {st.session_state.license_expiry}")
-st.markdown("### Smart Factory Monitoring & Scheduling System")
 
+# =========================================================================
+# حساب الوقت المتبقي لانتهاء الترخيص
+# =========================================================================
+try:
+    # تحويل تاريخ انتهاء الترخيص من نص إلى كائن datetime (تأكد أن الصيغة مطابقة لـ YYYY-MM-DD)
+    expiry_date = datetime.strptime(st.session_state.license_expiry, "%Y-%m-%d")
+    now = datetime.now()
+    
+    # حساب الفارق الزمني
+    time_remaining = expiry_date - now
+    days_remaining = time_remaining.days
+    
+    # تحضير النص واللون بناءً على الأيام المتبقية
+    if days_remaining > 0:
+        license_status_text = f"⏳ Temps restant : {days_remaining} jours"
+        # إذا فاضل أقل من 7 أيام يظهر تحذير أصفر، غير ذلك يظهر أخضر
+        sidebar_status = st.sidebar.warning if days_remaining <= 7 else st.sidebar.success
+    else:
+        license_status_text = "❌ Licence expirée !"
+        sidebar_status = st.sidebar.error
+        
+except Exception:
+    # في حال حدوث خطأ في صيغة التاريخ أو عدم وجوده
+    license_status_text = "⏳ Temps restant : Indisponible"
+    sidebar_status = st.sidebar.info
+
+# =========================================================================
+# عرض البيانات في القائمة الجانبية والصفحة الرئيسية
+# =========================================================================
+
+# الخانة الأولى (تاريخ الانتهاء)
+sidebar_status(f"🔐 Version sous licence jusqu'au : {st.session_state.license_expiry}")
+
+# الخانة الثانية الجديدة (الوقت المتبقي بالأيام)
+st.sidebar.info(license_status_text)
+
+
+st.markdown("### Smart Factory Monitoring & Scheduling System")
 st.markdown("---")
 
 # لوحة تحكم علوية
