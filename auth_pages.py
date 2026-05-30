@@ -83,30 +83,33 @@ def sign_in_page():
     """
     st.markdown(title_html, unsafe_allow_html=True)
     
-    # 💡 التغيير هنا: استخدمنا st.form وأعطيناه مفتاحاً خاصاً مع إخفاء زر السيرفر الافتراضي البشع
-    with st.form(key="login_form", clear_on_submit=False, border=True):
+    # Conteneur (Card) pour structurer l'interface
+    with st.container(border=True):
         st.markdown('<p class="form-label">Connectez-vous pour continuer</p>', unsafe_allow_html=True)
         
-        username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
-        password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
+        # 1. 👈 قمنا بإنشاء نموذج (Form) هنا
+        with st.form("login_form", clear_on_submit=False, border=False): # جعلنا الـ border مخفي لكي لا يخرب تصميم الـ container الأصلي
+            
+            username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
+            password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
                 
-        st.write("") # فراغ جمالي بسيط
-        
-        # تقسيم المساحة إلى 3 أعمدة (الأطراف متساوية، والأوسط عريض بما يكفي للزر)
-        col_left, col_center, col_right = st.columns([1, 1.5, 1])
-        
-        with col_center:
-            # 💡 التغيير هنا: حوّلنا st.button إلى st.form_submit_button بنفس الخصائص تماماً
-            # هذا التغيير لن يؤثر على كود الـ CSS الخاص بك لأن Streamlit يعامل الزرين بنفس الـ HTML Tags تقريباً
-            if st.form_submit_button("Se connecter", type="primary"):
-                if login_user(username, password):
-                    st.session_state.logged_in = True
-                    st.session_state.username = username
-                    st.success("Connexion réussie ! Redirection en cours...")
-                    st.rerun()
-                else:
-                    st.error("Nom d'utilisateur ou mot de passe incorrect.")
-
+            st.write("") # فراغ جمالي بسيط
+            
+            # تقسيم المساحة إلى 3 أعمدة
+            col_left, col_center, col_right = st.columns([1, 1.5, 1])
+            
+            with col_center:
+                # 2. 👈 تحويل الزر إلى زر إرسال النموذج (يأخذ نفس الـ CSS الخاص بالـ st.button تماماً)
+                submit_button = st.form_submit_button("Se connecter", type="primary")
+                
+                if submit_button:
+                    if login_user(username, password):
+                        st.session_state.logged_in = True
+                        st.session_state.username = username
+                        st.success("Connexion réussie ! Redirection en cours...")
+                        st.rerun()
+                    else:
+                        st.error("Nom d'utilisateur ou mot de passe incorrect.")
 
 def sign_up_page():
     load_css() # Chargement du style CSS
