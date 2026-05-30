@@ -87,30 +87,28 @@ def sign_in_page():
     with st.container(border=True):
         st.markdown('<p class="form-label">Connectez-vous pour continuer</p>', unsafe_allow_html=True)
         
-        # 🟢 هنا تم إنشاء الـ Form لتفعيل خاصية الـ Enter
+        # 🟢 بداية الـ Form
         with st.form(key="login_form", clear_on_submit=False):
-            
             username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
             password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
-                    
-            st.write("") # فراغ جمالي بسيط
             
-            # تقسيم المساحة إلى 3 أعمدة
+            # 🟢 هنا السحر: تقسيم الأعمدة داخل الـ Form نفسه ليكون الزر جزءاً منه
+            st.write("") # فراغ جمالي بسيط
             col_left, col_center, col_right = st.columns([1, 1.5, 1])
             
             with col_center:
-                # 🟢 استبدال st.button بـ st.form_submit_button
+                # 🟢 نستخدم زر الـ Form الرئيسي مباشرة (بعد تعديل الـ CSS في الخطوة السابقة)
                 submit_button = st.form_submit_button("Se connecter", type="primary")
-                
-                if submit_button:
-                    if login_user(username, password):
-                        st.session_state.logged_in = True
-                        st.session_state.username = username
-                        st.success("Connexion réussie ! Redirection en cours...")
-                        st.rerun()
-                    else:
-                        st.error("Nom d'utilisateur ou mot de passe incorrect.")
-
+        
+        # 🟢 هنا نضع معالجة البيانات (خارج نطاق الـ Form أو بداخله، والأفضل هنا بالأسفل)
+        if submit_button:
+            if login_user(username, password):
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.success("Connexion réussie ! Redirection en cours...")
+                st.rerun()
+            else:
+                st.error("Nom d'utilisateur ou mot de passe incorrect.")
 
 
 
