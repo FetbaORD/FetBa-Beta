@@ -175,7 +175,7 @@ h1, h2, h3 {
 /* استهداف النص (اسم الموظف) مباشرة في الحالة العادية */
 [data-testid="stSidebar"] .stExpander summary span, 
 [data-testid="stSidebar"] .stExpander summary p {
-    color: White !important; /* اختياري: تغيير لون النص أيضاً إلى الأزرق المضيء ليزيد جمالاً */
+    color: Black !important; /* اختياري: تغيير لون النص أيضاً إلى الأزرق المضيء ليزيد جمالاً */
     font-size: 15px !important;
     font-weight: bold !important; /* خط عادي في البداية */
     transition: font-weight 0.2s ease-in-out, color 0.2s ease-in-out !important; /* جعل تحول الخط ناعماً */
