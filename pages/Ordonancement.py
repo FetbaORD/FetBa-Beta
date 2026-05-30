@@ -341,12 +341,12 @@ if "show_complete_gantt" not in st.session_state:
 col_gantt_btn1, col_gantt_btn2 = st.columns([1, 1], gap="large")
 
 with col_gantt_btn1:
-    if st.button("📊 Afficher Gantt Complete", type="primary", use_container_width=True):
+    if st.button("📊 Afficher Gantt Complete", type="primary"):
         st.session_state.show_complete_gantt = True
 
 with col_gantt_btn2:
     if st.session_state.show_complete_gantt:
-        if st.button("❌ Masquer le Diagramme", use_container_width=True):
+        if st.button("❌ Masquer le Diagramme" ):
             st.session_state.show_complete_gantt = False
             st.rerun()
 
