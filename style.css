@@ -119,7 +119,7 @@ h1, h2, h3 {
 /* تأثير الـ Active (عند الضغط على الزر) */
 [data-testid="stSidebar"] button:active {
     transform: translateY(1px) !important; /* تأثير ارتدادي لأسفل عند الضغط */
-	color: #FFFFFF !important;
+	color: #000000 !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
@@ -154,6 +154,37 @@ h1, h2, h3 {
 
 
 
+/* ======================================================== */
+/* تحويل خلفية الـ Expander إلى اللون الأسود عند الفتح     */
+/* ======================================================== */
+
+/* 1. تلوين الحاوية الخارجية وعنوان الـ Expander بالأسود عند الفتح */
+[data-testid="stSidebar"] .stExpander[open] {
+    background-color: #000000 !important; /* خلفية سوداء للعنوان */
+    border: 1px solid #333333 !important; /* إطار رمادي داكن أنيق */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 2. 🎯 العنصر المسؤول عن الخلفية البيضاء الداخلية (تم تحويله للأسود) */
+[data-testid="stSidebar"] .stExpander[open] div[data-testid="stExpanderDetails"] {
+    background-color: #000000 !important; /* صبغ الخلفية الداخلية المتفرعة بالأسود */
+    border-top: 1px solid #222222 !important; /* خط فاصل بسيط بين العنوان والمحتوى */
+}
+
+/* 3. ضمان تحول عنوان الـ Expander والسهم إلى الأبيض ليتناسق مع الخلفية السوداء */
+[data-testid="stSidebar"] div.stExpander[open] summary div[data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] div.stExpander[open] summary div[data-testid="stMarkdownContainer"] span,
+[data-testid="stSidebar"] div.stExpander[open] summary span,
+[data-testid="stSidebar"] div.stExpander[open] summary p,
+[data-testid="stSidebar"] div.stExpander[open] summary svg {
+    color: #FFFFFF !important;
+    fill: #FFFFFF !important;
+}
+
+/* 4. حماية نصوص الـ Labels وحقول الإدخال بالداخل لكي تظل مقروءة وواضحة */
+[data-testid="stSidebar"] .stExpander[open] .stTextInput label {
+    color: #E2E8F0 !important; /* تحويل عناوين الحقول (رقم الهاتف، البريد) للون رمادي فاتح واضح */
+}
 
 
 
