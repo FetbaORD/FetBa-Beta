@@ -388,11 +388,62 @@ if st.session_state.show_complete_gantt:
     static_ts = st.session_state.Ts.values
     static_seq = [int(x) - 1 for x in st.session_state.sequence]
     
-    s_times, en_times, nj, nm = solve_flow_shop_static_plotly(static_pij, static_ts, static_seq)
+    s_times, e_times, nj, nm = solve_flow_shop_static_plotly(static_pij, static_ts, static_seq)
     
     # بناء مصفوفة البيانات الرسمية لـ Plotly
-    static_g
-
+    static_gantt_data = []
+    
+    for i, job_idx in enumerate(static_seq):
+        for m in range(nm):
+            # 1. إضافة وقت الإعداد (Setup Time) باللون الرمادي إذا وجد
+            if i > 0:
+                prev_job_idx = static_seq[i-1]
+                setup_duration = static_ts[prev_job_idx, job_idx]
+                if setup_duration > 0:
+                    # وقت بداية الإعداد هو وقت فراغ الآلة السابق (والذي يساوي وقت بدء المهمة الحالية ناقص وقت الإعداد)
+                    setup_start = s_times[job_idx, m] - setup_duration
+                    if setup_start >= 0:
+                        static_gantt_data.append(dict(
+                            Machine=f"Machine {m+1}",
+                            Start=pd.to_datetime(setup_start, unit='s'),
+                            Finish=pd.to_datetime(s_times[job_idx, m], unit='s'),
+                            Type="Temps d'opération (Setup)"
+                        ))
+            
+            # 2. إضافة فترة تشغيل المنتج العادية
+            static_gantt_data.append(dict(
+                Machine=f"Machine {m+1}",
+                Start=pd.to_datetime(s_times[job_idx, m], unit='s'),
+                Finish=pd.to_datetime(e_times[job_idx, m], unit='s'),
+                Type=f"Job {job_idx + 1}"
+            ))
+            
+    if static_gantt_data:
+        df_static_gantt = pd.DataFrame(static_gantt_data)
+        
+        # خريطة ألوان مخصصة: تجعل وقت الإعداد رمادياً داكناً ومميزاً والمنتجات بألوانها المعتادة
+        color_map = {"Temps d'opération (Setup)": "#555555"}
+        
+        fig_static = px.timeline(
+            df_static_gantt,
+            x_start="Start",
+            x_end="Finish",
+            y="Machine",
+            color="Type",
+            color_discrete_map=color_map,
+            title=f"Diagramme de Gantt Complet Static | Makespan (Cmax) = {int(np.max(e_times))} ثانية"
+        )
+        
+        fig_static.update_yaxes(autorange="reversed")
+        fig_static.update_layout(
+            xaxis_title="الزمن الكلي للجدولة (دقائق:ثواني)",
+            xaxis=dict(tickformat="%M:%S"),
+            showlegend=True,
+            height=400
+        )
+        
+        # عرض المخطط فوراً وبثبات كامل
+        st.plotly_chart(fig_static, use_container_width=True, key="static_gantt_plotly")
 
 # =========================
 # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
