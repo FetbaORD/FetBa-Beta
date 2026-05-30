@@ -70,25 +70,12 @@ def load_css():
         pass
 
 
-
-# 1. نقوم بإنشاء دالة صغيرة لتنفيذ عملية تسجيل الدخول
-def trigger_login():
-    # نتحقق من البيانات مباشرة من الـ session_state الخاص بالحقول
-    user = st.session_state.login_user
-    passw = st.session_state.login_pass
-    
-    if login_user(user, passw):
-        st.session_state.logged_in = True
-        st.session_state.username = user
-        # سنستخدم st.toast أو نترك النجاح يظهر عند إعادة التشغيل
-        st.session_state.login_success = True 
-        st.rerun()
-    else:
-        st.session_state.login_error = True
+# =====================================================================================
 
 def sign_in_page():
     load_css() # Chargement du style CSS
     
+    # Titre avec icône officielle Google Material Icons (login)
     title_html = """
     <p class="main-title">
         <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">login</i>Connexion
@@ -96,19 +83,20 @@ def sign_in_page():
     """
     st.markdown(title_html, unsafe_allow_html=True)
     
+    # Conteneur (Card) pour structurer l'interface
     with st.container(border=True):
         st.markdown('<p class="form-label">Connectez-vous pour continuer</p>', unsafe_allow_html=True)
         
-        # 2. أضفنا on_change هنا: عندما يضغط Enter في حقل اليوزر أو الباسورد سيتنفذ تسجيل الدخول فوراً
-        username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur", on_change=trigger_login)
-        password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••", on_change=trigger_login)
+        username = st.text_input("Nom d'utilisateur", key="login_user", placeholder="Entrez votre nom d'utilisateur")
+        password = st.text_input("Mot de passe", type="password", key="login_pass", placeholder="••••••••")
                 
-        st.write("") 
+        st.write("") # فراغ جمالي بسيط
         
+        # تقسيم المساحة إلى 3 أعمدة (الأطراف متساوية، والأوسط عريض بما يكفي للزر)
         col_left, col_center, col_right = st.columns([1, 1.5, 1])
         
         with col_center:
-            # 3. 👈 زرّك الأصلي كما هو تماماً (لم نغير فيه حرفاً واحداً لضمان بقاء الستايل)
+            # 👈 السحر هنا: ألغينا تماماً use_container_width ليأخذ الزر حجمه الاحترافي الافتراضي
             if st.button("Se connecter", type="primary"):
                 if login_user(username, password):
                     st.session_state.logged_in = True
@@ -117,11 +105,7 @@ def sign_in_page():
                     st.rerun()
                 else:
                     st.error("Nom d'utilisateur ou mot de passe incorrect.")
-        
-        # إظهار الأخطاء أو النجاح القادم من ضغطة الـ Enter
-        if st.session_state.get('login_error'):
-            st.error("Nom d'utilisateur ou mot de passe incorrect.")
-            del st.session_state.login_error # تنظيف الحالة
+
 
 
 
