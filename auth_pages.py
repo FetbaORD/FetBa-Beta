@@ -1,5 +1,6 @@
 import streamlit as st
 import sqlite3
+import re
 import bcrypt
 
 # =========================================================================
@@ -109,6 +110,7 @@ def sign_in_page():
                     st.error("Nom d'utilisateur ou mot de passe incorrect.")
 
 
+
 def sign_up_page():
     load_css() 
     
@@ -136,9 +138,19 @@ def sign_up_page():
         
         if signup_button or (new_username and email and phone and new_password and st.session_state.reg_pass_conf):
             
+            # 1. التحقق من ملء جميع الحقول
             if not new_username or not email or not phone or not new_password or not confirm_password:
                 st.warning("Veuillez remplir tous les champs obligatoires.")
             
+            # 2. 🌟 التحقق من صحة صيغة الإيميل (يجب أن يحتوي على @ ونطاق صحيح)
+            elif not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+                st.error("Veuillez entrer une adresse e-mail valide (ex: exemple@mail.com).")
+            
+            # 3. 🌟 التحقق من صحة رقم الهاتف (يقبل الأرقام، المسافات، وعلامة + في البداية فقط، بطول بين 7 إلى 15 رقم)
+            elif not re.match(r"^\+?[0-9\s]{7,15}$", phone):
+                st.error("Veuillez entrer un numéro de téléphone valide (uniquement des chiffres, ex: +33612345678).")
+            
+            # 4. التحقق من تطابق كلمتي المرور
             elif new_password != confirm_password:
                 st.error("Les mots de passe ne correspondent pas.")
             
