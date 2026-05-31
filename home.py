@@ -157,7 +157,7 @@ if not st.session_state.is_activated:
             """)
             st.write("") 
             
-            sub_b1, sub_b2, sub_b3 = st.columns([1, 1.5, 1])
+            sub_b1, sub_b2, sub_b3 = st.columns([2, 1.5, 2])
             with sub_b2:
                 if st.button("Acheter une Clé / Support", type="secondary"):
                     st.toast("💡 Redirection vers le support commercial...", icon="ℹ️")
