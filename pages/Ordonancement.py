@@ -431,7 +431,8 @@ if st.session_state.show_complete_gantt:
             y="Machine",
             color="Type",
             color_discrete_map=color_map,
-            title=f"Diagramme de Gantt Complet | Cmax = {int(np.max(e_times))} Seconds"
+            # استخدمنا وسم span لتلوين القيمة باللون الأحمر كمثال
+            title=f"Diagramme de Gantt Complet Static | Cmax = <span style='color:red; font-weight:bold;'>{int(np.max(e_times))}</span> Seconds"
         )
         
         fig_static.update_yaxes(autorange="reversed")
