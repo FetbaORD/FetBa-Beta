@@ -131,16 +131,16 @@ if "sequence_df" in st.session_state:
     
     with col_btn:
         # استخدام popover لإنشاء قائمة منسدلة تحتوي على الخوارزميات
-        with st.popover("🔀 Choisir Algorithme" , type="primary"):
+        with st.popover("🔀 Choisir Algorithme", type="primary"):
             st.write("Sélectionnez un Algorithme :")
             
             # إنشاء الأزرار الخمسة
             algo_choice = None
-            if st.button("G-NEH-S"): algo_choice = 1
-            if st.button("(GA + G-NEH-S)"): algo_choice = 2
-            if st.button("Génetique Robuste"): algo_choice = 3
-            if st.button("Algorithme 4"): algo_choice = 4
-            if st.button("Algorithme 5"): algo_choice = 5
+            if st.button("G-NEH-S", type="primary"): algo_choice = 1
+            if st.button("(GA + G-NEH-S, type="primary")"): algo_choice = 2
+            if st.button("Génetique Robuste", type="primary"): algo_choice = 3
+            if st.button("Algorithme 4", type="primary"): algo_choice = 4
+            if st.button("Algorithme 5", type="primary"): algo_choice = 5
 
             if algo_choice:
                 import random
