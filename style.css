@@ -132,6 +132,8 @@ h1, h2, h3 {
     margin-bottom: 12px !important; 
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important; 
     transition: all 0.3s ease-in-out !important;
+	border-radius: 8px !important; /* انحناء الحواف */
+	border: none;
 }
 
 /* 🎯 السحر هنا: تأثير الـ Hover الفعال والآمن */
@@ -314,7 +316,7 @@ button[kind="primary"] {
     background-color: #26a5ff !important;
     color: white !important;
     border-radius: 10px !important;
-    border: none !important;
+    border: 1px solid #E2E8F0 !important;
     font-weight: 600 !important;
     font-size: 1rem !important;
     box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
