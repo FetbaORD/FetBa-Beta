@@ -3,6 +3,21 @@ import sqlite3
 import re
 import bcrypt
 
+
+# =========================================================================
+# 2. INTERFACES UTILISATEUR (DESIGN DESIGN AMÉLIORÉ)
+# =========================================================================
+
+def load_css():
+    try:
+        with open("style.css", "r", encoding="utf-8") as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    except FileNotFoundError:
+        pass
+
+
+
+
 # =========================================================================
 # 1. GESTION DE LA BASE DE DONNÉES ET SÉCURITÉ DES MOTS DE PASSE (BCRYPT)
 # =========================================================================
@@ -63,16 +78,6 @@ def login_user(username, password):
     return False
 
 
-# =========================================================================
-# 2. INTERFACES UTILISATEUR (DESIGN DESIGN AMÉLIORÉ)
-# =========================================================================
-
-def load_css():
-    try:
-        with open("style.css", "r", encoding="utf-8") as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-    except FileNotFoundError:
-        pass
 
 # =====================================================================================
 
