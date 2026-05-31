@@ -24,7 +24,7 @@ html, body, [data-testid="stAppViewContainer"] {
     border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #eef2f3;
+    border: none !important;
     margin-bottom: 20px;
 }
 
@@ -55,7 +55,7 @@ h1, h2, h3 {
     width: 200%;
     font-size: 30px;
     border-radius: 8px;
-    border: none;
+    border: none !important;
     background-color: #3498db;
     color: white;
     font-weight: bold;
@@ -90,7 +90,7 @@ h1, h2, h3 {
 [data-testid="stSidebar"] button {
     background-color: #ff0037 !important; /* لون خلفية الزر الأساسي */
     color: #FFF !important; /* لون النص */
-    border: 1px solid #3A3A55 !important; /* إطار خفيف */
+    border: none !important;
     border-radius: 8px !important; /* انحناء الحواف */
     padding: 10px 20px !important; /* المسافات الداخلية */
     font-size: 15px !important;
@@ -190,7 +190,7 @@ h1, h2, h3 {
 [data-testid="stSidebar"] .stTextInput input {
     background-color: #2D2D44 !important; /* خلفية الحقل */
     color: #E2E8F0 !important; /* لون النص داخل الحقل */
-    border: 1px solid #4A4A6A !important;
+    border: none !important;
     border-radius: 6px !important;
     padding: 8px 12px !important;
     transition: all 0.2s ease-in-out !important;
@@ -230,7 +230,7 @@ h1, h2, h3 {
 div[data-testid="stVerticalBlockBorderWrapper"] {
     background-color: #ffffff !important;
     border-radius: 16px !important;
-    border: 1px solid #E2E8F0 !important;
+    border: none !important;
     padding: 30px !important;
     /* الظل الافتراضي الخفيف للبطاقة */
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
@@ -247,7 +247,7 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
 /* 2. تحسين حقول الإدخال (Inputs) عند التركيز عليها */
 div[data-testid="stTextInput"] input {
     border-radius: 10px !important;
-    border: 1px solid #CBD5E1 !important;
+    border: none !important;
     padding: 12px !important;
     transition: all 0.3s ease !important;
 }
@@ -316,7 +316,7 @@ button[kind="primary"] {
     background-color: #26a5ff !important;
     color: white !important;
     border-radius: 10px !important;
-    border: 1px solid #E2E8F0 !important;
+    border: none !important;
     font-weight: 600 !important;
     font-size: 1rem !important;
     box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
@@ -426,7 +426,7 @@ button[kind="primary"]:hover {
     text-decoration: none !important;
     color: #31333F !important; /* لون الخط الافتراضي لستريمليت */
     background-color: #f8f9fa;
-    border: 1px solid #e0e0e0;
+    border: none !important;
     transition: all 0.3s ease;
 }
 
