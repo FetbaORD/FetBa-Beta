@@ -167,7 +167,7 @@ def sign_up_page():
 
         st.write("")
         
-        col1, col2, col3 = st.columns([1, 1.5, 1])
+        col1, col2, col3 = st.columns([2, 1.5, 2])
         with col2:
             signup_button = st.button("Créer le compte", type="primary")
         
