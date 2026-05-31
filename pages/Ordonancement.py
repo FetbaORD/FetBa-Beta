@@ -131,7 +131,7 @@ if "sequence_df" in st.session_state:
     
     with col_btn:
         # استخدام popover لإنشاء قائمة منسدلة تحتوي على الخوارزميات
-        with st.popover("🔀 Choisir Algorithme"):
+        with st.popover("🔀 Choisir Algorithme" , type="primary"):
             st.write("Sélectionnez un Algorithme :")
             
             # إنشاء الأزرار الخمسة
