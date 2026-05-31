@@ -140,6 +140,33 @@ if "Ts" in st.session_state:
     st.session_state.Ts = edited_ts
 
 
+
+
+# ==========================================
+# أضف هذا الكود مباشرة تحت نهاية شرط عرض مصفوفة Ts
+# ==========================================
+if "Incompatibilite" in st.session_state:
+
+    st.subheader("❌ Incompatibilité Matrix (0: Compatible, 1: Incompatible)")
+    edited_incomp = st.data_editor(
+        st.session_state.Incompatibilite,
+        key="Incompatibilite_editor",
+        use_container_width=True,
+        disabled=True # مصفوفة مرآة للعرض فقط، إذا أردت السماح للمستخدم بتعديلها احذف هذا السطر
+    )
+    st.session_state.Incompatibilite = edited_incomp
+    
+
+
+
+
+
+
+
+
+
+
+
 # ==========================================
 # 5 & 6. Sequence (توليد وتعديل التسلسل)
 # ==========================================
