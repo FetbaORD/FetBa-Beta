@@ -136,7 +136,7 @@ if not st.session_state.is_activated:
     col_left, col_right = st.columns([1, 1])
     
     with col_left:
-        st.subheader("Activation du Produit" , icon=":material/credit_card:")
+        st.subheader(":material/vpn_key: Activation du Produit")
         with st.container(border=True):
             input_key = st.text_input("Clé de Produit (Product Key)", type="password", placeholder="XXXX-XXXX-XXXX")
             st.write("") 
@@ -150,7 +150,7 @@ if not st.session_state.is_activated:
 
     # تعديل: تم نقل الـ col_right إلى هنا (داخل نطاق الـ if الشرطية)
     with col_right:
-        st.subheader("Achat d'une Clé d'Activation", icon=":material/shopping_cart:")
+        st.subheader(":material/shopping_cart: Achat d'une Clé d'Activation")
         with st.container(border=True):
             st.markdown("""
             **Besoin d'une clé de produit valide ?** Vous pouvez obtenir une nouvelle clé d'activation immédiatement en contactant notre service commercial ou via notre plateforme sécurisée.
