@@ -1,8 +1,5 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
-
-
-
 if is_danger and can_send_alert(machine, key):
             send_telegram_msg(CONTACTS.get(label, CONTACTS["عام/احتياطي"]), f"🚨 {machine}\n{label}: {val}")
             
@@ -89,9 +86,6 @@ h1, h2, h3 {
     transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-
-
-
 /* تنسيق الأزرار وحقول الإدخال داخل الـ Sidebar */
 [data-testid="stSidebar"] button {
     background-color: #ff0037 !important; /* لون خلفية الزر الأساسي */
@@ -108,7 +102,6 @@ h1, h2, h3 {
     width: 100%;
 }
 
-
 /* تأثير الـ Hover (عند تمرير الماوس فوق الزر) */
 [data-testid="stSidebar"] button:hover {
 	background-color: #4F46E5 !important;
@@ -116,7 +109,6 @@ h1, h2, h3 {
 	box-shadow: 0 8px 15px rgba(99, 102, 241, 0.4) !important; /* ظل مضيء ملون */
 	transform: translateY(-2px) !important; /* تحريك الزر لأعلى قليلاً */
 }
-
 
 /* تأثير الـ Active (عند الضغط على الزر) */
 [data-testid="stSidebar"] button:active {
@@ -131,9 +123,6 @@ h1, h2, h3 {
     border-bottom: 2px solid #E2E8F0;
     padding-bottom: 5px;
 }
-
-
-
 
 /* ======================================================== */
 /* 1. التنسيق الأساسي للـ Expander (وهو في الحالة العادية) */
@@ -163,10 +152,6 @@ h1, h2, h3 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
 
 }
-
-
-
-
 
 /* تحسين شكل عنوان الموظف والنص داخل الـ Expander (الحالة العادية) */
 [data-testid="stSidebar"] .stExpander summary {
@@ -222,19 +207,6 @@ h1, h2, h3 {
     font-size: 13px !important;
     margin-bottom: 4px !important;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* تنسيق العناوين المخصصة */
 .main-title {
@@ -309,9 +281,6 @@ button[kind="secondary"]:hover {
 button[kind="secondary"]:active {
     transform: scale(0.98);
 }
-
-
-
 
 /* 3. زر التشغيل الأساسي وزر الـ Form مع تأثير الـ Hover والـ Shadows */
 button[kind="secondary"], div.stFormSubmitButton > button {
@@ -390,7 +359,6 @@ button[kind="primary"]:hover {
 	border-color: #000 !important; /* لون أزرق/بنفسجي عند الضغط */
 
 }
-
 
 /* 2. تحسين خطوط العناوين وتجهيزها للحركة */
 [data-testid="stSidebarNav"] ul li a span {
@@ -531,5 +499,3 @@ button[kind="primary"]:hover {
     background-color: #f2fbf5;
 }
 .whatsapp-card:hover .icon-box { color: #25d366; }
-
-
