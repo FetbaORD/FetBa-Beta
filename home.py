@@ -143,7 +143,7 @@ if not st.session_state.is_activated:
             
             sub_col1, sub_col2, sub_col3 = st.columns([1, 1.5, 1])
             with sub_col2:
-                if st.button("Activer le Système", type="primary"): 
+                if st.button("Activer le Système", type="primary",use_container_width=False): 
                     verify_key(input_key)
             st.write("") 
             st.caption("Note: La clé est valide pour une utilisation sur deux appareils maximum.")
@@ -157,7 +157,7 @@ if not st.session_state.is_activated:
             """)
             st.write("") 
             
-            sub_b1, sub_b2, sub_b3 = st.columns([2, 1.5, 2])
+            sub_b1, sub_b2, sub_b3 = st.columns([1, 1.5, 1])
             with sub_b2:
                 if st.button("Acheter une Clé / Support", type="secondary",use_container_width=False):
                     st.toast("💡 Redirection vers le support commercial...", icon="ℹ️")
