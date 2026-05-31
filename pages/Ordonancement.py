@@ -108,6 +108,8 @@ if st.button("إنشاء الجداول"):
     # تخزين في session_state
     st.session_state.Pij = Pij
     st.session_state.Ts = Ts
+    st.session_state.Incompatibilite = Incompatibilite  # أضف هذا السطر للتخزين
+    
     st.success("تم إنشاء الجداول بنجاح")
 
 # =========================
