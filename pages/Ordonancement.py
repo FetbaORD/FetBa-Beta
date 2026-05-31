@@ -74,9 +74,9 @@ if st.button("إنشاء الجداول"):
    # np.where(شرط, القيمة إذا تحقق, القيمة إذا لم يتحقق)
     incomp_values = np.where(Ts.values > 0, 1, 0)
     Incompatibilite = pd.DataFrame(
-         incomp_values,
-         columns=[f"Job {i+1}" for i in range(n_jobs)],
-         index=[f"Job {i+1}" for i in range(n_jobs)]
+        incomp_values,
+        columns=[f"Job {i+1}" for i in range(n_jobs)],
+        index=[f"Job {i+1}" for i in range(n_jobs)]
     )
 
 
