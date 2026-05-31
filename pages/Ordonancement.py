@@ -137,7 +137,7 @@ if "sequence_df" in st.session_state:
             # إنشاء الأزرار الخمسة
             algo_choice = None
             if st.button("G-NEH-S"): algo_choice = 1
-            if st.button("(GA + G-NEH-S)"): algo_choice = 2
+            if st.button("(GA + G-NEH-S)", type="primary"): algo_choice = 2
             if st.button("Génetique Robuste"): algo_choice = 3
             if st.button("Algorithme 4"): algo_choice = 4
             if st.button("Algorithme 5"): algo_choice = 5
