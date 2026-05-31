@@ -94,7 +94,7 @@ def sign_in_page():
                 
         st.write("") 
         
-        col_left, col_center, col_right = st.columns([1, 1.5, 1])
+        col_left, col_center, col_right = st.columns([2, 1.5, 2])
         
         with col_center:
             login_button = st.button("Se connecter", type="primary")
