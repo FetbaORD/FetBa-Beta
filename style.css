@@ -312,7 +312,6 @@ button[kind="secondary"] {
     color: white !important;
     border-radius: 10px !important;
     border: none !important;
-    padding: 12px 24px !important;
     font-weight: 600 !important;
     font-size: 1rem !important;
     box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
@@ -365,13 +364,12 @@ button[kind="secondary"]:active, div.stFormSubmitButton > button:active {
 
 
 
-/* 3. زر التشغيل الأساسي (secondary Button) مع تأثير الـ Hover والـ Shadows */
+/* 3. زر التشغيل الأساسي (primary Button) مع تأثير الـ Hover والـ Shadows */
 button[kind="primary"] {
     background-color: #26a5ff !important;
     color: white !important;
     border-radius: 10px !important;
     border: none !important;
-    padding: 12px 24px !important;
     font-weight: 600 !important;
     font-size: 1rem !important;
     box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
