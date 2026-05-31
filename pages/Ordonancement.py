@@ -139,7 +139,12 @@ if "Ts" in st.session_state:
 )
     st.session_state.Ts = edited_ts
 
-
+# تحديث مصفوفة عدم التوافق فورياً بناءً على التعديل الجديد للمستخدم
+    st.session_state.Incompatibilite = pd.DataFrame(
+        np.where(edited_ts.values > 0, 1, 0),
+        columns=edited_ts.columns,
+        index=edited_ts.index
+    )
 
 
 # ==========================================
