@@ -652,8 +652,8 @@ h1, h2, h3 {
 
 /* تنسيق الأزرار وحقول الإدخال داخل الـ Sidebar */
 [data-testid="stSidebar"] button {
-    background-color: #FFFFFF !important; /* لون خلفية الزر الأساسي */
-    color: #FFFFFF !important; /* لون النص */
+    background-color: #000 !important; /* لون خلفية الزر الأساسي */
+    color: White !important; /* لون النص */
     border: 1px solid #3A3A55 !important; /* إطار خفيف */
     border-radius: 8px !important; /* انحناء الحواف */
     padding: 10px 20px !important; /* المسافات الداخلية */
@@ -679,7 +679,7 @@ h1, h2, h3 {
 /* تأثير الـ Active (عند الضغط على الزر) */
 [data-testid="stSidebar"] button:active {
     transform: translateY(1px) !important; /* تأثير ارتدادي لأسفل عند الضغط */
-	color: #FFFFFF !important;
+	color: White !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
@@ -709,7 +709,7 @@ h1, h2, h3 {
     background-color: #0782d9 !important; /* تحويل الخلفية للأبيض */
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35) !important; /* الظل المضيء */
     transform: translateY(-2px) !important; /* الحركة للأعلى */
-	color: #000000;
+	color: Black;
 }
 
 
@@ -719,7 +719,7 @@ h1, h2, h3 {
 /* ======================================================== */
 [data-testid="stSidebar"] .stExpander[open] {
     background-color: #0782d9 !important; /* الحفاظ على الخلفية الأصلية عند الفتح */
-	color: #000000;
+	color: Black;
     transform: none !important; /* إلغاء الحركة للأعلى لكي لا تهتز الأزرار بالداخل */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
 
@@ -850,7 +850,6 @@ button[kind="secondary"] {
     color: white !important;
     border-radius: 10px !important;
     border: none !important;
-    padding: 12px 24px !important;
     font-weight: 600 !important;
     font-size: 1rem !important;
     box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
@@ -880,7 +879,6 @@ button[kind="secondary"], div.stFormSubmitButton > button {
     color: white !important;
     border-radius: 10px !important;
     border: none !important;
-    padding: 12px 24px !important;
     font-weight: 600 !important;
     font-size: 1rem !important;
     box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
