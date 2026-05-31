@@ -431,7 +431,7 @@ if st.session_state.show_complete_gantt:
             y="Machine",
             color="Type",
             color_discrete_map=color_map,
-            title=f"Diagramme de Gantt Complet Static | Makespan (Cmax) = {int(np.max(e_times))} Seconds"
+            title=f"Diagramme de Gantt Complet | Cmax = {int(np.max(e_times))} Seconds"
         )
         
         fig_static.update_yaxes(autorange="reversed")
