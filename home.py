@@ -136,7 +136,7 @@ if not st.session_state.is_activated:
     col_left, col_right = st.columns([1, 1])
     
     with col_left:
-        st.subheader("🔑 Activation du Produit")
+        st.subheader("Activation du Produit" , icon=":material/credit_card:")
         with st.container(border=True):
             input_key = st.text_input("Clé de Produit (Product Key)", type="password", placeholder="XXXX-XXXX-XXXX")
             st.write("") 
