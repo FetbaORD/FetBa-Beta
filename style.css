@@ -848,7 +848,7 @@ div[data-testid="stTextInput"] input:focus {
 button[kind="secondary"] {
     background-color: #ff0037 !important;
     color: white !important;
-	padding: 6px 12px !important;
+	padding: 6px 8px !important;
     border-radius: 10px !important;
     border: none !important;
     font-weight: 600 !important;
@@ -879,7 +879,7 @@ button[kind="secondary"], div.stFormSubmitButton > button {
     background-color: #ff0037 !important;
     color: white !important;
     border-radius: 10px !important;
-	padding: 6px 12px !important;
+	padding: 6px 8px !important;
     border: none !important;
     font-weight: 600 !important;
     font-size: 1rem !important;
@@ -909,7 +909,7 @@ button[kind="primary"] {
     color: white !important;
     border-radius: 10px !important;
     border: none !important;
-    padding: 12px 24px !important;
+    padding: 6px 8px !important;
     font-weight: 600 !important;
     font-size: 1rem !important;
     box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
