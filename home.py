@@ -157,7 +157,7 @@ if not st.session_state.is_activated:
             """)
             st.write("") 
             
-            sub_b1, sub_b2, sub_b3 = st.columns([0.5, 2, 0.5])
+            sub_b1, sub_b2, sub_b3 = st.columns([1, 1.5, 1])
             with sub_b2:
                 if st.button("Acheter une Clé / Support", type="secondary"):
                     st.toast("💡 Redirection vers le support commercial...", icon="ℹ️")
@@ -174,7 +174,7 @@ if not st.session_state.is_activated:
 
 
 # تحديث تلقائي كل ثانية
-st_autorefresh(interval=1000, key="refresh_clock")
+st_autorefresh(interval=2000, key="refresh_clock")
 
 st.title(":material/factory: Industrial AI Control Center")
 
