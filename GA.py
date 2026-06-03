@@ -76,9 +76,14 @@ def smartSwapMutation(seq, pm, P, Incompat, Ts):
 
 def run_ga_interface():
     """هذه الدالة ترسم الإعدادات وتشغل الخوارزمية وتحدث الجلسة"""
-    if st.button("GA", type="primary") or st.session_state.get("ga_active", False):
-        st.session_state.ga_active = True
-        
+    
+    # 🔄 التعديل الجديد: تحويل الزر إلى مفتاح تبديل (Toggle) يعكس الحالة عند كل ضغطة
+    if st.button("GA", type="primary"):
+        st.session_state.ga_active = not st.session_state.get("ga_active", False)
+        st.rerun() # إعادة تشغيل الواجهة فوراً لتطبيق الانكماش أو التوسع
+
+    # 👁️ عرض الإعدادات فقط إذا كانت الحالة True
+    if st.session_state.get("ga_active", False):
         st.markdown("#### ⚙️ إعدادات الخوارزمية الجينية (GA)")
         
         # عناصر التحكم بالإعدادات
