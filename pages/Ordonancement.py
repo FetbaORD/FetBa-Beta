@@ -110,6 +110,25 @@ else:
 # =========================
 st.sidebar.header("⚙️ Paramètres")
 
+
+# =========================
+# 1. إدخال الحجم والبارامترات
+# =========================
+st.sidebar.header("⚙️ Paramètres")
+
+n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
+n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
+
+# 🧬 أضف هذه الأسطر هنا للتحكم في إعدادات الـ GA من شريط الجانب
+st.sidebar.markdown("---")
+st.sidebar.header("🧬 Paramètres GA")
+popSize = st.sidebar.number_input("حجم المجتمع (popSize)", 10, 500, 50)
+nGen = st.sidebar.number_input("عدد الأجيال (nGen)", 10, 1000, 100)
+pc = st.sidebar.slider("احتمالية العبور (pc)", 0.0, 1.0, 0.85)
+pm = st.sidebar.slider("احتمالية الطفرة (pm)", 0.0, 1.0, 0.055)
+
+
+
 n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
 n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
 
@@ -268,34 +287,36 @@ if "sequence_df" in st.session_state:
             if st.button("(GA + G-NEH-S)", type="primary"): algo_choice = 2
             if st.button("Génetique Robuste", type="primary"): algo_choice = 3
 
-# 🧬 استبدل شرط زر GA القديم بهذا الكود الفعال:
+#------------------------------
+
+
+
+
+
+
+
+# 🧬 كود زر GA المرتبط بشريط الجانب الديناميكي:
             if st.button("GA", type="primary"):
-                # الحصول على المصفوفات الحية من الجلسة
+                # الحصول على مصفوفات الجلسة الحية
                 GA_Ts = st.session_state.Ts.values
                 GA_P = st.session_state.Pij.values
                 GA_Incompat = st.session_state.Incompatibilite.values
                 current_nJobs = GA_P.shape[0]
                 
-                # إعدادات افتراضية للـ GA (يمكنك تغييرها حسب الرغبة)
-                popSize = 50
-                nGen = 100
-                pc = 0.85
-                pm = 0.055
-
                 st.info("🧬 جاري تشغيل خوارزمية الجينات للجدولة المثالية...")
                 
-                # توليد المجتمع الابتدائي
-                population = np.zeros((popSize, current_nJobs), dtype=int)
-                for i in range(popSize):
+                # توليد المجتمع الابتدائي (يعتمد الآن على popSize من الـ Sidebar)
+                population = np.zeros((int(popSize), current_nJobs), dtype=int)
+                for i in range(int(popSize)):
                     population[i, :] = np.random.permutation(current_nJobs) + 1
 
                 bestOverallCmax = float('inf')
                 bestOverallSeq = []
 
-                # حلقة التشغيل عبر الأجيال
-                for gen in range(nGen):
-                    fitness = np.zeros(popSize)
-                    for i in range(popSize):
+                # حلقة التشغيل عبر الأجيال (تعتمد الآن على nGen من الـ Sidebar)
+                for gen in range(int(nGen)):
+                    fitness = np.zeros(int(popSize))
+                    for i in range(int(popSize)):
                         fitness[i] = computeCmax(population[i, :], GA_P, GA_Incompat, GA_Ts)
 
                     minIdx = np.argmin(fitness)
@@ -303,10 +324,11 @@ if "sequence_df" in st.session_state:
                         bestOverallCmax = fitness[minIdx]
                         bestOverallSeq = population[minIdx, :].copy()
 
-                    newPop = np.zeros((popSize, current_nJobs), dtype=int)
+                    newPop = np.zeros((int(popSize), current_nJobs), dtype=int)
                     newPop[0, :] = bestOverallSeq
 
-                    for i in range(1, popSize, 2):
+                    for i in range(1, int(popSize), 2):
+                        # تعتمد على كفاءة الاختيار والدوال الممررة عبر السلايدرز (pc, pm)
                         parent1 = tournamentSelection(population, fitness, 3)
                         parent2 = tournamentSelection(population, fitness, 3)
                         
@@ -320,7 +342,7 @@ if "sequence_df" in st.session_state:
                         child2 = smartSwapMutation(child2, pm, GA_P, GA_Incompat, GA_Ts)
 
                         newPop[i, :] = child1
-                        if i + 1 < popSize:
+                        if i + 1 < int(popSize):
                             newPop[i + 1, :] = child2
 
                     population = newPop.copy()
@@ -335,8 +357,13 @@ if "sequence_df" in st.session_state:
                 
                 st.success(f"🏆 تم التحديث بنجاح بواسطة GA! (قيمة Makespan المتوقعة: {int(bestOverallCmax)})")
                 st.rerun()
+
+
+
+
+
             
-            
+#-----------------------
             
             if st.button("Algorithme 5", type="primary"): algo_choice = 5
 
