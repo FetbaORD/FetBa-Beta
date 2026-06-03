@@ -111,7 +111,6 @@ else:
 st.sidebar.header("⚙️ Paramètres")
 # =========================
 
-
 n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
 n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
 
@@ -123,10 +122,6 @@ nGen = st.sidebar.number_input("عدد الأجيال (nGen)", 10, 1000, 100)
 pc = st.sidebar.slider("احتمالية العبور (pc)", 0.0, 1.0, 0.85)
 pm = st.sidebar.slider("احتمالية الطفرة (pm)", 0.0, 1.0, 0.055)
 
-
-
-n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
-n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
 
 # =========================
 # 2. زر إنشاء الجداول
