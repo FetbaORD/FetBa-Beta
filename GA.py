@@ -78,7 +78,7 @@ def run_ga_interface():
     """هذه الدالة ترسم الإعدادات وتشغل الخوارزمية وتحدث الجلسة"""
     
     # 🔄 التعديل الجديد: تحويل الزر إلى مفتاح تبديل (Toggle) يعكس الحالة عند كل ضغطة
-    if st.button("Algorithme Génétique Déterministe", type="primary"):
+    if st.button("Algorithme Génétique", type="primary"):
         st.session_state.ga_active = not st.session_state.get("ga_active", False)
         st.rerun() # إعادة تشغيل الواجهة فوراً لتطبيق الانكماش أو التوسع
 
