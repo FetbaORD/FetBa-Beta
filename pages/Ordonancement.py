@@ -109,12 +109,8 @@ else:
 # 1. إدخال الحجم
 # =========================
 st.sidebar.header("⚙️ Paramètres")
-
-
 # =========================
-# 1. إدخال الحجم والبارامترات
-# =========================
-st.sidebar.header("⚙️ Paramètres")
+
 
 n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
 n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
