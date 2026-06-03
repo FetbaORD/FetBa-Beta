@@ -267,7 +267,77 @@ if "sequence_df" in st.session_state:
             if st.button("G-NEH-S", type="primary"): algo_choice = 1
             if st.button("(GA + G-NEH-S)", type="primary"): algo_choice = 2
             if st.button("Génetique Robuste", type="primary"): algo_choice = 3
-            if st.button("GA", type="primary"): algo_choice = 4
+
+# 🧬 استبدل شرط زر GA القديم بهذا الكود الفعال:
+            if st.button("GA", type="primary"):
+                # الحصول على المصفوفات الحية من الجلسة
+                GA_Ts = st.session_state.Ts.values
+                GA_P = st.session_state.Pij.values
+                GA_Incompat = st.session_state.Incompatibilite.values
+                current_nJobs = GA_P.shape[0]
+                
+                # إعدادات افتراضية للـ GA (يمكنك تغييرها حسب الرغبة)
+                popSize = 50
+                nGen = 100
+                pc = 0.85
+                pm = 0.055
+
+                st.info("🧬 جاري تشغيل خوارزمية الجينات للجدولة المثالية...")
+                
+                # توليد المجتمع الابتدائي
+                population = np.zeros((popSize, current_nJobs), dtype=int)
+                for i in range(popSize):
+                    population[i, :] = np.random.permutation(current_nJobs) + 1
+
+                bestOverallCmax = float('inf')
+                bestOverallSeq = []
+
+                # حلقة التشغيل عبر الأجيال
+                for gen in range(nGen):
+                    fitness = np.zeros(popSize)
+                    for i in range(popSize):
+                        fitness[i] = computeCmax(population[i, :], GA_P, GA_Incompat, GA_Ts)
+
+                    minIdx = np.argmin(fitness)
+                    if fitness[minIdx] < bestOverallCmax:
+                        bestOverallCmax = fitness[minIdx]
+                        bestOverallSeq = population[minIdx, :].copy()
+
+                    newPop = np.zeros((popSize, current_nJobs), dtype=int)
+                    newPop[0, :] = bestOverallSeq
+
+                    for i in range(1, popSize, 2):
+                        parent1 = tournamentSelection(population, fitness, 3)
+                        parent2 = tournamentSelection(population, fitness, 3)
+                        
+                        if np.random.rand() < pc:
+                            child1, child2 = orderCrossover(parent1, parent2)
+                        else:
+                            child1 = parent1.copy()
+                            child2 = parent2.copy()
+
+                        child1 = smartSwapMutation(child1, pm, GA_P, GA_Incompat, GA_Ts)
+                        child2 = smartSwapMutation(child2, pm, GA_P, GA_Incompat, GA_Ts)
+
+                        newPop[i, :] = child1
+                        if i + 1 < popSize:
+                            newPop[i + 1, :] = child2
+
+                    population = newPop.copy()
+
+                # تحديث التسلسل في الـ Session State بالنتيجة الأفضل المكتشفة
+                final_sequence = list(bestOverallSeq)
+                st.session_state.sequence = final_sequence
+                st.session_state.sequence_df = pd.DataFrame(
+                    [final_sequence], 
+                    columns=[f"J{idx+1}" for idx in range(current_nJobs)]
+                )
+                
+                st.success(f"🏆 تم التحديث بنجاح بواسطة GA! (قيمة Makespan المتوقعة: {int(bestOverallCmax)})")
+                st.rerun()
+            
+            
+            
             if st.button("Algorithme 5", type="primary"): algo_choice = 5
 
             if algo_choice:
