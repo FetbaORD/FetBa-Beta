@@ -5,7 +5,7 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
-
+from GA import run_ga_interface
 
 
 
@@ -273,87 +273,7 @@ if "sequence_df" in st.session_state:
 #------------------------------
 
 
-
-
-
-
-# 🧬 كود زر GA المطور: الإعدادات تظهر هنا فقط داخل الـ Popover عند اختياره
-            if st.button("GA", type="primary") or st.session_state.get("ga_active", False):
-                # تفعيل حالة إظهار الإعدادات داخل الجلسة
-                st.session_state.ga_active = True
-                
-                st.markdown("#### ⚙️ إعدادات الخوارزمية الجينية (GA)")
-                
-                # عناصر التحكم تظهر هنا الآن ديناميكياً
-                popSize = st.number_input("حجم المجتمع (popSize)", 10, 500, 50, key="ga_pop")
-                nGen = st.number_input("عدد الأجيال (nGen)", 10, 1000, 100, key="ga_gen")
-                pc = st.slider("احتمالية العبور (pc)", 0.0, 1.0, 0.85, key="ga_pc")
-                pm = st.slider("احتمالية الطفرة (pm)", 0.0, 1.0, 0.055, key="ga_pm")
-                
-                # زر فرعي لتأكيد وبدء الحساب الفعلي بعد ضبط الأرقام
-                if st.button("تأكيد وتشغيل الخوارزمية 🚀", type="primary", use_container_width=True):
-                    # الحصول على مصفوفات الجلسة الحية
-                    GA_Ts = st.session_state.Ts.values
-                    GA_P = st.session_state.Pij.values
-                    GA_Incompat = st.session_state.Incompatibilite.values
-                    current_nJobs = GA_P.shape[0]
-                    
-                    st.info("🧬 جاري تشغيل خوارزمية الجينات للجدولة المثالية...")
-                    
-                    # توليد المجتمع الابتدائي بناءً على المدخلات الحالية
-                    population = np.zeros((int(popSize), current_nJobs), dtype=int)
-                    for i in range(int(popSize)):
-                        population[i, :] = np.random.permutation(current_nJobs) + 1
-
-                    bestOverallCmax = float('inf')
-                    bestOverallSeq = []
-
-                    # حلقة التشغيل عبر الأجيال
-                    for gen in range(int(nGen)):
-                        fitness = np.zeros(int(popSize))
-                        for i in range(int(popSize)):
-                            fitness[i] = computeCmax(population[i, :], GA_P, GA_Incompat, GA_Ts)
-
-                        minIdx = np.argmin(fitness)
-                        if fitness[minIdx] < bestOverallCmax:
-                            bestOverallCmax = fitness[minIdx]
-                            bestOverallSeq = population[minIdx, :].copy()
-
-                        newPop = np.zeros((int(popSize), current_nJobs), dtype=int)
-                        newPop[0, :] = bestOverallSeq
-
-                        for i in range(1, int(popSize), 2):
-                            parent1 = tournamentSelection(population, fitness, 3)
-                            parent2 = tournamentSelection(population, fitness, 3)
-                            
-                            if np.random.rand() < pc:
-                                child1, child2 = orderCrossover(parent1, parent2)
-                            else:
-                                child1 = parent1.copy()
-                                child2 = parent2.copy()
-
-                            child1 = smartSwapMutation(child1, pm, GA_P, GA_Incompat, GA_Ts)
-                            child2 = smartSwapMutation(child2, pm, GA_P, GA_Incompat, GA_Ts)
-
-                            newPop[i, :] = child1
-                            if i + 1 < int(popSize):
-                                newPop[i + 1, :] = child2
-
-                        population = newPop.copy()
-
-                    # تحديث التسلسل في الـ Session State بالنتيجة الأفضل المكتشفة
-                    final_sequence = list(bestOverallSeq)
-                    st.session_state.sequence = final_sequence
-                    st.session_state.sequence_df = pd.DataFrame(
-                        [final_sequence], 
-                        columns=[f"J{idx+1}" for idx in range(current_nJobs)]
-                    )
-                    
-                    # إعادة تعيين الحالة لإغلاق القائمة بعد الانتهاء
-                    st.session_state.ga_active = False
-                    
-                    st.success(f"🏆 تم التحديث بنجاح! قيمة Makespan المثالية: {int(bestOverallCmax)}")
-                    st.rerun()
+            run_ga_interface()
 
 
 
