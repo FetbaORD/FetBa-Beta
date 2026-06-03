@@ -194,7 +194,7 @@ if "sequence_df" in st.session_state:
             if st.button("G-NEH-S", type="primary"): algo_choice = 1
             if st.button("(GA + G-NEH-S)", type="primary"): algo_choice = 2
             if st.button("Génetique Robuste", type="primary"): algo_choice = 3
-            if st.button("Algorithme 4", type="primary"): algo_choice = 4
+            if st.button("GA", type="primary"): algo_choice = 4
             if st.button("Algorithme 5", type="primary"): algo_choice = 5
 
             if algo_choice:
