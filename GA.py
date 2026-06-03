@@ -87,7 +87,7 @@ def run_ga_interface():
         pc = st.slider("احتمالية العبور (pc)", 0.0, 1.0, 0.85, key="ga_pc")
         pm = st.slider("احتمالية الطفرة (pm)", 0.0, 1.0, 0.055, key="ga_pm")
         
-        if st.button("تأكيد وتشغيل الخوارزمية", icon=":material/hub:", type="secondary", use_container_width=True):
+        if st.button("تأكيد وتشغيل الخوارزمية", icon=":material/hub:", type="secondary"):
             # سحب المصفوفات حية من الجلسة
             GA_Ts = st.session_state.Ts.values
             GA_P = st.session_state.Pij.values
