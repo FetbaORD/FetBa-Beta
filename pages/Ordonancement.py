@@ -7,6 +7,79 @@ from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 
 
+
+
+
+# ==========================================================
+# ================== GA FUNCTIONS AREA =====================
+# ==========================================================
+
+def computeCmax(seq, P, Incompat, Ts):
+    nM = P.shape[1]
+    nJ = len(seq)
+    machineReadyTime = np.zeros(nM)
+    jobReadyTime = np.zeros(int(np.max(seq)) + 1)
+    lastJobOnM = np.zeros(nM, dtype=int)
+
+    for jIdx in range(nJ):
+        job = int(seq[jIdx])
+        for m in range(nM):
+            cleaningTime = 0
+            if lastJobOnM[m] != 0:
+                prevJob = lastJobOnM[m]
+                cleaningTime = Ts[prevJob - 1, job - 1]
+
+            startTime = max(machineReadyTime[m] + cleaningTime, jobReadyTime[job])
+            endTime = startTime + P[job - 1, m]
+
+            machineReadyTime[m] = endTime
+            jobReadyTime[job] = endTime
+            lastJobOnM[m] = job
+    return np.max(machineReadyTime)
+
+def tournamentSelection(pop, fitness, k):
+    idx = np.random.choice(pop.shape[0], k, replace=False)
+    bIdx = np.argmin(fitness[idx])
+    return pop[idx[bIdx]].copy()
+
+def orderCrossover(p1, p2):
+    n = len(p1)
+    pts = np.sort(np.random.choice(n, 2, replace=False))
+    child1 = fillChild(p1[pts[0]:pts[1]+1], p2, pts)
+    child2 = fillChild(p2[pts[0]:pts[1]+1], p1, pts)
+    return child1, child2
+
+def fillChild(sub, parent, pts):
+    n = len(parent)
+    child = np.zeros(n, dtype=int)
+    child[pts[0]:pts[1]+1] = sub
+    remaining = [item for item in parent if item not in sub]
+    all_idx = list(range(pts[1]+1, n)) + list(range(0, pts[0]))
+    for i, idx in enumerate(all_idx):
+        child[idx] = remaining[i]
+    return child
+
+def smartSwapMutation(seq, pm, P, Incompat, Ts):
+    mutated = seq.copy()
+    if np.random.rand() < pm:
+        nJ = len(seq)
+        maxTsVal = -1
+        targetIdx = np.random.randint(0, nJ)
+        for jIdx in range(1, nJ):
+            currJob = int(seq[jIdx])
+            prevJob = int(seq[jIdx-1])
+            if Incompat[prevJob - 1, currJob - 1] == 1:
+                currentCleaning = Ts[prevJob - 1, currJob - 1]
+                if currentCleaning > maxTsVal:
+                    maxTsVal = currentCleaning
+                    targetIdx = jIdx
+        if targetIdx > 0:
+            swapIdx = targetIdx - 1
+            mutated[swapIdx], mutated[targetIdx] = mutated[targetIdx], mutated[swapIdx]
+    return mutated
+
+
+
 st_autorefresh(interval=2000, key="refresh_clock")
 st.set_page_config(page_title="Ordonancement de la production", layout="wide")
 
