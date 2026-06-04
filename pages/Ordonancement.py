@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 from GA import run_ga_interface
-
+from G_NEH_S import run_g_neh_s_interface
 
 
 
