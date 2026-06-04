@@ -268,9 +268,31 @@ if "sequence_df" in st.session_state:
             algo_choice = None
             
             
-            
-            if st.button("G-NEH-S", type="primary"): algo_choice = 1
-            
+
+            # 2. زر تشغيل الخوارزمية
+            if st.button("G-NEH-S", type="primary"): 
+                if "Pij" in st.session_state and "Ts" in st.session_state:
+                    
+                    # تنفيذ الحسابات مستخدمين مصفوفات الـ session_state الحالية
+                    optimized_seq, detected_groups = run_g_neh_s_interface(
+                        st.session_state.Pij, 
+                        st.session_state.Ts, 
+                        st.session_state.Incompatibilite
+                    )
+                    
+                    # تحديث الـ session state بالتسلسل الجديد (1-based)
+                    current_n_jobs = len(optimized_seq)
+                    st.session_state.sequence = optimized_seq
+                    st.session_state.sequence_df = pd.DataFrame(
+                        [optimized_seq], 
+                        columns=[f"J{i+1}" for i in range(current_n_jobs)]
+                    )
+                    
+                    # عرض رسالة نجاح مخصصة تحتوي على عدد المجموعات المكتشفة
+                    st.success(f"✨ تم حساب G-NEH-S بنجاح! المجموعات المكتشفة: {detected_groups}")
+                    st.rerun()
+                else:
+                    st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")            
             
             
             
