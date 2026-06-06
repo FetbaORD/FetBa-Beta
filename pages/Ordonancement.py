@@ -8,6 +8,53 @@ from datetime import datetime
 from GA import run_ga_interface
 from G_NEH_S import run_g_neh_s_interface
 from GA_G_NEH_S import run_ga_g_neh_s_interface
+
+
+
+@st.dialog("⚙️ Réglage des Paramètres (GA + G-NEH-S)")
+def show_ga_parameters_dialog():
+    st.write("قم بضبط معايير الخوارزمية الجينية قبل التشغيل:")
+    
+    # 1. حقول إدخال المتغيرات الأربعة مع القيم الافتراضية من كود MATLAB
+    pop_size = st.number_input("حجم المجتمع (Population Size)", min_value=4, max_value=500, value=100, step=10)
+    n_gen = st.number_input("عدد الأجيال (Generations)", min_value=1, max_value=1000, value=200, step=10)
+    pc = st.slider("معدل العبور (Crossover Probability - pc)", min_value=0.0, max_value=1.0, value=0.85, step=0.05)
+    pm = st.slider("معدل الطفرة (Mutation Probability - pm)", min_value=0.0, max_value=1.0, value=0.06, step=0.01)
+    
+    st.divider()
+    
+    # 2. زر التشغيل الفعلي داخل النافذة
+    if st.button("🚀 Run Algorithm", type="primary", use_container_width=True):
+        if "Pij" in st.session_state and "Ts" in st.session_state:
+            with st.spinner("جاري تشغيل الخوارزمية الهجينة وتحسين السلسلة..."):
+                
+                # استدعاء الدالة وتمرير المتغيرات الأربعة التي اختارها المستخدم
+                from GA_G_NEH_S import run_ga_g_neh_s_interface
+                optimized_seq, best_cmax = run_ga_g_neh_s_interface(
+                    st.session_state.Pij,
+                    st.session_state.Ts,
+                    st.session_state.Incompatibilite,
+                    popSize=int(pop_size),
+                    nGen=int(n_gen),
+                    pc=pc,
+                    pm=pm
+                )
+                
+                # تحديث الجلسة بالنتائج الجديدة
+                current_n_jobs = len(optimized_seq)
+                st.session_state.sequence = optimized_seq
+                st.session_state.sequence_df = pd.DataFrame(
+                    [optimized_seq], 
+                    columns=[f"J{i+1}" for i in range(current_n_jobs)]
+                )
+                
+                st.success(f"✨ تم الحساب بنجاح! قيمة Cmax المحققة: {best_cmax} ثانية")
+                st.rerun()
+        else:
+            st.error("⚠️ المصفوفات غير موجودة في الجلسة!")
+
+
+
 # ==========================================================
 # ================== GA FUNCTIONS AREA =====================
 # ==========================================================
@@ -296,31 +343,12 @@ if "sequence_df" in st.session_state:
             
             
 # =================================================================
-
-# 3. تشغيل الخوارزمية المهجنة المحدثة
+# 3. زر يفتح نافذة الإعدادات المنبثقة لخوارزمية الهجين
             if st.button("(GA + G-NEH-S)", type="primary"):
                 if "Pij" in st.session_state and "Ts" in st.session_state:
-                    with st.spinner("جاري دمج (GA + G-NEH-S) لتحسين الجدولة..."):
-                        # استدعاء الدالة وحساب أفضل تسلسل وأفضل Cmax للحل
-                        optimized_seq, best_cmax = run_ga_g_neh_s_interface(
-                            st.session_state.Pij,
-                            st.session_state.Ts,
-                            st.session_state.Incompatibilite
-                        )
-                        
-                        # تحديث حالة الجلسة بالتسلسل المحسن الجديد
-                        current_n_jobs = len(optimized_seq)
-                        st.session_state.sequence = optimized_seq
-                        st.session_state.sequence_df = pd.DataFrame(
-                            [optimized_seq], 
-                            columns=[f"J{i+1}" for i in range(current_n_jobs)]
-                        )
-                        
-                        st.success(f"✨ تم إنهاء التهجين بنجاح! قيمة Cmax المحققة: {best_cmax} ثانية")
-                        st.rerun()
+                    show_ga_parameters_dialog()
                 else:
                     st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
-
 #------------------------------
 
             if st.button("Génetique Robuste", type="primary"): algo_choice = 3
