@@ -57,8 +57,8 @@ def generer_matrice_sterilisation(Incomp):
                 Ts[j, i] = valeur_aleatoire
             else:
                 # القيمة 10 ثابتة عند التوافق
-                Ts[i, j] = 10
-                Ts[j, i] = 10
+                Ts[i, j] = 0
+                Ts[j, i] = 0
                 
     # تأكيد أن القطر الرئيسي صفر تماماً Ts(i,i) = 0
     np.fill_diagonal(Ts, 0)
