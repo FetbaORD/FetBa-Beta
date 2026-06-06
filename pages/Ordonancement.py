@@ -297,14 +297,16 @@ if "sequence_df" in st.session_state:
             
             
             
+# =================================================================
+            # خيار خوارزمية (GA + G-NEH-S) داخل حاوية قابلة للتوسع والانكماش
             # =================================================================
             st.markdown("---")
             
-            # تحويل القسم إلى popover فرعي يظهر على شكل زر داخل القائمة الرئيسية
-            with st.popover("(GA + G-NEH-S)", type="primary"):
-                st.write("⚙️ Réglage des Paramètres :")
+            # تحويل الإعدادات إلى قائمة منسدلة/موسعة تفتح وتغلق عند الضغط
+            with st.expander("🛠️ (GA + G-NEH-S) Settings", expanded=False):
+                st.write("قم بضبط معايير الخوارزمية الجينية:")
 
-                # تهيئة القيم في الجلسة لتثبيتها ومنع تصفيرها
+                # تهيئة القيم في الجلسة لتثبيتها ومنع اختفائها مع الـ refresh
                 if "ga_pop_size" not in st.session_state: st.session_state.ga_pop_size = 100
                 if "ga_n_gen" not in st.session_state: st.session_state.ga_n_gen = 200
                 if "ga_pc" not in st.session_state: st.session_state.ga_pc = 0.85
@@ -316,10 +318,9 @@ if "sequence_df" in st.session_state:
                 pc = st.slider("معدل العبور (pc)", min_value=0.0, max_value=1.0, step=0.05, key="ga_pc")
                 pm = st.slider("معدل الطفرة (pm)", min_value=0.0, max_value=1.0, step=0.01, key="ga_pm")
 
-                st.divider()
-
-                # زر تشغيل الخوارزمية الهجينة
-                if st.button("🚀 Run Algorithm", type="primary", use_container_width=True, key="run_hybrid_btn"):
+                st.markdown("---")
+                # زر تشغيل الخوارزمية الهجينة الفعلي
+                if st.button("🚀 Run Algorithm", type="primary", use_container_width=True):
                     if "Pij" in st.session_state and "Ts" in st.session_state:
                         with st.spinner("جاري تشغيل الخوارزمية الهجينة..."):
                             
@@ -348,8 +349,6 @@ if "sequence_df" in st.session_state:
 
             st.markdown("---")
             # =================================================================
-
-
             
 
 
