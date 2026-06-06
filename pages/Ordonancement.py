@@ -302,48 +302,62 @@ if "sequence_df" in st.session_state:
 # =================================================================
 
 # =========================================================
-            # خيار خوارزمية (GA + G-NEH-S) مع إعداداتها المباشرة والمستقرة
-            # =========================================================
-            st.markdown("---")
-            st.markdown("### 🤖 (GA + G-NEH-S) Settings")
+
+
+# =================================================================
+# =================================================================
+# خيار خوارزمية (GA + G-NEH-S) المصحح والمحصن ضد الـ Autorefresh
+# =================================================================
+st.markdown("---")
+st.markdown("### 🤖 (GA + G-NEH-S) Settings")
+
+# 1. تهيئة قيم المعاملات في الـ session_state لمنع تصفيرها أثناء التحديث التلقائي
+if "ga_pop_size" not in st.session_state: st.session_state.ga_pop_size = 100
+if "ga_n_gen" not in st.session_state: st.session_state.ga_n_gen = 200
+if "ga_pc" not in st.session_state: st.session_state.ga_pc = 0.85
+if "ga_pm" not in st.session_state: st.session_state.ga_pm = 0.06
+
+# 2. حقول الإدخال الأربعة مربوطة بالـ session_state عبر الـ key لضمان ثباتها أثناء الـ refresh
+pop_size = st.number_input("حجم المجتمع (Population Size)", min_value=4, max_value=500, step=10, key="ga_pop_size")
+n_gen = st.number_input("عدد الأجيال (Generations)", min_value=1, max_value=1000, step=10, key="ga_n_gen")
+pc = st.slider("معدل العبور (pc)", min_value=0.0, max_value=1.0, step=0.05, key="ga_pc")
+pm = st.slider("معدل الطفرة (pm)", min_value=0.0, max_value=1.0, step=0.01, key="ga_pm")
+
+# 3. زر التشغيل الفعلي
+if st.button("🚀 Run Hybrid (GA + G-NEH-S)", type="primary", use_container_width=True):
+    if "Pij" in st.session_state and "Ts" in st.session_state:
+        with st.spinner("جاري تشغيل الخوارزمية الهجينة..."):
             
-            # حقول الإدخال الأربعة تظهر مباشرة هنا داخل الـ Popover وهي محصنة ضد الـ Autorefresh
-            pop_size = st.number_input("حجم المجتمع (Population Size)", min_value=4, max_value=500, value=100, step=10, key="hybrid_pop_size")
-            n_gen = st.number_input("عدد الأجيال (Generations)", min_value=1, max_value=1000, value=200, step=10, key="hybrid_n_gen")
-            pc = st.slider("معدل العبور (pc)", min_value=0.0, max_value=1.0, value=0.85, step=0.05, key="hybrid_pc")
-            pm = st.slider("معدل الطفرة (pm)", min_value=0.0, max_value=1.0, value=0.06, step=0.01, key="hybrid_pm")
+            # استدعاء دالة الخوارزمية من ملفها المخصص وتمرير المتغيرات الأربعة الثابتة
+            from GA_G_NEH_S import run_ga_g_neh_s_interface
+            optimized_seq, best_cmax = run_ga_g_neh_s_interface(
+                st.session_state.Pij,
+                st.session_state.Ts,
+                st.session_state.Incompatibilite,
+                popSize=int(pop_size),
+                nGen=int(n_gen),
+                pc=pc,
+                pm=pm
+            )
             
-            # زر التشغيل الفعلي
-            if st.button("🚀 Run Hybrid (GA + G-NEH-S)", type="primary", use_container_width=True):
-                if "Pij" in st.session_state and "Ts" in st.session_state:
-                    with st.spinner("جاري تشغيل الخوارزمية الهجينة..."):
-                        
-                        # استدعاء دالة الخوارزمية من ملفها المخصص وتمرير المتغيرات الأربعة الديناميكية
-                        from GA_G_NEH_S import run_ga_g_neh_s_interface
-                        optimized_seq, best_cmax = run_ga_g_neh_s_interface(
-                            st.session_state.Pij,
-                            st.session_state.Ts,
-                            st.session_state.Incompatibilite,
-                            popSize=int(pop_size),
-                            nGen=int(n_gen),
-                            pc=pc,
-                            pm=pm
-                        )
-                        
-                        # تحديث مصفوفة الحالة بالتسلسل الجديد المنظم
-                        current_n_jobs = len(optimized_seq)
-                        st.session_state.sequence = optimized_seq
-                        st.session_state.sequence_df = pd.DataFrame(
-                            [optimized_seq], 
-                            columns=[f"J{i+1}" for i in range(current_n_jobs)]
-                        )
-                        
-                        st.success(f"✨ تم الحساب بنجاح! قيمة Cmax المحققة: {best_cmax} ثانية")
-                        st.rerun()
-                else:
-                    st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
+            # تحديث مصفوفة الحالة بالتسلسل الجديد المنظم
+            current_n_jobs = len(optimized_seq)
+            st.session_state.sequence = optimized_seq
+            st.session_state.sequence_df = pd.DataFrame(
+                [optimized_seq], 
+                columns=[f"J{i+1}" for i in range(current_n_jobs)]
+            )
             
-            st.markdown("---")
+            st.success(f"✨ تم الحساب بنجاح! قيمة Cmax المحققة: {best_cmax} ثانية")
+            st.rerun()
+    else:
+        st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
+
+st.markdown("---")
+# =================================================================
+
+
+
 
             
 #------------------------------
