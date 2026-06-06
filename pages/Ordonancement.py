@@ -297,7 +297,64 @@ if "sequence_df" in st.session_state:
             
             
             
-            if st.button("(GA + G-NEH-S)", type="primary"): algo_choice = 2
+            # =================================================================
+            # خيار خوارزمية (GA + G-NEH-S) المصحح والمحصن بمحاذاة داخل الـ popover
+            # =================================================================
+            st.markdown("---")
+            st.markdown("### 🤖 (GA + G-NEH-S) Settings")
+
+            # تهيئة القيم في الجلسة لتثبيتها
+            if "ga_pop_size" not in st.session_state: st.session_state.ga_pop_size = 100
+            if "ga_n_gen" not in st.session_state: st.session_state.ga_n_gen = 200
+            if "ga_pc" not in st.session_state: st.session_state.ga_pc = 0.85
+            if "ga_pm" not in st.session_state: st.session_state.ga_pm = 0.06
+
+            # حقول المدخلات مربوطة بمفاتيح لمنع الاختفاء أثناء الـ refresh
+            pop_size = st.number_input("حجم المجتمع (Population Size)", min_value=4, max_value=500, step=10, key="ga_pop_size")
+            n_gen = st.number_input("عدد الأجيال (Generations)", min_value=1, max_value=1000, step=10, key="ga_n_gen")
+            pc = st.slider("معدل العبور (pc)", min_value=0.0, max_value=1.0, step=0.05, key="ga_pc")
+            pm = st.slider("معدل الطفرة (pm)", min_value=0.0, max_value=1.0, step=0.01, key="ga_pm")
+
+            # زر تشغيل الخوارزمية الهجينة
+            if st.button("🚀 Run Hybrid (GA + G-NEH-S)", type="primary", use_container_width=True):
+                if "Pij" in st.session_state and "Ts" in st.session_state:
+                    with st.spinner("جاري تشغيل الخوارزمية الهجينة..."):
+                        
+                        from GA_G_NEH_S import run_ga_g_neh_s_interface
+                        optimized_seq, best_cmax = run_ga_g_neh_s_interface(
+                            st.session_state.Pij,
+                            st.session_state.Ts,
+                            st.session_state.Incompatibilite,
+                            popSize=int(pop_size),
+                            nGen=int(n_gen),
+                            pc=pc,
+                            pm=pm
+                        )
+                        
+                        current_n_jobs = len(optimized_seq)
+                        st.session_state.sequence = optimized_seq
+                        st.session_state.sequence_df = pd.DataFrame(
+                            [optimized_seq], 
+                            columns=[f"J{i+1}" for i in range(current_n_jobs)]
+                        )
+                        
+                        st.success(f"✨ تم الحساب بنجاح! قيمة Cmax المحققة: {best_cmax} ثانية")
+                        st.rerun()
+                else:
+                    st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
+
+            st.markdown("---")
+            # =================================================================
+
+
+
+
+            
+
+
+            
+            
+            
             if st.button("Génetique Robuste", type="primary"): algo_choice = 3
 
 #------------------------------
