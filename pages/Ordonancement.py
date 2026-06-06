@@ -296,59 +296,74 @@ if "sequence_df" in st.session_state:
             
             
             
+            # =================================================================
+            # خيار خوارزمية (GA + G-NEH-S) التفاعلي (يتوسع وينكمش عند الضغط)
+            # =================================================================
+            st.markdown("---")
+            
+            # 1. تهيئة متغير حالة فتح وإغلاق قائمة الإعدادات في الـ session_state
+            if "show_ga_settings" not in st.session_state:
+                st.session_state.show_ga_settings = False
+
+            # 2. الزر الرئيسي المتحكم في التوسع والانكماش
+            # عند الضغط عليه، يعكس حالته (من True إلى False والعكس) ثم يعيد تشغيل السكريبت لتحديث الواجهة
+            if st.button("🤖 (GA + G-NEH-S)", type="primary", use_container_width=True):
+                st.session_state.show_ga_settings = not st.session_state.show_ga_settings
+                st.rerun()
+
+            # 3. البلوك الذي يظهر فقط عندما تكون الحالة True (التوسع)
+            if st.session_state.show_ga_settings:
+                # نضع الإعدادات داخل حاوية متميزة بصرياً (container)
+                with st.container(border=True):
+                    st.markdown("#### ⚙️ Réglage des Paramètres")
+                    
+                    # تهيئة قيم المعاملات الافتراضية في الـ session_state لضمان حصانتها ضد الـ Autorefresh
+                    if "ga_pop_size" not in st.session_state: st.session_state.ga_pop_size = 100
+                    if "ga_n_gen" not in st.session_state: st.session_state.ga_n_gen = 200
+                    if "ga_pc" not in st.session_state: st.session_state.ga_pc = 0.85
+                    if "ga_pm" not in st.session_state: st.session_state.ga_pm = 0.06
+
+                    # حقول المدخلات المربوطة بمفاتيح
+                    pop_size = st.number_input("حجم المجتمع (Population Size)", min_value=4, max_value=500, step=10, key="ga_pop_size")
+                    n_gen = st.number_input("عدد الأجيال (Generations)", min_value=1, max_value=1000, step=10, key="ga_n_gen")
+                    pc = st.slider("معدل العبور (pc)", min_value=0.0, max_value=1.0, step=0.05, key="ga_pc")
+                    pm = st.slider("معدل الطفرة (pm)", min_value=0.0, max_value=1.0, step=0.01, key="ga_pm")
+
+                    st.write("") # مسافة تجميلية
+
+                    # زر التشغيل الفعلي للخوارزمية داخل الحاوية المتوسعة
+                    if st.button("🚀 Run Algorithm", type="secondary", use_container_width=True, key="run_hybrid_ga_btn"):
+                        if "Pij" in st.session_state and "Ts" in st.session_state:
+                            with st.spinner("جاري تشغيل الخوارزمية الهجينة..."):
+                                
+                                from GA_G_NEH_S import run_ga_g_neh_s_interface
+                                optimized_seq, best_cmax = run_ga_g_neh_s_interface(
+                                    st.session_state.Pij,
+                                    st.session_state.Ts,
+                                    st.session_state.Incompatibilite,
+                                    popSize=int(pop_size),
+                                    nGen=int(n_gen),
+                                    pc=pc,
+                                    pm=pm
+                                )
+                                
+                                current_n_jobs = len(optimized_seq)
+                                st.session_state.sequence = optimized_seq
+                                st.session_state.sequence_df = pd.DataFrame(
+                                    [optimized_seq], 
+                                    columns=[f"J{i+1}" for i in range(current_n_jobs)]
+                                )
+                                
+                                st.success(f"✨ تم الحساب بنجاح! قيمة Cmax المحققة: {best_cmax} ثانية")
+                                st.rerun()
+                        else:
+                            st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
+
+            st.markdown("---")
+            # =================================================================
+
             
 # =================================================================
-            # خيار خوارزمية (GA + G-NEH-S) داخل حاوية قابلة للتوسع والانكماش
-            # =================================================================
-            st.markdown("---")
-            
-            # تحويل الإعدادات إلى قائمة منسدلة/موسعة تفتح وتغلق عند الضغط
-            with st.expander("🛠️ (GA + G-NEH-S) Settings", expanded=False):
-                st.write("قم بضبط معايير الخوارزمية الجينية:")
-
-                # تهيئة القيم في الجلسة لتثبيتها ومنع اختفائها مع الـ refresh
-                if "ga_pop_size" not in st.session_state: st.session_state.ga_pop_size = 100
-                if "ga_n_gen" not in st.session_state: st.session_state.ga_n_gen = 200
-                if "ga_pc" not in st.session_state: st.session_state.ga_pc = 0.85
-                if "ga_pm" not in st.session_state: st.session_state.ga_pm = 0.06
-
-                # حقول المدخلات مربوطة بمفاتيح لمنع الاختفاء أثناء الـ refresh
-                pop_size = st.number_input("حجم المجتمع (Population Size)", min_value=4, max_value=500, step=10, key="ga_pop_size")
-                n_gen = st.number_input("عدد الأجيال (Generations)", min_value=1, max_value=1000, step=10, key="ga_n_gen")
-                pc = st.slider("معدل العبور (pc)", min_value=0.0, max_value=1.0, step=0.05, key="ga_pc")
-                pm = st.slider("معدل الطفرة (pm)", min_value=0.0, max_value=1.0, step=0.01, key="ga_pm")
-
-                st.markdown("---")
-                # زر تشغيل الخوارزمية الهجينة الفعلي
-                if st.button("🚀 Run Algorithm", type="primary", use_container_width=True):
-                    if "Pij" in st.session_state and "Ts" in st.session_state:
-                        with st.spinner("جاري تشغيل الخوارزمية الهجينة..."):
-                            
-                            from GA_G_NEH_S import run_ga_g_neh_s_interface
-                            optimized_seq, best_cmax = run_ga_g_neh_s_interface(
-                                st.session_state.Pij,
-                                st.session_state.Ts,
-                                st.session_state.Incompatibilite,
-                                popSize=int(pop_size),
-                                nGen=int(n_gen),
-                                pc=pc,
-                                pm=pm
-                            )
-                            
-                            current_n_jobs = len(optimized_seq)
-                            st.session_state.sequence = optimized_seq
-                            st.session_state.sequence_df = pd.DataFrame(
-                                [optimized_seq], 
-                                columns=[f"J{i+1}" for i in range(current_n_jobs)]
-                            )
-                            
-                            st.success(f"✨ تم الحساب بنجاح! قيمة Cmax المحققة: {best_cmax} ثانية")
-                            st.rerun()
-                    else:
-                        st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
-
-            st.markdown("---")
-            # =================================================================
             
 
 
