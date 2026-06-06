@@ -330,7 +330,7 @@ if "sequence_df" in st.session_state:
                     st.write("") # مسافة تجميلية
 
                     # زر التشغيل الفعلي للخوارزمية داخل الحاوية المتوسعة
-                    if st.button("🚀 Run Algorithm", type="secondary", use_container_width=True, key="run_hybrid_ga_btn"):
+                    if st.button("Run Algorithm", type="secondary", key="run_hybrid_ga_btn"):
                         if "Pij" in st.session_state and "Ts" in st.session_state:
                             with st.spinner("جاري تشغيل الخوارزمية الهجينة..."):
                                 
