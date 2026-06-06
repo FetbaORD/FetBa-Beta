@@ -298,16 +298,14 @@ if "sequence_df" in st.session_state:
             
             # =================================================================
             # خيار خوارزمية (GA + G-NEH-S) التفاعلي (يتوسع وينكمش عند الضغط)
-            # =================================================================
-            st.markdown("---")
-            
+            # =================================================================            
             # 1. تهيئة متغير حالة فتح وإغلاق قائمة الإعدادات في الـ session_state
             if "show_ga_settings" not in st.session_state:
                 st.session_state.show_ga_settings = False
 
             # 2. الزر الرئيسي المتحكم في التوسع والانكماش
             # عند الضغط عليه، يعكس حالته (من True إلى False والعكس) ثم يعيد تشغيل السكريبت لتحديث الواجهة
-            if st.button("🤖 (GA + G-NEH-S)", type="primary", use_container_width=True):
+            if st.button("🤖 (GA + G-NEH-S)", type="primary"):
                 st.session_state.show_ga_settings = not st.session_state.show_ga_settings
                 st.rerun()
 
