@@ -13,9 +13,8 @@ def run_g_neh_s_ga_interface(P_df, Ts_df, Incompat_df):
     Incompat = Incompat_df.values
     
     nJobs, nMachines = P.shape
-    popSize = 20
-    nGen = 200
-    
+    # popSize = 20
+    # nGen = 200    
     # 1. تهيئة المجتمع 
     population = np.zeros((popSize, nJobs), dtype=int)
     
