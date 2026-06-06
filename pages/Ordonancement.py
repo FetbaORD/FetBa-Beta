@@ -342,6 +342,15 @@ if "sequence_df" in st.session_state:
                     show_ga_params_dialog()
                 else:
                     st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية الجينية المهجنة.")
+
+
+
+#------------------------------
+
+            if st.button("Génetique Robuste", type="primary"): algo_choice = 3
+
+
+            
 #------------------------------
 
 
