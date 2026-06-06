@@ -296,30 +296,19 @@ if "sequence_df" in st.session_state:
             
             
 # =================================================================
-            # 🆕 1. إنشاء دالة النافذة المنبثقة لإدخال معلمات الـ GA
-            # =================================================================
-            @st.dialog("⚙️ Paramètres de l'Algorithme (GA + G-NEH-S)")
-            def show_ga_params_dialog():
-                st.write("قم بتخصيص إعدادات الخوارزمية الجينية قبل التشغيل:")
-                
-                # حقول إدخال المعلمات ديناميكياً
-                pop_size = st.number_input("حجم المجتمع (Population Size)", min_value=4, max_value=200, value=20, step=2)
-                n_gen = st.number_input("عدد الأجيال (Generations)", min_value=10, max_value=2000, value=200, step=10)
-                
-                st.write("---")
-                # زر التأكيد والتشغيل النهائي داخل النافذة
-                if st.button("🚀 تشغيل المحاكاة الآن", type="primary", use_container_width=True):
-                    with st.spinner("جاري تشغيل خوارزمية (GA + G-NEH-S) وتطوير الحلول..."):
-                        # استدعاء الدالة وتمرير القيم المختارة من المستخدم
-                        optimized_seq, final_cmax = run_g_neh_s_ga_interface(
-                            st.session_state.Pij, 
-                            st.session_state.Ts, 
-                            st.session_state.Incompatibilite,
-                            popSize=pop_size,
-                            nGen=n_gen
+
+# 3. تشغيل الخوارزمية المهجنة المحدثة
+            if st.button("(GA + G-NEH-S)", type="primary"):
+                if "Pij" in st.session_state and "Ts" in st.session_state:
+                    with st.spinner("جاري دمج (GA + G-NEH-S) لتحسين الجدولة..."):
+                        # استدعاء الدالة وحساب أفضل تسلسل وأفضل Cmax للحل
+                        optimized_seq, best_cmax = run_ga_g_neh_s_interface(
+                            st.session_state.Pij,
+                            st.session_state.Ts,
+                            st.session_state.Incompatibilite
                         )
                         
-                        # تحديث جلسة الـ Streamlit حياً بالسلسلة المحسنة الجديدة
+                        # تحديث حالة الجلسة بالتسلسل المحسن الجديد
                         current_n_jobs = len(optimized_seq)
                         st.session_state.sequence = optimized_seq
                         st.session_state.sequence_df = pd.DataFrame(
@@ -327,22 +316,10 @@ if "sequence_df" in st.session_state:
                             columns=[f"J{i+1}" for i in range(current_n_jobs)]
                         )
                         
-                        # حفظ رسالة النجاح في السيسشن لعرضها بعد الـ rerun
-                        st.session_state.ga_success_msg = f"🏆 تم التنفيذ بنجاح! [المجتمع: {pop_size} | الأجيال: {n_gen}] - أفضل Cmax: {final_cmax} ثانية"
-                        
-                    st.rerun()
-
-            # =================================================================
-            # 🆕 2. منطق الزر الرئيسي داخل القائمة المنسدلة
-            # =================================================================
-            if st.button("(GA + G-NEH-S)", type="primary"): 
-                if "Pij" in st.session_state and "Ts" in st.session_state:
-                    # استدعاء النافذة المنبثقة فوراً عند الضغط
-                    show_ga_params_dialog()
+                        st.success(f"✨ تم إنهاء التهجين بنجاح! قيمة Cmax المحققة: {best_cmax} ثانية")
+                        st.rerun()
                 else:
-                    st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية الجينية المهجنة.")
-
-
+                    st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
 
 #------------------------------
 
