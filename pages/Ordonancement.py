@@ -301,7 +301,7 @@ if "sequence_df" in st.session_state:
             st.markdown("---")
             
             # تحويل القسم إلى popover فرعي يظهر على شكل زر داخل القائمة الرئيسية
-            with st.popover("🤖 (GA + G-NEH-S)", type="primary", use_container_width=True):
+            with st.popover("(GA + G-NEH-S)", type="primary"):
                 st.write("⚙️ Réglage des Paramètres :")
 
                 # تهيئة القيم في الجلسة لتثبيتها ومنع تصفيرها
