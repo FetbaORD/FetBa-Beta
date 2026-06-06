@@ -7,8 +7,7 @@ from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 from GA import run_ga_interface
 from G_NEH_S import run_g_neh_s_interface
-
-
+from G_NEH_S_GA import run_g_neh_s_ga_interface
 
 # ==========================================================
 # ================== GA FUNCTIONS AREA =====================
@@ -297,7 +296,31 @@ if "sequence_df" in st.session_state:
             
             
             
-            if st.button("(GA + G-NEH-S)", type="primary"): algo_choice = 2
+            # 🆕 تعديل منطق زر الهجين المطور (GA + G-NEH-S) 
+            if st.button("(GA + G-NEH-S)", type="primary"): 
+                if "Pij" in st.session_state and "Ts" in st.session_state:
+                    
+                    # تشغيل خوارزمية MATLAB المهجنة المحولة لبايثون
+                    optimized_seq, final_cmax = run_g_neh_s_ga_interface(
+                        st.session_state.Pij, 
+                        st.session_state.Ts, 
+                        st.session_state.Incompatibilite
+                    )
+                    
+                    # تحديث جلسة الـ Streamlit حياً بالسلسلة المكتشفة الجديدة
+                    current_n_jobs = len(optimized_seq)
+                    st.session_state.sequence = optimized_seq
+                    st.session_state.sequence_df = pd.DataFrame(
+                        [optimized_seq], 
+                        columns=[f"J{i+1}" for i in range(current_n_jobs)]
+                    )
+                    
+                    # إظهار رسالة نجاح مخصصة للمستخدم بالنتيجة الرقمية لـ Cmax المقاسة بالثواني
+                    st.success(f"🏆 تم تنفيذ (GA + G-NEH-S) بنجاح! أفضل وقت إنجاز كلي (Cmax) هو: {final_cmax} ثانية")
+                    st.rerun()
+                else:
+                    st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية الجينية المهجنة.")
+            
             if st.button("Génetique Robuste", type="primary"): algo_choice = 3
 
 #------------------------------
