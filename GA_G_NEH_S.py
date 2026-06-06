@@ -6,7 +6,7 @@ import streamlit as st
 from G_NEH_S import run_g_neh_s_interface
 
 
-def run_ga_g_neh_s_interface(P_df, Ts_df, Incompat_df):
+def run_ga_g_neh_s_interface(P_df, Ts_df, Incompat_df, popSize=100, nGen=200, pc=0.85, pm=0.06):
     """تنفيذ الخوارزمية الهجينة (GA + G-NEH-S) حيث يتم استخدام G-NEH-S لتهيئة الجيل الأول"""
 
     # 1. استخراج المصفوفات كـ Numpy Arrays
