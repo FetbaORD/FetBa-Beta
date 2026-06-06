@@ -7,8 +7,7 @@ from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 from GA import run_ga_interface
 from G_NEH_S import run_g_neh_s_interface
-from G_NEH_S_GA import run_g_neh_s_ga_interface
-
+from GA_G_NEH_S import run_ga_g_neh_s_interface
 # ==========================================================
 # ================== GA FUNCTIONS AREA =====================
 # ==========================================================
