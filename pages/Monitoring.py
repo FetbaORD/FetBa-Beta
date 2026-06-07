@@ -53,10 +53,9 @@ SENDER_PASSWORD = "wrmi lpuz geyj ssyp"  # كلمة مرور التطبيقات 
 # =========================
 TWILIO_ACCOUNT_SID = "AC63ca0d3643cccca495c8409993ad6e34"
 TWILIO_AUTH_TOKEN = "68510f98171cd751af475b790f0aeef5"
-TWILIO_PHONE_NUMBER = "+15055510744"  # الرقم الممنوح لك من Twilio
 
-# رقم الواتساب الممنوح لك من Twilio (يجب إضافة whatsapp: قبل الرقم)
-TWILIO_WHATSAPP_NUMBER = "whatsapp:+14155238886" 
+
+TWILIO_WHATSAPP_NUMBER = "whatsapp:+14155238886"
 
 # رقم هاتفك الشخصي الذي ربطته بالـ Sandbox (يجب إضافة whatsapp: قبل الرقم)
 YOUR_PERSONAL_NUMBER = "whatsapp:+15055510744" # ضع رقمك هنا بالصيغة الدولية
@@ -180,11 +179,11 @@ def send_real_notifications(machine_name, fault_label, worker_info, value_str):
         client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
         client.messages.create(
             body=message_text,
-            from_=TWILIO_PHONE_NUMBER,
+            from_=TWILIO_WHATSAPP_NUMBER,  # استخدام رقم الواتساب الممنوح من تويليو
             to=worker_info["phone"]
         )
     except Exception as e:
-        st.sidebar.error(f"خطأ في إرسال SMS: {e}")
+        st.sidebar.error(f"خطأ في إرسال WhatsApp: {e}")
 
 
 
