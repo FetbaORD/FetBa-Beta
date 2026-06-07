@@ -180,7 +180,7 @@ def send_real_notifications(machine_name, fault_label, worker_info, value_str):
         client.messages.create(
             body=message_text,
             from_=TWILIO_WHATSAPP_NUMBER,  # استخدام رقم الواتساب الممنوح من تويليو
-            to=worker_info["phone"]
+            to=f"whatsapp:{worker_info['phone']}"  # 👈 التعديل هنا: دمج السابقة البرمجية مع رقم العامل ديناميكياً
         )
     except Exception as e:
         st.sidebar.error(f"خطأ في إرسال WhatsApp: {e}")
