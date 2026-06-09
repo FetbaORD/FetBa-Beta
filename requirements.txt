@@ -10,5 +10,5 @@ datetime
 plotly.express
 matplotlib
 st-theme
-streamlit-google-sheets
+st-sheets-connection
 gspread
