@@ -73,7 +73,9 @@ def add_user(username, password, email="", phone=""):
     
     # 1. قراءة البيانات الحالية مع تحديد ورقة العمل بدقة
     try:
-        df = conn.read(worksheet="Sheet1", ttl=0) 
+        # هنا نخفي النص القديم ونظهر نصاً احترافياً يناسب التسجيل
+        with st.spinner("Checking availability..."):
+            df = conn.read(worksheet="Sheet1", ttl=0, show_spinner=False) 
     except Exception:
         import pandas as pd
         df = pd.DataFrame(columns=["username", "password", "email", "phone"])
