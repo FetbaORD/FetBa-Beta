@@ -53,8 +53,8 @@ def check_password(password, hashed_password):
 
 # إنشاء اتصال بجدول بيانات جوجل (يقرأ الإعدادات تلقائياً من Secrets)
 def get_sheets_connection():
-    # هنا نستخدم طريقة الاتصال الرسمية والمباشرة المدمجة في Streamlit
-    return st.connection("gsheets", type="sheets")
+    # تمرير الفئة المستوردة صراحة كما تطلب مكتبة streamlit_gsheets
+    return st.connection("gsheets", type=GSheetsConnection)
 
 
 
