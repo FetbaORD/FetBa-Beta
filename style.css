@@ -285,7 +285,7 @@ button[kind="secondary"]:active {
 
 /* 3. زر التشغيل الأساسي وزر الـ Form مع تأثير الـ Hover والـ Shadows */
 button[kind="secondary"], div.stFormSubmitButton > button {
-    background-color: #0980e8 !important;
+    background-color: #ff0037 !important;
     color: white !important;
     border-radius: 10px !important;
     border: none !important;
