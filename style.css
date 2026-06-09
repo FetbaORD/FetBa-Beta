@@ -322,6 +322,7 @@ button[kind="primary"], div.stFormSubmitButton > button {
     box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
     transition: all 0.3s ease !important;
     cursor: pointer;
+	padding: 0.75rem 2.5rem !important;   /* تعريض الزر وزيادة ارتفاعه (إضافة مساحة داخلية) */
 }
 
 /* تأثير الـ Hover على الأزرار */
