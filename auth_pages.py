@@ -80,17 +80,17 @@ def add_user(username, password, email="", phone=""):
     
     # تنظيف الأسماء الحالية قبل الفحص لمنع التكرار بسبب المسافات
     if not df.empty and "username" in df.columns:
-        df['username'] = df['username'].astype(str).str.strip()
+        df['username'] = df['username'].astype(str).str.strip().str.lower() # 👈 أضفنا .str.lower()
     
     # التحقق من أن اسم المستخدم غير موجود مسبقاً بعد تنظيفه
-    if username.strip() in df["username"].values:
+    if username.strip().lower() in df["username"].values: # 👈 أضفنا .lower()
         return False
         
     # 2. تشفير كلمة المرور وتجهيز البيانات الجديدة
     hashed_pass = hash_password(password)
     new_data = {
-        "username": [username.strip()],
-        "password": [hashed_pass.strip()], # إزالة أي مسافات زائدة من الهاش
+        "username": [username.strip().lower()], # 👈 أضفنا .lower() هنا أيضاً
+        "password": [hashed_pass.strip()],
         "email": [email.strip()],
         "phone": [phone.strip()]
     }
