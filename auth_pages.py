@@ -118,10 +118,10 @@ def login_user(username, password):
         return False
 
     # 🧼 تنظيف الأعمدة تماماً من أي مسافات فارغة (مهم جداً لجداول جوجل)
-    df['username'] = df['username'].astype(str).str.strip()
+    df['username'] = df['username'].astype(str).str.strip().str.lower() # 👈 أضفنا .str.lower()
     df['password'] = df['password'].astype(str).str.strip()
     
-    clean_username = str(username).strip()
+    clean_username = str(username).strip().lower() # 👈 أضفنا .lower()
     
     # البحث عن السطر الخاص بالمستخدم
     user_row = df[df["username"] == clean_username]
