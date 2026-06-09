@@ -109,6 +109,7 @@ def login_user(username, password):
     try:
         # استخدام st.spinner لإخفاء النص الافتراضي واستبداله بنص مخصص
         with st.spinner("Checking information entered..."):
+            st.cache_data.clear()
             df = conn.read(worksheet="Sheet1", ttl=0, show_spinner=False)
     except Exception as e:
         st.error(f"Erreur de lecture: {e}")
