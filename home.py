@@ -148,7 +148,7 @@ if not st.session_state.is_activated:
                 # تقسيم الأعمدة الداخلية لتوسط الزر
                 sub_col1, sub_col2, sub_col3 = st.columns([1, 1.5, 1])
                 with sub_col2:
-                    submit_button = st.form_submit_button("Activer le Système", type="secondary", use_container_width=False)
+                    submit_button = st.form_submit_button("Activer le Système", type="primary", use_container_width=False)
                     
                     if submit_button:
                         if input_key.strip() != "":
