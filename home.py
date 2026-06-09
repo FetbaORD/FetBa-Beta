@@ -138,8 +138,6 @@ if not st.session_state.is_activated:
     with col_left:
         st.subheader(":material/vpn_key: Activation du Produit")
         with st.container(border=True):
-            input_key = st.text_input("Clé de Produit (Product Key)", type="password", placeholder="XXXX-XXXX-XXXX")
-            st.write("")
 # إنشاء النموذج (Form) لحل مشكلة زر الـ Enter
             with st.form(key="activation_form", clear_on_submit=False):
                 
