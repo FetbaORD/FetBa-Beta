@@ -257,11 +257,18 @@ def sign_up_page():
                     st.error("Ce nom d'utilisateur est déjà pris. Veuillez en choisir un autre.")
 
 
-# 1. تشغيل التحديث التلقائي في الخلفية (كل 10 ثوانٍ) لفحص عداد الدقيقة دون تجميد الصفحة
+# 1. تشغيل التحديث التلقائي في الخلفية (كل 10 ثوانٍ) لفحص عداد الدقيقة
 st_autorefresh(interval=10000, key="auto_logout_check")
 
 # 2. استدعاء مدير الكوكيز الخاص بالمتصفح
 cookie_manager = stx.CookieManager()
+
+# ✨ التعديل السحري: إعطاء وقت للمتصفح للاتصال وقراءة الكوكيز عند الـ Refresh
+# إذا كانت الكوكيز لم تُحمل بعد، ننتظر قليلاً حتى تظهر لكي لا يتم الطرد تلقائياً
+if "cookies_ready" not in st.session_state:
+    time.sleep(0.5)  # الانتظار نصف ثانية كحد أقصى ليقرأ المتصفح الكوكيز
+    st.session_state.cookies_ready = True
+    st.rerun()
 
 # جلب بيانات الجلسة الحالية من متصفح المستخدم
 is_logged_cookie = cookie_manager.get(cookie="logged_in")
@@ -292,6 +299,7 @@ if is_logged_cookie != "true":
         
         # إذا نجح الدخول من النموذج وتم تفعيل العلم المؤقت، ننقل البيانات للكوكيز فوراً
         if st.session_state.get("just_logged_in") == True:
+            # تم تحديد مدة الكوكي بـ 3600 ثانية (ساعة) ولكن كود الفحص فوق سيحذفه بعد دقيقة
             cookie_manager.set("logged_in", "true", max_age=3600)
             cookie_manager.set("username", st.session_state.username, max_age=3600)
             cookie_manager.set("login_time", str(time.time()), max_age=3600)
@@ -302,14 +310,13 @@ if is_logged_cookie != "true":
 
 else:
     # 🌟 هنا تضع كود صفحة تطبيقك الرئيسية التي تظهر بعد تسجيل الدخول الناجح 🌟
-    # الكوكيز الآن تحمي المستخدم، لو ضغط Ctrl+R لن يتم تسجيل خروجه إلا بعد دقيقة
     st.title(f"مرحباً بك مجدداً، {username_cookie} 👋")
-    st.success("أنت متصل الآن بشكل آمن.")
+    st.success("أنت متصل الآن بشكل آمن. جرب عمل Ctrl+R الآن ولن تخرج!")
     
-    # حساب وعرض الوقت المتبقي للمستخدم (اختياري، يمكنك حذفه)
+    # حساب وعرض الوقت المتبقي للمخدم (اختياري)
     time_left = int(TIMEOUT_DURATION - (time.time() - float(login_time_cookie)))
     if time_left > 0:
-        st.info(f"الوقت المتبقي لانتهاء الجلسة: {time_left} ثانية.")
+        st.info(f"الوقت المتبقي لانتهاء الجلسة تلقائياً: {time_left} ثانية.")
 
     # زر تسجيل الخروج اليدوي
     if st.button("Déconnexion (تسجيل الخروج)"):
