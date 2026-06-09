@@ -123,8 +123,7 @@ def login_user(username, password):
     df['password'] = df['password'].astype(str).str.strip()
     
     clean_username = str(username).strip().lower() # 👈 أضفنا .lower()
-    st.write("Input username =", clean_username)
-    st.write("Usernames in sheet =", df["username"].tolist())
+
 
 
     
