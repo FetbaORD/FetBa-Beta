@@ -71,25 +71,28 @@ def get_sheets_connection():
 def add_user(username, password, email="", phone=""):
     conn = get_sheets_connection()
     
-    # 1. قراءة البيانات الحالية للتأكد من عدم تكرار اسم المستخدم
+    # 1. قراءة البيانات الحالية مع تحديد ورقة العمل بدقة
     try:
-        df = conn.read(ttl=0) # ttl=0 تضمن قراءة أحدث البيانات دائماً دون كاش
+        df = conn.read(worksheet="Sheet1", ttl=0) 
     except Exception:
-        # إذا كان الجدول فارغاً تماماً في المرة الأولى
         import pandas as pd
         df = pd.DataFrame(columns=["username", "password", "email", "phone"])
     
-    # التحقق من أن اسم المستخدم غير موجود مسبقاً
-    if username in df["username"].values:
+    # تنظيف الأسماء الحالية قبل الفحص لمنع التكرار بسبب المسافات
+    if not df.empty and "username" in df.columns:
+        df['username'] = df['username'].astype(str).str.strip()
+    
+    # التحقق من أن اسم المستخدم غير موجود مسبقاً بعد تنظيفه
+    if username.strip() in df["username"].values:
         return False
         
     # 2. تشفير كلمة المرور وتجهيز البيانات الجديدة
     hashed_pass = hash_password(password)
     new_data = {
-        "username": [username],
-        "password": [hashed_pass],
-        "email": [email],
-        "phone": [phone]
+        "username": [username.strip()],
+        "password": [hashed_pass.strip()], # إزالة أي مسافات زائدة من الهاش
+        "email": [email.strip()],
+        "phone": [phone.strip()]
     }
     import pandas as pd
     new_df = pd.DataFrame(new_data)
@@ -97,38 +100,38 @@ def add_user(username, password, email="", phone=""):
     # دمج السطر الجديد مع البيانات السابقة
     updated_df = pd.concat([df, new_df], ignore_index=True)
     
-    # 3. تحديث الجدول على Google Sheets
-    conn.update(data=updated_df)
+    # 3. تحديث الجدول على ورقة العمل المحددة
+    conn.update(worksheet="Sheet1", data=updated_df)
     return True
 
 def login_user(username, password):
     conn = get_sheets_connection()
     try:
-        # قراءة الجدول مع تحديد اسم ورقة العمل (تأكد من مطابقة الاسم مثلاً "Sheet1")
         df = conn.read(worksheet="Sheet1", ttl=0)
     except Exception as e:
         st.error(f"Erreur de lecture: {e}")
         return False
         
-    if df.empty or "username" not in df.columns:
+    if df.empty or "username" not in df.columns or "password" not in df.columns:
         return False
 
-    # 🧼 تنظيف البيانات: إزالة المسافات الفارغة من البداية والنهاية وتحويل القيم لنصوص
+    # 🧼 تنظيف الأعمدة تماماً من أي مسافات فارغة (مهم جداً لجداول جوجل)
     df['username'] = df['username'].astype(str).str.strip()
+    df['password'] = df['password'].astype(str).str.strip()
+    
     clean_username = str(username).strip()
     
-    # البحث عن السطر الخاص بالمستخدم بدقة
+    # البحث عن السطر الخاص بالمستخدم
     user_row = df[df["username"] == clean_username]
     
     if not user_row.empty:
-        # جلب الهاش المخزن في العمود الثاني
+        # جلب الهاش المخزن
         hashed_password = user_row.iloc[0]["password"]
         
-        # استدعاء دالة التحقق المعدلة التي تحول الهاش لـ bytes
+        # استدعاء دالة التحقق
         return check_password(password, hashed_password)
         
     return False
-
 
 
 # =====================================================================================
