@@ -260,20 +260,21 @@ def sign_up_page():
 # 1. تشغيل التحديث التلقائي في الخلفية (كل 10 ثوانٍ) لفحص عداد الدقيقة
 st_autorefresh(interval=10000, key="auto_logout_check")
 
-# 2. استدعاء مدير الكوكيز الخاص بالمتصفح
+# 2. استدعاء مدير الكوكيز
 cookie_manager = stx.CookieManager()
 
-# ✨ التعديل السحري: إعطاء وقت للمتصفح للاتصال وقراءة الكوكيز عند الـ Refresh
-# إذا كانت الكوكيز لم تُحمل بعد، ننتظر قليلاً حتى تظهر لكي لا يتم الطرد تلقائياً
-if "cookies_ready" not in st.session_state:
-    time.sleep(0.5)  # الانتظار نصف ثانية كحد أقصى ليقرأ المتصفح الكوكيز
-    st.session_state.cookies_ready = True
-    st.rerun()
-
-# جلب بيانات الجلسة الحالية من متصفح المستخدم
+# جلب بيانات الجلسة من المتصفح
 is_logged_cookie = cookie_manager.get(cookie="logged_in")
 username_cookie = cookie_manager.get(cookie="username")
 login_time_cookie = cookie_manager.get(cookie="login_time")
+
+# تفادي تسرع الكود: إذا كانت الكوكيز فارغة تماماً عند أول تحميل للصفحة،
+# ننتظر أجزاء من الثانية للتأكد من اتصال المتصفح بسيرفر Streamlit
+if is_logged_cookie is None:
+    time.sleep(0.2)
+    is_logged_cookie = cookie_manager.get(cookie="logged_in")
+    username_cookie = cookie_manager.get(cookie="username")
+    login_time_cookie = cookie_manager.get(cookie="login_time")
 
 # مدة صلاحية الجلسة بالثواني (دقيقة واحدة = 60 ثانية)
 TIMEOUT_DURATION = 60
@@ -282,44 +283,50 @@ TIMEOUT_DURATION = 60
 if is_logged_cookie == "true" and login_time_cookie:
     elapsed_time = time.time() - float(login_time_cookie)
     if elapsed_time > TIMEOUT_DURATION:
-        # إذا انتهت الدقيقة، احذف الكوكيز فوراً واطرد المستخدم لصفحة الدخول
+        # انتهت الدقيقة -> تدمير الجلسة في المتصفح والـ session_state
         cookie_manager.delete("logged_in")
         cookie_manager.delete("username")
         cookie_manager.delete("login_time")
+        if "logged_in" in st.session_state:
+            st.session_state.logged_in = False
         st.warning("تم تسجيل الخروج تلقائياً لانتهاء صلاحية الجلسة (1 دقيقة).")
         st.rerun()
 
-# 4. توجيه واجهة المستخدم بناءً على الكوكيز المخزنة
+# 4. توجيه واجهة المستخدم بناءً على حالة الكوكيز الحقيقية
 if is_logged_cookie != "true":
-    # إذا لم يكن مسجلاً في الكوكيز، نعرض قائمة الدخول والتسجيل الافتراضية
+    # المستخدم غير متصل -> عرض صفحات تسجيل الدخول والتسجيل
     page = st.sidebar.selectbox("Navigation", ["Connexion", "Inscription"])
     
     if page == "Connexion":
         sign_in_page()
         
-        # إذا نجح الدخول من النموذج وتم تفعيل العلم المؤقت، ننقل البيانات للكوكيز فوراً
+        # إذا نجح المستخدم بالدخول وضغط الزر، نقوم بزرع الكوكيز في متصفحه فوراً
         if st.session_state.get("just_logged_in") == True:
-            # تم تحديد مدة الكوكي بـ 3600 ثانية (ساعة) ولكن كود الفحص فوق سيحذفه بعد دقيقة
+            # نحدد عمر الكوكي بساعة (3600 ثانية)، لكن العداد فوق سيحذفه بمجرد مرور دقيقة
             cookie_manager.set("logged_in", "true", max_age=3600)
             cookie_manager.set("username", st.session_state.username, max_age=3600)
             cookie_manager.set("login_time", str(time.time()), max_age=3600)
-            st.session_state.just_logged_in = False # تصفير العلم المؤقت
+            st.session_state.just_logged_in = False  # تصفير العلم المؤقت
             st.rerun()
     else:
         sign_up_page()
 
 else:
-    # 🌟 هنا تضع كود صفحة تطبيقك الرئيسية التي تظهر بعد تسجيل الدخول الناجح 🌟
+    # 🌟 [صفحة تطبيقك الرئيسية] 🌟
+    # تظهر فقط إذا كان الكوكي موجوداً ومتصلاً بنجاح، ومحمي تماماً ضد الـ Refresh
     st.title(f"مرحباً بك مجدداً، {username_cookie} 👋")
-    st.success("أنت متصل الآن بشكل آمن. جرب عمل Ctrl+R الآن ولن تخرج!")
+    st.success("أنت متصل الآن بشكل آمن عبر ملفات تعريف الارتباط للمتصفح (Cookies).")
+    st.info("جرب عمل Ctrl+R الآن، ولن يتم تسجيل خروجك إلا بعد انتهاء الدقيقة.")
     
-    # حساب وعرض الوقت المتبقي للمخدم (اختياري)
+    # حساب وعرض الوقت المتبقي للمستخدم
     time_left = int(TIMEOUT_DURATION - (time.time() - float(login_time_cookie)))
     if time_left > 0:
-        st.info(f"الوقت المتبقي لانتهاء الجلسة تلقائياً: {time_left} ثانية.")
+        st.metric(label="الوقت المتبقي لانتهاء الجلسة", value=f"{time_left} ثانية")
 
+    st.write("---")
+    
     # زر تسجيل الخروج اليدوي
-    if st.button("Déconnexion (تسجيل الخروج)"):
+    if st.button("Déconnexion (تسجيل الخروج)", type="secondary"):
         cookie_manager.delete("logged_in")
         cookie_manager.delete("username")
         cookie_manager.delete("login_time")
