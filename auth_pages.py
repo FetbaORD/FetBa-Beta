@@ -273,7 +273,7 @@ def get_cookie_manager():
 cookie_manager = get_cookie_manager()
 
 # قراءة الكوكيز من المتصفح في بداية كل تشغيل للسكربت
-saved_user = cookie_manager.get(cookie="logged_in_user")
+saved_user = cookie_manager.get("logged_in_user")
 
 # التحقق من حالة تسجيل الدخول
 if saved_user:
