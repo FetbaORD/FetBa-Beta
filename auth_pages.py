@@ -44,10 +44,19 @@ def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def check_password(password, hashed_password):
-    # التأكد من عمل encode للهاش المخزن إذا كان نصاً
+    # إذا كان الهاش قادماً كنص (str) من Google Sheets، نقوم بتحويله إلى بايتات (bytes)
     if isinstance(hashed_password, str):
         hashed_password = hashed_password.encode('utf-8')
-    return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
+    
+    # التأكد أيضاً من تحويل كلمة المرور المدخلة إلى بايتات
+    if isinstance(password, str):
+        password = password.encode('utf-8')
+        
+    try:
+        return bcrypt.checkpw(password, hashed_password)
+    except Exception:
+        # حماية التطبيق من الانهيار إذا كان الهاش المخزن في الجدول تالفاً أو فارغاً
+        return False
 
 
 
