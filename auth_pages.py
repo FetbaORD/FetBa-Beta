@@ -3,6 +3,64 @@ import sqlite3
 import re
 import bcrypt
 from streamlit_gsheets import GSheetsConnection
+import time
+from streamlit_autorefresh import st_autorefresh
+
+# 1. إعداد التحديث التلقائي بالخلفية لفحص الوقت (كل 10 ثوانٍ مثلاً لضمان دقة دقيقة الخروج)
+# تحتاج لتثبيت المكتبة عبر أمر: pip install streamlit-autorefresh
+st_autorefresh(interval=10000, key="auto_logout_check")
+
+# 2. التحقق من وقت تسجيل الدخول وإدارة الجلسة
+def manage_session_timeout():
+    # مدة صلاحية الجلسة بالثواني (دقيقة واحدة = 60 ثانية)
+    TIMEOUT_DURATION = 60 
+
+    if "logged_in" in st.session_state and st.session_state.logged_in:
+        if "login_time" in st.session_state:
+            elapsed_time = time.time() - st.session_state.login_time
+            
+            # إذا مرت أكثر من دقيقة، يتم تسجيل الخروج تلقائياً
+            if elapsed_time > TIMEOUT_DURATION:
+                st.session_state.logged_in = False
+                st.session_state.username = None
+                if "login_time" in st.session_state:
+                    del st.session_state.login_time
+                st.warning("تم تسجيل الخروج تلقائياً لانتهاء صلاحية الجلسة (1 دقيقة).")
+                st.rerun()
+
+# 3. تحديث دالة تسجيل الدخول الناجح لتسجيل الوقت الحالي
+# (تعديل بسيط داخل دالة sign_in_page الخاصة بك عند تحقق الشرط بنجاح)
+"""
+تأكد أن السطور عند نجاح تسجيل الدخول تصبح هكذا:
+if login_user(username, password):
+    st.session_state.logged_in = True
+    st.session_state.username = username
+    st.session_state.login_time = time.time() # 👈 إضافة هذا السطر لحفظ وقت الدخول
+    st.success("Connexion réussie ! Redirection en cours...")
+    st.rerun()
+"""
+
+# 4. استدعاء دالة الفحص في بداية التطبيق
+manage_session_timeout()
+
+# 5. عرض الصفحات بناءً على الحالة
+if "logged_in" not in st.session_state or not st.session_state.logged_in:
+    # عرض صفحة تسجيل الدخول أو حساب جديد
+    page = st.sidebar.selectbox("Navigation", ["Connexion", "Inscription"])
+    if page == "Connexion":
+        sign_in_page()
+    else:
+        sign_up_page()
+else:
+    # 🌟 هنا تضع كود صفحة تطبيقك الرئيسية بعد تسجيل الدخول الناجح
+    st.title(f"مرحباً بك، {st.session_state.username}")
+    st.write("أنت الآن داخل النظام. سيتم إخراجك تلقائياً بعد دقيقة واحدة.")
+    
+    # زر تسجيل الخروج اليدوي
+    if st.button("Déconnexion"):
+        st.session_state.logged_in = False
+        st.rerun()
+
 
 # =========================================================================
 # 2. INTERFACES UTILISATEUR (DESIGN DESIGN AMÉLIORÉ)
