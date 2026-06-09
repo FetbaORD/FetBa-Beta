@@ -141,12 +141,24 @@ if not st.session_state.is_activated:
             input_key = st.text_input("Clé de Produit (Product Key)", type="password", placeholder="XXXX-XXXX-XXXX")
             st.write("") 
             
-            sub_col1, sub_col2, sub_col3 = st.columns([1, 1.5, 1])
-            with sub_col2:
-                if st.button("Activer le Système", type="primary",use_container_width=False): 
-                    verify_key(input_key)
-            st.write("") 
-            st.caption("Note: La clé est valide pour une utilisation sur deux appareils maximum.")
+# نقوم بإنشاء نموذج (Form) لربط الإدخال بزر التفعيل
+with st.form(key="activation_form", clear_on_submit=False):
+    
+    # هنا تضع حقل إدخال المفتاح (تأكد من وجوده داخل الفورم)
+    input_key = st.text_input("Entrez votre clé d'activation :")
+    
+    # تقسيم الأعمدة لتنسيق زر التفعيل بالمنتصف
+    sub_col1, sub_col2, sub_col3 = st.columns([1, 1.5, 1])
+    
+    with sub_col2:
+        # استبدال st.button بـ st.form_submit_button
+        submit_button = st.form_submit_button("Activer le Système", type="primary", use_container_width=False)
+        
+        if submit_button:
+            verify_key(input_key)
+
+st.write("") 
+st.caption("Note: La clé est valide pour une utilisation sur deux appareils maximum.")
 
     # تعديل: تم نقل الـ col_right إلى هنا (داخل نطاق الـ if الشرطية)
     with col_right:
