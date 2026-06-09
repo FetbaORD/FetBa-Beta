@@ -12,3 +12,4 @@ matplotlib
 st-theme
 gspread
 st-gsheets-connection
+extra-streamlit-components
