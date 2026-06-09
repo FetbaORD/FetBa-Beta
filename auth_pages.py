@@ -263,127 +263,43 @@ def sign_up_page():
 
 
 # =====================================================================================
-# 3. إدارة الجلسة المستقرة عبر الكوكيز (تمنع تسجيل الخروج عند الـ Refresh)
+# 3. إدارة الجلسة المستقرة عبر الكوكيز (النسخة المتوافقة مع Streamlit Cloud)
 # =====================================================================================
 
-# 1. تهيئة مدير الكوكيز
 @st.cache_resource
 def get_cookie_manager():
     return stx.CookieManager()
 
 cookie_manager = get_cookie_manager()
 
-# تأخير بسيط لضمان تحميل الكوكيز من المتصفح
-time.sleep(0.1) 
-
-# جلب اسم المستخدم المخزن في الكوكيز (إن وجد)
+# قراءة الكوكيز من المتصفح في بداية كل تشغيل للسكربت
 saved_user = cookie_manager.get(cookie="logged_in_user")
 
-# دالة لتهيئة جدول الجلسات في قاعدة البيانات (لتتبع وقت انتهاء الجلسة)
-def init_session_db():
-    conn = sqlite3.connect("project_db.db")
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS active_sessions 
-                 (username TEXT PRIMARY KEY, login_time REAL)''')
-    conn.commit()
-    conn.close()
-
-init_session_db()
-TIMEOUT_DURATION = 60  # مدة صلاحية الجلسة بالثواني (دقيقة واحدة)
-
-# 2. التحقق من حالة الجلسة بناءً على الكوكيز وقاعدة البيانات
+# التحقق من حالة تسجيل الدخول
 if saved_user:
-    conn = sqlite3.connect("project_db.db")
-    c = conn.cursor()
-    c.execute("SELECT login_time FROM active_sessions WHERE username = ?", (saved_user,))
-    session_data = c.fetchone()
-    conn.close()
-
-    if session_data:
-        db_login_time = session_data[0]
-        elapsed_time = time.time() - db_login_time
-
-        if elapsed_time > TIMEOUT_DURATION:
-            # انتهت الدقيقة -> حذف الجلسة والكوكيز
-            conn = sqlite3.connect("project_db.db")
-            c = conn.cursor()
-            c.execute("DELETE FROM active_sessions WHERE username = ?", (saved_user,))
-            conn.commit()
-            conn.close()
-            
-            cookie_manager.delete("logged_in_user")
-            st.session_state.logged_in = False
-            st.warning("تم تسجيل الخروج تلقائياً لانتهاء صلاحية الجلسة (1 دقيقة).")
-            st.rerun()
-        else:
-            # الجلسة ما زالت صالحة -> تثبيتها في السيرفر
-            st.session_state.logged_in = True
-            st.session_state.username = saved_user
-            st.session_state.db_login_time = db_login_time
-    else:
-        # الكوكيز موجود لكن لا توجد جلسة في قاعدة البيانات
-        cookie_manager.delete("logged_in_user")
-        st.session_state.logged_in = False
+    st.session_state.logged_in = True
+    st.session_state.username = saved_user
 else:
-    # إذا لم يكن هناك كوكيز، نتأكد من حالة session_state
-    if not st.session_state.get("logged_in", False):
+    if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
 
-# 3. توجيه واجهة المستخدم
+# توجيه واجهة المستخدم
 if not st.session_state.logged_in:
     page = st.sidebar.selectbox("Navigation", ["Connexion", "Inscription"])
-    
     if page == "Connexion":
         sign_in_page()
-        
-        # إذا نجح الدخول من صفحة الـ sign_in_page
-        if st.session_state.get("just_logged_in") == True:
-            now = time.time()
-            username_to_save = st.session_state.username
-            
-            # حفظ الجلسة في قاعدة البيانات
-            conn = sqlite3.connect("project_db.db")
-            c = conn.cursor()
-            c.execute("INSERT OR REPLACE INTO active_sessions (username, login_time) VALUES (?, ?)",
-                      (username_to_save, now))
-            conn.commit()
-            conn.close()
-            
-            # 👈 حفظ الكوكيز في متصفح المستخدم ليتذكره عند الـ Refresh (صالح لمدة يوم مثلاً)
-            cookie_manager.set(cookie="logged_in_user", value=username_to_save, max_age=86400)
-            
-            st.session_state.logged_in = True
-            st.session_state.just_logged_in = False
-            st.rerun()
     else:
         sign_up_page()
-
 else:
     # 🌟 [صفحة تطبيقك الرئيسية] 🌟
     st.title(f"مرحباً بك مجدداً، {st.session_state.username} 👋")
-    st.success("تم تأكيد اتصالك الآمن والمستقر عبر الكوكيز (لن يتم تسجيل خروجك عند الـ Refresh).")
+    st.success("اتصالك آمن ومستقر ومحمي من الـ Refresh على السيرفر السحابي.")
     
-    # تحديث تلقائي صامت في الخلفية كل 5 ثوانٍ لتحديث عداد الوقت المتبقي فقط
-    st_autorefresh(interval=5000, key="db_logout_check")
-    
-    # حساب وعرض الوقت المتبقي لانتهاء الدقيقة
-    current_login_time = st.session_state.get("db_login_time", time.time())
-    time_left = int(TIMEOUT_DURATION - (time.time() - current_login_time))
-    if time_left > 0:
-        st.metric(label="الوقت المتبقي لانتهاء الجلسة", value=f"{time_left} ثانية")
-        
     st.write("---")
     
     # زر تسجيل الخروج اليدوي
     if st.button("Déconnexion (تسجيل الخروج)"):
-        conn = sqlite3.connect("project_db.db")
-        c = conn.cursor()
-        c.execute("DELETE FROM active_sessions WHERE username = ?", (st.session_state.username,))
-        conn.commit()
-        conn.close()
-        
-        # حذف الكوكيز من المتصفح فوراً
         cookie_manager.delete("logged_in_user")
-        
         st.session_state.logged_in = False
+        st.session_state.username = None
         st.rerun()
