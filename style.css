@@ -283,6 +283,15 @@ button[kind="secondary"]:active {
     transform: scale(0.98);
 }
 
+
+
+div.stFormSubmitButton {
+    display: flex !important;
+    justify-content: center !important; /* توسيط الزر أفقياً */
+    width: 100% !important;            /* التأكد من أن الحاوية تأخذ العرض الكامل */
+}
+
+
 /* 3. زر التشغيل الأساسي وزر الـ Form مع تأثير الـ Hover والـ Shadows */
 button[kind="secondary"], div.stFormSubmitButton > button {
     background-color: #ff0037 !important;
