@@ -170,6 +170,7 @@ def sign_in_page():
                 cookie_manager.set("logged_in_user", username, max_age=86400)
                 st.session_state.logged_in = True
                 st.session_state.username = username
+                st.session_state.last_activity = time.time()  # 🌟 إضافة سطر لتسجيل وقت الدخول
                 st.success("Connexion réussie ! Redirection en cours...")
                 time.sleep(0.5) # مهلة صغيرة جداً ليتأكد المتصفح من كتابة الكوكيز
                 st.rerun()
@@ -297,6 +298,28 @@ if not st.session_state.get("logged_in", False):
     else:
         sign_up_page()
 else:
+    # 🌟 1. تفعيل التحديث التلقائي بالخلفية كل 10 ثوانٍ لفحص الوقت
+    st_autorefresh(interval=10000, key="auto_logout_check")
+
+    # 🌟 2. التحقق من وقت الخمول (دقيقتان = 120 ثانية)
+    if "last_activity" in st.session_state:
+        elapsed_time = time.time() - st.session_state.last_activity
+        if elapsed_time > 120:  # إذا تجاوز الغياب 120 ثانية
+            cookie_manager.delete("logged_in_user")
+            st.session_state.logged_in = False
+            st.session_state.username = None
+            if "last_activity" in st.session_state:
+                del st.session_state.last_activity
+            st.warning("تم تسجيل الخروج تلقائياً بسبب عدم النشاط.")
+            time.sleep(1)
+            st.rerun()
+    else:
+        # حماية في حال دخل عبر الكوكيز ولم يكن المتغير مسجلاً بعد
+        st.session_state.last_activity = time.time()
+
+    # 🌟 3. تحديث وقت النشاط إلى الوقت الحالي فور حدوث أي تفاعل من المستخدم
+    st.session_state.last_activity = time.time()
+
     # 🌟 [صفحة تطبيقك الرئيسية] 🌟
     st.title(f"مرحباً بك مجدداً، {st.session_state.username} 👋")
     st.success("اتصالك آمن ومستقر ومحمي من الـ Refresh على السيرفر السحابي.")
@@ -308,5 +331,7 @@ else:
         cookie_manager.delete("logged_in_user")
         st.session_state.logged_in = False
         st.session_state.username = None
+        if "last_activity" in st.session_state:
+            del st.session_state.last_activity
         time.sleep(0.2)
         st.rerun()
