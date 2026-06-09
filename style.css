@@ -326,7 +326,7 @@ button[kind="primary"], div.stFormSubmitButton > button {
 
 /* تأثير الـ Hover على الأزرار */
 button[kind="primary"]:hover, div.stFormSubmitButton > button:hover {
-    background-color: #c2002a !important; /* لون أغمق قليلاً عند التحويم */
+    background-color: #0961ad !important; /* لون أغمق قليلاً عند التحويم */
     color: white !important;
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
     transform: scale(1.01) !important; /* تكبير طفيف جداً للزر */
