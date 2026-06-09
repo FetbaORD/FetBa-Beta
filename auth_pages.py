@@ -275,16 +275,22 @@ cookie_manager = get_cookie_manager()
 # قراءة الكوكيز من المتصفح في بداية كل تشغيل للسكربت
 saved_user = cookie_manager.get("logged_in_user")
 
-# التحقق من حالة تسجيل الدخول
+# التحقق من حالة تسجيل الدخول مع إعطاء المتصفح فرصة للاستجابة
 if saved_user:
     st.session_state.logged_in = True
     st.session_state.username = saved_user
-else:
-    if "logged_in" not in st.session_state:
-        st.session_state.logged_in = False
 
-# توجيه واجهة المستخدم
-if not st.session_state.logged_in:
+# توجيه واجهة المستخدم بناءً على الحالة المستقرة
+if not st.session_state.get("logged_in", False):
+    # إذا لم يجد السيرفر الكوكي في أول جزء من الثانية، ننتظر قليلاً ونعيد الفحص قبل طرد المستخدم
+    time.sleep(0.2)
+    saved_user_retry = cookie_manager.get("logged_in_user")
+    
+    if saved_user_retry:
+        st.session_state.logged_in = True
+        st.session_state.username = saved_user_retry
+        st.rerun()
+        
     page = st.sidebar.selectbox("Navigation", ["Connexion", "Inscription"])
     if page == "Connexion":
         sign_in_page()
@@ -297,9 +303,10 @@ else:
     
     st.write("---")
     
-    # زر تسجيل الخروج اليدوي
+    # زر تسجيل الخروج اليدوي النظيف تماماً من الرموز المسببة للمشاكل
     if st.button("Déconnexion (تسجيل الخروج)"):
         cookie_manager.delete("logged_in_user")
         st.session_state.logged_in = False
         st.session_state.username = None
+        time.sleep(0.2)
         st.rerun()
