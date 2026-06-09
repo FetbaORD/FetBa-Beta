@@ -9,3 +9,6 @@ plotly
 datetime
 plotly.express
 matplotlib
+st-theme
+st-sheets-connection
+gspread
