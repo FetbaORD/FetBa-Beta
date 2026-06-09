@@ -167,7 +167,7 @@ def sign_in_page():
         if login_button or (username and password and st.session_state.get("login_pass")):
             if login_user(username, password):
                 # 👈 نقوم بحفظ الكوكيز هنا فوراً داخل المتصفح لضمان ثباتها على الـ Cloud
-                cookie_manager.set(cookie="logged_in_user", value=username, max_age=86400)
+                cookie_manager.set("logged_in_user", username, max_age=86400)
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.success("Connexion réussie ! Redirection en cours...")
