@@ -162,9 +162,10 @@ def sign_in_page():
             login_button = st.button("Se connecter", type="primary")
         
         if login_button or (username and password and st.session_state.login_pass):
-            if login_user(username, password):
+            clean_user_input = username.strip().lower()
+            if login_user(clean_user_input, password):
                 st.session_state.logged_in = True
-                st.session_state.username = username
+                st.session_state.username = clean_user_input
                 st.success("Connexion réussie ! Redirection en cours...")
                 st.rerun()
             else:
