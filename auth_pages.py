@@ -107,7 +107,9 @@ def add_user(username, password, email="", phone=""):
 def login_user(username, password):
     conn = get_sheets_connection()
     try:
-        df = conn.read(worksheet="Sheet1", ttl=0)
+        # استخدام st.spinner لإخفاء النص الافتراضي واستبداله بنص مخصص
+        with st.spinner("Checking information entered..."):
+            df = conn.read(worksheet="Sheet1", ttl=0)
     except Exception as e:
         st.error(f"Erreur de lecture: {e}")
         return False
