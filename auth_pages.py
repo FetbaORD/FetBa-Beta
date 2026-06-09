@@ -3,7 +3,9 @@ import sqlite3
 import re
 import bcrypt
 from streamlit_gsheets import GSheetsConnection
-
+import time
+import extra_streamlit_components as stx
+from streamlit_autorefresh import st_autorefresh
 
 # =========================================================================
 # 2. INTERFACES UTILISATEUR (DESIGN DESIGN AMÉLIORÉ)
@@ -166,6 +168,7 @@ def sign_in_page():
             if login_user(username, password):
                 st.session_state.logged_in = True
                 st.session_state.username = username
+                st.session_state.just_logged_in = True # 👈 علم مؤقت لإبلاغ المتصفح بحفظ الكوكيز
                 st.success("Connexion réussie ! Redirection en cours...")
                 st.rerun()
             else:
@@ -252,3 +255,67 @@ def sign_up_page():
                     st.success("Compte créé avec succès ! Vous pouvez maintenant passer à la page de connexion.")
                 else:
                     st.error("Ce nom d'utilisateur est déjà pris. Veuillez en choisir un autre.")
+
+
+# 1. تشغيل التحديث التلقائي في الخلفية (كل 10 ثوانٍ) لفحص عداد الدقيقة دون تجميد الصفحة
+st_autorefresh(interval=10000, key="auto_logout_check")
+
+# 2. استدعاء مدير الكوكيز الخاص بالمتصفح
+cookie_manager = stx.CookieManager()
+
+# جلب بيانات الجلسة الحالية من متصفح المستخدم
+is_logged_cookie = cookie_manager.get(cookie="logged_in")
+username_cookie = cookie_manager.get(cookie="username")
+login_time_cookie = cookie_manager.get(cookie="login_time")
+
+# مدة صلاحية الجلسة بالثواني (دقيقة واحدة = 60 ثانية)
+TIMEOUT_DURATION = 60
+
+# 3. فحص شرط الطرد بعد دقيقة واحدة
+if is_logged_cookie == "true" and login_time_cookie:
+    elapsed_time = time.time() - float(login_time_cookie)
+    if elapsed_time > TIMEOUT_DURATION:
+        # إذا انتهت الدقيقة، احذف الكوكيز فوراً واطرد المستخدم لصفحة الدخول
+        cookie_manager.delete("logged_in")
+        cookie_manager.delete("username")
+        cookie_manager.delete("login_time")
+        st.warning("تم تسجيل الخروج تلقائياً لانتهاء صلاحية الجلسة (1 دقيقة).")
+        st.rerun()
+
+# 4. توجيه واجهة المستخدم بناءً على الكوكيز المخزنة
+if is_logged_cookie != "true":
+    # إذا لم يكن مسجلاً في الكوكيز، نعرض قائمة الدخول والتسجيل الافتراضية
+    page = st.sidebar.selectbox("Navigation", ["Connexion", "Inscription"])
+    
+    if page == "Connexion":
+        sign_in_page()
+        
+        # إذا نجح الدخول من النموذج وتم تفعيل العلم المؤقت، ننقل البيانات للكوكيز فوراً
+        if st.session_state.get("just_logged_in") == True:
+            cookie_manager.set("logged_in", "true", max_age=3600)
+            cookie_manager.set("username", st.session_state.username, max_age=3600)
+            cookie_manager.set("login_time", str(time.time()), max_age=3600)
+            st.session_state.just_logged_in = False # تصفير العلم المؤقت
+            st.rerun()
+    else:
+        sign_up_page()
+
+else:
+    # 🌟 هنا تضع كود صفحة تطبيقك الرئيسية التي تظهر بعد تسجيل الدخول الناجح 🌟
+    # الكوكيز الآن تحمي المستخدم، لو ضغط Ctrl+R لن يتم تسجيل خروجه إلا بعد دقيقة
+    st.title(f"مرحباً بك مجدداً، {username_cookie} 👋")
+    st.success("أنت متصل الآن بشكل آمن.")
+    
+    # حساب وعرض الوقت المتبقي للمستخدم (اختياري، يمكنك حذفه)
+    time_left = int(TIMEOUT_DURATION - (time.time() - float(login_time_cookie)))
+    if time_left > 0:
+        st.info(f"الوقت المتبقي لانتهاء الجلسة: {time_left} ثانية.")
+
+    # زر تسجيل الخروج اليدوي
+    if st.button("Déconnexion (تسجيل الخروج)"):
+        cookie_manager.delete("logged_in")
+        cookie_manager.delete("username")
+        cookie_manager.delete("login_time")
+        if "logged_in" in st.session_state:
+            st.session_state.logged_in = False
+        st.rerun()
