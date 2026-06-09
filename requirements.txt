@@ -10,4 +10,5 @@ datetime
 plotly.express
 matplotlib
 st-theme
+st-data-profile
 gspread
