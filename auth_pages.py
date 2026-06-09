@@ -104,17 +104,29 @@ def add_user(username, password, email="", phone=""):
 def login_user(username, password):
     conn = get_sheets_connection()
     try:
-        df = conn.read(ttl=0)
-    except Exception:
+        # قراءة الجدول مع تحديد اسم ورقة العمل (تأكد من مطابقة الاسم مثلاً "Sheet1")
+        df = conn.read(worksheet="Sheet1", ttl=0)
+    except Exception as e:
+        st.error(f"Erreur de lecture: {e}")
         return False
         
-    # البحث عن السطر الخاص بالمستخدم
-    user_row = df[df["username"] == username]
+    if df.empty or "username" not in df.columns:
+        return False
+
+    # 🧼 تنظيف البيانات: إزالة المسافات الفارغة من البداية والنهاية وتحويل القيم لنصوص
+    df['username'] = df['username'].astype(str).str.strip()
+    clean_username = str(username).strip()
+    
+    # البحث عن السطر الخاص بالمستخدم بدقة
+    user_row = df[df["username"] == clean_username]
     
     if not user_row.empty:
-        # جلب الهاش المخزن والتحقق من كلمة المرور
+        # جلب الهاش المخزن في العمود الثاني
         hashed_password = user_row.iloc[0]["password"]
+        
+        # استدعاء دالة التحقق المعدلة التي تحول الهاش لـ bytes
         return check_password(password, hashed_password)
+        
     return False
 
 
