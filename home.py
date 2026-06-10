@@ -195,9 +195,8 @@ if not st.session_state.is_activated:
     </div>
     """, unsafe_allow_html=True)
     
-    # جلب أيقونات الـ Material للتحقق من المميزات داخل البطاقات
+# جلب أيقونات الـ Material للتحقق من المميزات داخل البطاقات
     st.markdown('<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">', unsafe_allow_html=True)
-    
     st.markdown("""
     <div class="pricing-container">
         <div class="pricing-card">
@@ -206,6 +205,19 @@ if not st.session_state.is_activated:
                 <div class="plan-name">Mensuel</div>
                 <div class="plan-price">10$<span> / mois</span></div>
                 <div style="height: 25px;"></div>
+                <ul class="plan-features">
+                    <li><i class="material-icons">check_circle</i> Accès complet au système</li>
+                    <li><i class="material-icons">check_circle</i> Support sur 2 appareils</li>
+                    <li><i class="material-icons">check_circle</i> Mises à jour gratuites</li>
+                    <li class="disabled"><i class="material-icons">cancel</i> Support prioritaire 24/7</li>
+                </ul>
+            </div>
+        </div><div class="pricing-card">
+            <div>
+                <span class="plan-icon">🚀</span>
+                <div class="plan-name">6 Mois</div>
+                <div class="plan-price">45$<span> / 6 mois</span></div>
+                <span class="save-badge">Économisez 25%</span>
                 <ul class="plan-features">
                     <li><i class="material-icons">check_circle</i> Accès complet au système</li>
                     <li><i class="material-icons">check_circle</i> Support sur 2 appareils</li>
@@ -225,19 +237,6 @@ if not st.session_state.is_activated:
                     <li><i class="material-icons">check_circle</i> Support sur 2 appareils</li>
                     <li><i class="material-icons">check_circle</i> Mises à jour gratuites</li>
                     <li><i class="material-icons">check_circle</i> Support prioritaire 24/7</li>
-                </ul>
-            </div>
-        </div><div class="pricing-card">
-            <div>
-                <span class="plan-icon">🚀</span>
-                <div class="plan-name">6 Mois</div>
-                <div class="plan-price">45$<span> / 6 mois</span></div>
-                <span class="save-badge">Économisez 25%</span>
-                <ul class="plan-features">
-                    <li><i class="material-icons">check_circle</i> Accès complet au système</li>
-                    <li><i class="material-icons">check_circle</i> Support sur 2 appareils</li>
-                    <li><i class="material-icons">check_circle</i> Mises à jour gratuites</li>
-                    <li class="disabled"><i class="material-icons">cancel</i> Support prioritaire 24/7</li>
                 </ul>
             </div>
         </div>
