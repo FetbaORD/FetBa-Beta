@@ -120,6 +120,10 @@ st.markdown('</div>', unsafe_allow_html=True)
 if submit_button:
     if not serial_number:
         st.error("Veuillez d'abord saisir votre numéro de série !")
+
+    elif not email:  # التحقق من إدخال الإيميل
+        st.error("Veuillez saisir votre adresse e-mail !")
+    
     # استبدل جزء التحقق وجزء تجهيز الـ files والإرسال القديم بهذا:
     elif not screenshots:  # التحقق من أن القائمة ليست فارغة
         st.error("Veuillez téléverser au moins une preuve de paiement (Capture d'écran) pour valider votre demande !")
