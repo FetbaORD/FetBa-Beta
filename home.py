@@ -182,7 +182,7 @@ if not st.session_state.is_activated:
             st.caption("Pour toute urgence, contactez : Markandreas03@gmail.com")
 
 
-    # =========================================================
+# =========================================================
     # إشهار صفحة خطط الأسعار (Pricing) أسفل نافذة التفعيل والطلب
     # =========================================================
     st.markdown("---")
@@ -205,16 +205,15 @@ if not st.session_state.is_activated:
                 <span class="plan-icon">⚡</span>
                 <div class="plan-name">Mensuel</div>
                 <div class="plan-price">10$<span> / mois</span></div>
-                <div style="height: 25px;"></div> <ul class="plan-features">
+                <div style="height: 25px;"></div>
+                <ul class="plan-features">
                     <li><i class="material-icons">check_circle</i> Accès complet au système</li>
                     <li><i class="material-icons">check_circle</i> Support sur 2 appareils</li>
                     <li><i class="material-icons">check_circle</i> Mises à jour gratuites</li>
                     <li class="disabled"><i class="material-icons">cancel</i> Support prioritaire 24/7</li>
                 </ul>
             </div>
-        </div>
-        
-        <div class="pricing-card popular">
+        </div><div class="pricing-card popular">
             <span class="popular-badge">Plus Populaire</span>
             <div>
                 <span class="plan-icon">👑</span>
@@ -228,9 +227,7 @@ if not st.session_state.is_activated:
                     <li><i class="material-icons">check_circle</i> Support prioritaire 24/7</li>
                 </ul>
             </div>
-        </div>
-        
-        <div class="pricing-card">
+        </div><div class="pricing-card">
             <div>
                 <span class="plan-icon">🚀</span>
                 <div class="plan-name">6 Mois</div>
@@ -255,11 +252,6 @@ if not st.session_state.is_activated:
             show_contact_dialog()
 
     st.stop() # إيقاف الكود هنا لحماية بقية التطبيق الداخلي
-
-
-
-
-
 # =========================================================
 # المحتوى الأصلي (يظهر فقط بعد التفعيل الناجح)
 # =========================================================
