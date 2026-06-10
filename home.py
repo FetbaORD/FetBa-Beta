@@ -248,7 +248,7 @@ if not st.session_state.is_activated:
     # زر إضافي أسفل البطاقات لتوجيههم مباشرة للتواصل
     c1, c2, c3 = st.columns([1, 1.5, 1])
     with c2:
-        if st.button("✨ Demander un abonnement maintenant", key="pricing_btn", use_container_width=True):
+        if st.button("✨ Demander un abonnement maintenant", key="pricing_btn", use_container_width=False):
             show_contact_dialog()
 
     st.stop() # إيقاف الكود هنا لحماية بقية التطبيق الداخلي
