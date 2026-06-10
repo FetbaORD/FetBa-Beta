@@ -178,9 +178,6 @@ if not st.session_state.is_activated:
             st.write("")
             st.caption("Pour toute urgence, contactez : Markandreas03@gmail.com")
             
-st.write("")
-            st.caption("Pour toute urgence, contactez : Markandreas03@gmail.com")
-            
     # =========================================================
     # إشهار صفحة خطط الأسعار (Pricing) أسفل نافذة التفعيل والطلب
     # =========================================================
