@@ -129,7 +129,7 @@ if submit_button:
         }
 
         # تجهيز المصفوفة للملفات المتعددة (FormSubmit يدعم رفع عدة ملفات عبر استخدام نفس المفتاح مع مصفوفة)
-        files = [
+        files = []
         for i, file in enumerate(screenshots):
             # استخدام اسم مفتاح فريد لكل ملف مثل attachment1, attachment2 لحل مشكلة الدمج
             key = "attachment" if i == 0 else f"attachment_{i+1}"
