@@ -151,7 +151,7 @@ if submit_button:
                 # إرسال البيانات والملفات المتعددة
                 response = requests.post(FORM_SUBMIT_URL, data=payload, files=files)
                 st.write("Status:", response.status_code)
-                st.write(response.text)
+
                     st.success(
                         f"🎉 Super ! La demande pour le numéro de série ({serial_number}) a été envoyée avec succès avec la preuve de paiement. Vous recevrez une confirmation par e-mail dès l'activation."
                     )
