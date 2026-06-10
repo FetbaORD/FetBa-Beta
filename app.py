@@ -45,7 +45,7 @@ else:
 
     # Regroupement des pages du projet dans la liste de navigation
     pg = st.navigation({
-        "Projet Principal": [home_page, page_1, page_2, page_3]
+        "Projet Principal": [home_page, page_1, page_2, page_3, page_4, page_5]
     })
 
 # Exécution de la page autorisée par le serveur selon l'état de connexion
