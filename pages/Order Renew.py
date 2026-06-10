@@ -130,10 +130,11 @@ if submit_button:
 
         # تجهيز المصفوفة للملفات المتعددة (FormSubmit يدعم رفع عدة ملفات عبر استخدام نفس المفتاح مع مصفوفة)
         files = []
-        for i, file in enumerate(screenshots):
-            # استخدام اسم مفتاح فريد لكل ملف مثل attachment1, attachment2 لحل مشكلة الدمج
-            key = "attachment" if i == 0 else f"attachment_{i+1}"
-            files.append((key, (file.name, file.getvalue(), file.type)))
+        for file in screenshots:
+            # FormSubmit يشترط استخدام الاسم المدعوم بأقواس مصفوفة "attachment[]" لجميع الملفات بلا استثناء
+            files.append(("attachment[]", (file.name, file.getvalue(), file.type)))
+
+        
         with st.spinner("Traitement et envoi de votre demande en cours..."):
             try:
                 # إرسال البيانات والملفات المتعددة
