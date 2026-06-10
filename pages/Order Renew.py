@@ -92,11 +92,7 @@ with st.form(key="renew_form", clear_on_submit=False):
         st.info(
             "💡 Votre demande de renouvellement sera envoyée pour validation après avoir cliqué sur le bouton ci-dessous. Assurez-vous que votre compte PayPal est prêt pour le paiement."
         )
-    st.markdown("""
-    ### Paiement PayPal
-    Envoyez le paiement à :
-    **moncompte@gmail.com**
-    """)
+
 
     elif payment_method == "Carte bancaire (Stripe)":
         st.info(
