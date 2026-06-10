@@ -117,6 +117,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 
 # --- معالجة البيانات وإرسالها عند الضغط على الزر ---
+# --- معالجة البيانات وإرسالها عند الضغط على الزر ---
 if submit_button:
     if not serial_number:
         st.error("Veuillez d'abord saisir votre numéro de série !")
@@ -124,38 +125,39 @@ if submit_button:
     elif not email:  # التحقق من إدخال الإيميل
         st.error("Veuillez saisir votre adresse e-mail !")
     
-    # استبدل جزء التحقق وجزء تجهيز الـ files والإرسال القديم بهذا:
-    elif not screenshots:  # التحقق من أن القائمة ليست فارغة
+    elif not screenshots:  # التحقق من أن قائمة الملفات ليست فارغة
         st.error("Veuillez téléverser au moins une preuve de paiement (Capture d'écran) pour valider votre demande !")
+    
     else:
-        # تجهيز الرسالة
+        # 1. تجهيز الرسالة والحقول النصية
         payload = {
             "Numéro de série": serial_number,
             "Durée du renouvellement": duration,
             "Prix": price,
             "Méthode de paiement": payment_method,
-            "_captcha": "false",
-            "_subject": f"Nouvelle demande de renouvellement : {serial_number}",
+            "_captcha": "false",  # إيقاف كابتشا المزعجة للمستخدمين
+            "_subject": f"🚀 Nouvelle demande de renouvellement : {serial_number}",
             "_replyto": email
         }
 
-        # تجهيز المصفوفة للملفات المتعددة (FormSubmit يدعم رفع عدة ملفات عبر استخدام نفس المفتاح مع مصفوفة)
+        # 2. تجهيز المصفوفة للملفات المتعددة بالطريقة المتوافقة تماماً مع بروتوكولات HTTP
         files = []
         for file in screenshots:
-            # FormSubmit يشترط استخدام الاسم المدعوم بأقواس مصفوفة "attachment[]" لجميع الملفات بلا استثناء
+            # استخدام الهيكلة القياسية: (اسم الحقل، (اسم الملف، المحتوى، نوع الملف))
             files.append(("attachment[]", (file.name, file.getvalue(), file.type)))
-
         
         with st.spinner("Traitement et envoi de votre demande en cours..."):
             try:
-                # إرسال البيانات والملفات المتعددة
+                # إرسال البيانات والملفات المتعددة عبر طلب POST واحد
                 response = requests.post(FORM_SUBMIT_URL, data=payload, files=files)
+                
                 if response.status_code == 200:
-
                     st.success(
-                        f"🎉 Super ! La demande pour le numéro de série ({serial_number}) a été envoyée avec succès avec la preuve de paiement. Vous recevrez une confirmation par e-mail dès l'activation."
+                        f"🎉 Super ! La demande pour le numéro de série ({serial_number}) a été envoyée avec succès. "
+                        "Veuillez vérifier votre boîte de réception (et vos spams) pour confirmation."
                     )
                 else:
-                    st.error("Une erreur est survenue lors de l'envoi. Veuillez réessayer.")
+                    st.error(f"Erreur du serveur FormSubmit (Code: {response.status_code}). Veuillez réessayer.")
+            
             except Exception as e:
-                st.error("Échec de la connexion au serveur d'envoi. Veuillez vérifier votre connexion Internet.")
+                st.error(f"Échec de la connexion au serveur d'envoi. Erreur : {str(e)}")
