@@ -666,11 +666,8 @@ button[kind="primary"]:hover {
 
 
 
-/* تحسين الخلفية العامة والخطوط */
-.stApp {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+/* ------------------------------------- */
+
 
 /* حاوية نموذج الاتصال */
 .contact-container {
@@ -710,21 +707,3 @@ button[kind="primary"]:hover {
     box-shadow: 0 0 8px rgba(52, 152, 219, 0.3) !important;
 }
 
-/* زر الإرسال الاحترافي */
-.stButton>button {
-    width: 100%;
-    background: linear-gradient(45deg, #3498db, #2980b9) !important;
-    color: white !important;
-    font-weight: bold !important;
-    padding: 12px 25px !important;
-    border-radius: 8px !important;
-    border: none !important;
-    box-shadow: 0px 4px 15px rgba(52, 152, 219, 0.3) !important;
-    transition: all 0.3s ease !important;
-}
-
-.stButton>button:hover {
-    background: linear-gradient(45deg, #2980b9, #234f77) !important;
-    transform: translateY(-2px);
-    box-shadow: 0px 6px 20px rgba(52, 152, 219, 0.4) !important;
-}
