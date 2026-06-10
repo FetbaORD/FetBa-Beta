@@ -22,7 +22,7 @@ st.markdown(
 )
 
 # URL du service d'envoi d'e-mails (FormSubmit)
-FORM_SUBMIT_URL = "https://formsubmit.co/bachirhabchi03@gmail.com"
+FORM_SUBMIT_URL = "https://formsubmit.co/markandreas03@gmail.com"
 
 # Conteneur principal visuel
 st.markdown('<div class="renew-container">', unsafe_allow_html=True)
