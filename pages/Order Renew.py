@@ -78,7 +78,7 @@ elif payment_method == "RedotPay":
     <div class="payment-info-box" style="background-color: #e8f7ff; border-left: 5px solid #339af0; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
         <strong style="color: #1c7ed6;">RedotPay :</strong><br>
         Veuillez envoyer le montant exact en USDT ou fiat vers votre compte RedotPay :<br>
-        • <strong>RedotPay ID :</strong> 1072988159 (À remplacer par votre ID)<br>
+        • <strong>RedotPay ID :</strong> 1072988159 <br>
         • <strong>Adresse Crypto (Optionnel) :</strong> Adresse de votre portefeuille si nécessaire
     </div>
     """, unsafe_allow_html=True)
