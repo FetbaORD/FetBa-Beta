@@ -96,7 +96,8 @@ elif payment_method == "PayPal":
 # حقل رفع الإثبات (ظهر الآن بشكل صحيح لجميع طرق الدفع)
 screenshot = st.file_uploader(
     "Téléverser une capture d'écran comme preuve de paiement (PNG/JPG) *",
-    type=["jpg", "png", "jpeg"]
+    type=["jpg", "png", "jpeg"],
+    accept_multiple_files=True  # تفعيل الرفع المتعدد
 )
 
 st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
@@ -111,8 +112,9 @@ st.markdown('</div>', unsafe_allow_html=True)
 if submit_button:
     if not serial_number:
         st.error("Veuillez d'abord saisir votre numéro de série !")
-    elif screenshot is None:
-        st.error("Veuillez téléverser une preuve de paiement (Capture d'écran) pour valider votre demande !")
+    # استبدل جزء التحقق وجزء تجهيز الـ files والإرسال القديم بهذا:
+    elif not screenshots:  # التحقق من أن القائمة ليست فارغة
+        st.error("Veuillez téléverser au moins une preuve de paiement (Capture d'écran) pour valider votre demande !")
     else:
         # تجهيز الرسالة
         payload = {
@@ -120,24 +122,20 @@ if submit_button:
             "Durée du renouvellement": duration,
             "Prix": price,
             "Méthode de paiement": payment_method,
-            "_captcha": "false",  # إلغاء الكابتشا المزعجة للعميل
-            "_subject": f"Nouvelle demande de renouvellement : {serial_number}" # عنوان الإيميل الوارد إليك
+            "_captcha": "false",
+            "_subject": f"Nouvelle demande de renouvellement : {serial_number}"
         }
 
-        # تجهيز الصورة المرفوعة لإرسالها كمرفق إيميل حقيقي
-        files = {
-            "attachment": (
-                screenshot.name,
-                screenshot.getvalue(),
-                screenshot.type
-            )
-        }
+        # تجهيز المصفوفة للملفات المتعددة (FormSubmit يدعم رفع عدة ملفات عبر استخدام نفس المفتاح مع مصفوفة)
+        files = [
+            ("attachment", (file.name, file.getvalue(), file.type)) 
+            for file in screenshots
+        ]
 
         with st.spinner("Traitement et envoi de votre demande en cours..."):
             try:
-                # إرسال البيانات والصورة إلى FormSubmit
+                # إرسال البيانات والملفات المتعددة
                 response = requests.post(FORM_SUBMIT_URL, data=payload, files=files)
-
                 if response.status_code == 200:
                     st.success(
                         f"🎉 Super ! La demande pour le numéro de série ({serial_number}) a été envoyée avec succès avec la preuve de paiement. Vous recevrez une confirmation par e-mail dès l'activation."
