@@ -231,7 +231,7 @@ if not st.session_state.is_activated:
         </div><div class="pricing-card popular">
             <span class="popular-badge">Plus Populaire</span>
             <div>
-                <span class="plan-icon">👑</span>
+                <span class="material-icons plan-icon" style="color: #1e3a8a;">military_tech</span>
                 <div class="plan-name">Annuel</div>
                 <div class="plan-price">80$<span> / an</span></div>
                 <span class="save-badge">Économisez 33%</span>
@@ -250,7 +250,7 @@ if not st.session_state.is_activated:
     # زر إضافي أسفل البطاقات لتوجيههم مباشرة للتواصل
     c1, c2, c3 = st.columns([1, 1.5, 1])
     with c2:
-        if st.button("✨ Demander un abonnement maintenant", key="pricing_btn", use_container_width=False):
+        if st.button("Demander un abonnement maintenant", icon=":material/shopping_bag:", key="pricing_btn", use_container_width=True):
             show_contact_dialog()
 
     st.stop() # إيقاف الكود هنا لحماية بقية التطبيق الداخلي
