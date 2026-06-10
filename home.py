@@ -3,9 +3,7 @@ from datetime import datetime
 import pandas as pd
 from streamlit_autorefresh import st_autorefresh 
 
-# تأكد من وجود هذا السطر في أعلى ملف التطبيق لقراءة الـ CSS
-with open("style.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
     
 # 1. إعدادات الصفحة
 st.set_page_config(
@@ -13,6 +11,10 @@ st.set_page_config(
     layout="wide",
     page_icon=":material/factory:"
 )
+
+# تأكد من وجود هذا السطر في أعلى ملف التطبيق لقراءة الـ CSS
+with open("style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # 2. إخفاء القائمة الجانبية برمجياً إذا لم يتم التفعيل
 if "is_activated" not in st.session_state or not st.session_state.is_activated:
@@ -26,6 +28,7 @@ if "is_activated" not in st.session_state or not st.session_state.is_activated:
 # ----------------------------------------------------------------
 # 3. جلب قاعدة بيانات المفاتيح والتواريخ من Google Sheets أونلاين
 # ----------------------------------------------------------------
+@st.cache_data(ttl=600) # 👈 تخزين مؤقت للبيانات لمدة 10 دقائق (600 ثانية) لتوفير الإنترنت وسرعة الأداء
 def load_licenses_from_sheets():
     try:
         sheet_url = st.secrets["public_gsheet_url"]
