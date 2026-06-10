@@ -165,7 +165,8 @@ def sign_in_page():
         with col_center:
             login_button = st.button("Se connecter", type="primary")
         
-        if login_button or (username and password and st.session_state.login_pass):
+        clean_user_input = username.strip().lower() # هذا السطر موجود لديك بالفعل، تأكد أنه يسبق الشرط
+        if login_button or (clean_user_input and password and st.session_state.login_pass):
             clean_user_input = username.strip().lower()
             if login_user(clean_user_input, password):
                 st.session_state.logged_in = True
@@ -193,7 +194,7 @@ def sign_up_page():
         
         # 1. حقل اسم المستخدم
         new_username = st.text_input("Choisissez un nom d'utilisateur *", key="reg_user", placeholder="Ex: admin123")
-        
+        clean_new_username = new_username.strip().lower() # 👈 السطر الجديد
         # 2. حقل البريد الإلكتروني مع التحقق الملون
         email = st.text_input("Adresse e-mail *", key="reg_email", placeholder="Ex: exemple@mail.com")
         is_email_valid = False
@@ -234,10 +235,10 @@ def sign_up_page():
             signup_button = st.button("Créer le compte", type="primary")
         
         # 🌟 تفعيل زر Enter أو الضغط على الزر مع التحقق الشامل
-        if signup_button or (new_username and email and phone and new_password and st.session_state.reg_pass_conf):
+        if signup_button or (clean_new_username and email and phone and new_password and st.session_state.reg_pass_conf):
             
             # التأكد أولاً من ملء كافة الحقول الأساسية
-            if not new_username or not email or not phone or not new_password or not confirm_password:
+            if not clean_new_username or not email or not phone or not new_password or not confirm_password:
                 st.warning("Veuillez remplir tous les champs obligatoires.")
             
             # التأكد من أن جميع المدخلات تجاوزت الفحص بنجاح (باللون الأخضر)
@@ -252,7 +253,7 @@ def sign_up_page():
             
             else:
                 # إذا كان كل شيء ممتلئاً وصحيحاً يتم التسجيل
-                if add_user(new_username, new_password, email, phone):
+                if add_user(clean_new_username, new_password, email, phone):
                     st.success("Compte créé avec succès ! Vous pouvez maintenant passer à la page de connexion.")
                 else:
                     st.error("Ce nom d'utilisateur est déjà pris. Veuillez en choisir un autre.")
