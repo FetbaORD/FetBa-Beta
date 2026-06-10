@@ -125,9 +125,7 @@ if submit_button:
     elif not email:  # التحقق من إدخال الإيميل
         st.error("Veuillez saisir votre adresse e-mail !")
     
-    elif not screenshots:  # التحقق من أن قائمة الملفات ليست فارغة
-        st.error("Veuillez téléverser au moins une preuve de paiement (Capture d'écran) pour valider votre demande !")
-    
+
     else:
         # 1. تجهيز الرسالة والحقول النصية
         payload = {
