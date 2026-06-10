@@ -33,6 +33,8 @@ else:
     page_1 = st.Page("pages/Matrice_Generator.py", title="Générateur de Matrice", icon=":material/grid_on:")
     page_2 = st.Page("pages/Monitoring.py", title="Surveillance", icon=":material/monitoring:")
     page_3 = st.Page("pages/Ordonancement.py", title="Ordonnancement", icon=":material/view_timeline:")
+    page_4 = st.Page("pages/Contact Us.py title="Ordonnancement", icon=":material/view_timeline:")
+    page_5 = st.Page("pages/Order Renew.py", title="Ordonnancement", icon=":material/view_timeline:")
 
     # 💡 نصيحة ذكية: قمنا بنقل أزرار ومعلومات المستخدم إلى داخل الـ Sidebar هنا
     # حتى تظهر دائماً في أسفل أو أعلى القائمة الجانبية بشكل أنيق وقبل تشغيل الصفحة
