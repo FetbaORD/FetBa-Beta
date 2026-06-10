@@ -137,7 +137,7 @@ if submit_button:
                 # 1. إعدادات السيرفر والإيميل (ضع بياناتك هنا)
                 SENDER_EMAIL = "markandreas03@gmail.com"
                 # ضع هنا الـ 16 حرفاً التي حصلت عليها من جوجل (بدون مسافات)
-                SENDER_PASSWORD = "xxxx xxxx xxxx xxxx" 
+                SENDER_PASSWORD = "lwks dykm swqe sexf" 
                 RECEIVER_EMAIL = "markandreas03@gmail.com"
 
                 # 2. إنشاء هيكل الرسالة الإلكترونية
