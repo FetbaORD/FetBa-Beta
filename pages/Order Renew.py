@@ -35,6 +35,13 @@ serial_number = st.text_input(
     placeholder="Exemple : XXXX-XXXX-XXXX-XXXX"
 )
 
+# ضعه أسفل حقل Numéro de série مباشرة:
+email = st.text_input(
+    "Votre adresse e-mail *",
+    placeholder="Exemple : client@gmail.com"
+)
+
+
 # 2. Durée du renouvellement (تعديل: إضافة التوزيع الأفقي)
 duration = st.radio(
     "Choisissez la durée du renouvellement *",
