@@ -178,7 +178,86 @@ if not st.session_state.is_activated:
             st.write("")
             st.caption("Pour toute urgence, contactez : Markandreas03@gmail.com")
             
-    st.stop() # إيقاف الكود هنا فلا يظهر المحتوى الأصلي إلا بعد التفعيل
+st.write("")
+            st.caption("Pour toute urgence, contactez : Markandreas03@gmail.com")
+            
+    # =========================================================
+    # إشهار صفحة خطط الأسعار (Pricing) أسفل نافذة التفعيل والطلب
+    # =========================================================
+    st.markdown("---")
+    st.markdown("""
+    <div class="pricing-header">
+        <h2 style='text-align: center; color: #1E3A8A;'>💎 Plans d'abonnement flexibles</h2>
+        <p style='text-align: center; color: #666; max-width: 600px; margin: 0 auto;'>
+            Choisissez le forfait qui correspond le mieux à vos besoins industriels. Obtenez une clé instantanée après l'achat.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # جلب أيقونات الـ Material للتحقق من المميزات داخل البطاقات
+    st.markdown('<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">', unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div class="pricing-container">
+        <div class="pricing-card">
+            <div>
+                <span class="plan-icon">⚡</span>
+                <div class="plan-name">Mensuel</div>
+                <div class="plan-price">10$<span> / mois</span></div>
+                <div style="height: 25px;"></div> <ul class="plan-features">
+                    <li><i class="material-icons">check_circle</i> Accès complet au système</li>
+                    <li><i class="material-icons">check_circle</i> Support sur 2 appareils</li>
+                    <li><i class="material-icons">check_circle</i> Mises à jour gratuites</li>
+                    <li class="disabled"><i class="material-icons">cancel</i> Support prioritaire 24/7</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="pricing-card popular">
+            <span class="popular-badge">Plus Populaire</span>
+            <div>
+                <span class="plan-icon">👑</span>
+                <div class="plan-name">Annuel</div>
+                <div class="plan-price">80$<span> / an</span></div>
+                <span class="save-badge">Économisez 33%</span>
+                <ul class="plan-features">
+                    <li><i class="material-icons">check_circle</i> Accès complet au système</li>
+                    <li><i class="material-icons">check_circle</i> Support sur 2 appareils</li>
+                    <li><i class="material-icons">check_circle</i> Mises à jour gratuites</li>
+                    <li><i class="material-icons">check_circle</i> Support prioritaire 24/7</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="pricing-card">
+            <div>
+                <span class="plan-icon">🚀</span>
+                <div class="plan-name">6 Mois</div>
+                <div class="plan-price">45$<span> / 6 mois</span></div>
+                <span class="save-badge">Économisez 25%</span>
+                <ul class="plan-features">
+                    <li><i class="material-icons">check_circle</i> Accès complet au système</li>
+                    <li><i class="material-icons">check_circle</i> Support sur 2 appareils</li>
+                    <li><i class="material-icons">check_circle</i> Mises à jour gratuites</li>
+                    <li class="disabled"><i class="material-icons">cancel</i> Support prioritaire 24/7</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    """, unsafe_allow_html=True)
+    
+    # زر إضافي أسفل البطاقات لتوجيههم مباشرة للتواصل
+    c1, c2, c3 = st.columns([1, 1.5, 1])
+    with c2:
+        if st.button("✨ Demander un abonnement maintenant", key="pricing_btn", use_container_width=True):
+            show_contact_dialog()
+
+    st.stop() # إيقاف الكود هنا لحماية بقية التطبيق الداخلي
+
+
+
+
 
 # =========================================================
 # المحتوى الأصلي (يظهر فقط بعد التفعيل الناجح)
