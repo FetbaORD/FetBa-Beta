@@ -217,7 +217,7 @@ if not st.session_state.is_activated:
             </div>
         </div><div class="pricing-card">
             <div>
-                <span class="plan-icon">🚀</span>
+                <span class="material-icons plan-icon" style="color: #3b82f6;">speed</span>
                 <div class="plan-name">6 Mois</div>
                 <div class="plan-price">45$<span> / 6 mois</span></div>
                 <span class="save-badge">Économisez 25%</span>
