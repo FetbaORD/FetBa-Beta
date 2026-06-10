@@ -22,7 +22,7 @@ st.markdown(
 )
 
 # URL du service d'envoi d'e-mails (FormSubmit)
-FORM_SUBMIT_URL = "https://formsubmit.co/markandreas03@gmail.com"
+FORM_SUBMIT_URL = "https://formsubmit.co/bachirhabchi03@gmail.com"
 
 # Conteneur principal visuel
 st.markdown('<div class="renew-container">', unsafe_allow_html=True)
@@ -68,7 +68,7 @@ if payment_method == "BaridiMob":
     <div class="payment-info-box" style="background-color: #fff4e6; border-left: 5px solid #ff922b; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
         <strong style="color: #d9480f;">CCP / BaridiMob :</strong><br>
         Veuillez effectuer le virement CCP ou via l'application BaridiMob vers :<br>
-        • <strong>RIP :</strong> 00799999000123456789 (À remplacer par votre RIP)<br>
+        • <strong>RIP :</strong> 00799999002904112209 (À remplacer par votre RIP)<br>
         • <strong>Nom :</strong> Votre Nom Complet
     </div>
     """, unsafe_allow_html=True)
