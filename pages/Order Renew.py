@@ -94,7 +94,7 @@ elif payment_method == "PayPal":
 
 
 # حقل رفع الإثبات (ظهر الآن بشكل صحيح لجميع طرق الدفع)
-screenshot = st.file_uploader(
+screenshots = st.file_uploader(
     "Téléverser une capture d'écran comme preuve de paiement (PNG/JPG) *",
     type=["jpg", "png", "jpeg"],
     accept_multiple_files=True  # تفعيل الرفع المتعدد
