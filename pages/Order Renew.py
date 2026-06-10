@@ -134,7 +134,6 @@ if submit_button:
             # استخدام اسم مفتاح فريد لكل ملف مثل attachment1, attachment2 لحل مشكلة الدمج
             key = "attachment" if i == 0 else f"attachment_{i+1}"
             files.append((key, (file.name, file.getvalue(), file.type)))
-
         with st.spinner("Traitement et envoi de votre demande en cours..."):
             try:
                 # إرسال البيانات والملفات المتعددة
