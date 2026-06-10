@@ -204,7 +204,7 @@ if not st.session_state.is_activated:
     <div class="pricing-container">
         <div class="pricing-card">
             <div>
-                <span class="plan-icon">⚡</span>
+                <span class="material-icons plan-icon" style="color: #f59e0b;">bolt</span>
                 <div class="plan-name">Mensuel</div>
                 <div class="plan-price">10$<span> / mois</span></div>
                 <div style="height: 25px;"></div>
