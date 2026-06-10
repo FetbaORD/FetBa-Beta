@@ -188,8 +188,11 @@ if not st.session_state.is_activated:
     st.markdown("---")
     st.markdown("""
     <div class="pricing-header">
-        <h2 style='text-align: center; color: #1E3A8A;'>💎 Plans d'abonnement flexibles</h2>
-        <p style='text-align: center; color: #666; max-width: 600px; margin: 0 auto;'>
+        <h2 style='text-align: center; color: #1E3A8A; display: flex; align-items: center; justify-content: center; gap: 10px;'>
+			<span class="material-icons" style="font-size: 32px; color: #1E3A8A;">workspace_premium</span>
+			Plans d'abonnement flexibles
+        </h2>
+		<p style='text-align: center; color: #666; max-width: 600px; margin: 0 auto;'>
             Choisissez le forfait qui correspond le mieux à vos besoins industriels. Obtenez une clé instantanée après l'achat.
         </p>
     </div>
