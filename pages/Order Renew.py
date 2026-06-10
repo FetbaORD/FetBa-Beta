@@ -76,7 +76,7 @@ if payment_method == "BaridiMob":
     <div class="payment-info-box" style="background-color: #fff4e6; border-left: 5px solid #ff922b; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
         <strong style="color: #d9480f;">CCP / BaridiMob :</strong><br>
         Veuillez effectuer le virement CCP ou via l'application BaridiMob vers :<br>
-        • <strong>RIP :</strong> 00799999002904112209 (À remplacer par votre RIP)<br>
+        • <strong>RIP :</strong> 00799999002904112209<br>
         • <strong>Nom :</strong> Mohamed Bachir Habchi
     </div>
     """, unsafe_allow_html=True)
