@@ -124,8 +124,8 @@ if submit_button:
             "Prix": price,
             "Méthode de paiement": payment_method,
             "_captcha": "false",
-            "_subject": f"Nouvelle demande de renouvellement : {serial_number}", # تأكد من وجود هذه الفاصلة هنا
-            "_replyto": "customer@example.com"  # هامة جداً لتفادي فلاتر الحظر البريدي للمرفقات
+            "_subject": f"Nouvelle demande de renouvellement : {serial_number}",
+            "_replyto": "customer@example.com"
         }
 
         # تجهيز المصفوفة للملفات المتعددة (FormSubmit يدعم رفع عدة ملفات عبر استخدام نفس المفتاح مع مصفوفة)
