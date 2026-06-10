@@ -123,44 +123,56 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 
 # --- معالجة البيانات وإرسالها عند الضغط على الزر ---
+# --- معالجة البيانات وإرسالها عبر SMTP ---
 if submit_button:
     if not serial_number:
         st.error("Veuillez d'abord saisir votre numéro de série !")
-
-    elif not email:  # التحقق من إدخال الإيميل
+    elif not email:
         st.error("Veuillez saisir votre adresse e-mail !")
-    
-    # استبدل جزء التحقق وجزء تجهيز الـ files والإرسال القديم بهذا:
-    elif not screenshots:  # التحقق من أن القائمة ليست فارغة
-        st.error("Veuillez téléverser au moins une preuve de paiement (Capture d'écran) pour valider votre demande !")
+    elif not screenshots:
+        st.error("Veuillez téléverser au moins une preuve de paiement !")
     else:
-        # تجهيز الرسالة
-        payload = {
-            "Numéro de série": serial_number,
-            "Durée du renouvellement": duration,
-            "Prix": price,
-            "Méthode de paiement": payment_method,
-            "_captcha": "false",
-            "_subject": f"Nouvelle demande de renouvellement : {serial_number}",
-            "_replyto": email
-        }
-
-        # تجهيز المصفوفة للملفات المتعددة (FormSubmit يدعم رفع عدة ملفات عبر استخدام نفس المفتاح مع مصفوفة)
-        files = []
-        for file in screenshots:
-            # FormSubmit يشترط استخدام الاسم المدعوم بأقواس مصفوفة "attachment[]" لجميع الملفات بلا استثناء
-            files.append(("attachment[]", (file.name, file.getvalue(), file.type)))
-
-        
-        with st.spinner("Traitement et envoi de votre demande en cours..."):
+        with st.spinner("Envoi de votre demande en cours..."):
             try:
-                # إرسال البيانات والملفات المتعددة
-                response = requests.post(FORM_SUBMIT_URL, data=payload, files=files)
-                if response.status_code == 200:
-                    st.success(
-                        f"🎉 Super ! La demande pour le numéro de série ({serial_number}) a été envoyée avec succès avec la preuve de paiement. Vous recevrez une confirmation par e-mail dès l'activation."
-                    )
-                else:
-                    st.error("Une erreur est survenue lors de l'envoi. Veuillez réessayer.")
+                # 1. إعدادات السيرفر والإيميل (ضع بياناتك هنا)
+                SENDER_EMAIL = "markandreas03@gmail.com"
+                # ضع هنا الـ 16 حرفاً التي حصلت عليها من جوجل (بدون مسافات)
+                SENDER_PASSWORD = "xxxx xxxx xxxx xxxx" 
+                RECEIVER_EMAIL = "markandreas03@gmail.com"
+
+                # 2. إنشاء هيكل الرسالة الإلكترونية
+                msg = MIMEMultipart()
+                msg['From'] = SENDER_EMAIL
+                msg['To'] = RECEIVER_EMAIL
+                msg['Subject'] = f"🚀 Nouvelle demande de renouvellement : {serial_number}"
+
+                # نص الرسالة (HTML لتبدو منظمة)
+                body = f"""
+                <h3>Nouvelle Demande de Renouvellement</h3>
+                <p><b>Numéro de série :</b> {serial_number}</p>
+                <p><b>Email Client :</b> {email}</p>
+                <p><b>Durée :</b> {duration}</p>
+                <p><b>Montant :</b> {price}</p>
+                <p><b>Méthode de paiement :</b> {payment_method}</p>
+                """
+                msg.attach(MIMEText(body, 'html', 'utf-8'))
+
+                # 3. إرفاق الصور المرفوعة (الملفات المتعددة)
+                for file in screenshots:
+                    part = MIMEBase('application', "octet-stream")
+                    part.set_payload(file.getvalue())
+                    encoders.encode_base64(part)
+                    part.add_header('Content-Disposition', f'attachment; filename="{file.name}"')
+                    msg.attach(part)
+
+                # 4. الاتصال بسيرفر Gmail والإرسال الآمن
+                server = smtplib.SMTP('smtp.gmail.com', 587)
+                server.starttls()  # تشفير الاتصال
+                server.login(SENDER_EMAIL, SENDER_PASSWORD)
+                server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, msg.as_string())
+                server.quit()
+
+                st.success(f"🎉 Super ! La demande pour {serial_number} a été envoyée avec succès directement à votre boîte mail.")
+
             except Exception as e:
-                st.error("Échec de la connexion au serveur d'envoi. Veuillez vérifier votre connexion Internet.")
+                st.error(f"Une erreur est survenue lors de l'envoi direct : {str(e)}")
