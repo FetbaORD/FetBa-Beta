@@ -125,13 +125,15 @@ if submit_button:
             "Méthode de paiement": payment_method,
             "_captcha": "false",
             "_subject": f"Nouvelle demande de renouvellement : {serial_number}"
+            "_replyto": "customer@example.com"  # هامة جداً لتفادي فلاتر الحظر البريدي للمرفقات
         }
 
         # تجهيز المصفوفة للملفات المتعددة (FormSubmit يدعم رفع عدة ملفات عبر استخدام نفس المفتاح مع مصفوفة)
         files = [
-            ("attachment[]", (file.name, file.getvalue(), file.type))
-            for file in screenshots
-        ]
+        for i, file in enumerate(screenshots):
+            # استخدام اسم مفتاح فريد لكل ملف مثل attachment1, attachment2 لحل مشكلة الدمج
+            key = "attachment" if i == 0 else f"attachment_{i+1}"
+            files.append((key, (file.name, file.getvalue(), file.type)))
 
         with st.spinner("Traitement et envoi de votre demande en cours..."):
             try:
