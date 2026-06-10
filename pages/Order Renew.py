@@ -149,7 +149,7 @@ if submit_button:
         with st.spinner("Traitement et envoi de votre demande en cours..."):
             try:
                 # إرسال البيانات والملفات المتعددة عبر طلب POST واحد
-                response = requests.post(FORM_SUBMIT_URL, data=payload, files=files)
+                response = requests.post(FORM_SUBMIT_URL, data=payload)
                 
                 if response.status_code == 200:
                     st.success(
