@@ -69,7 +69,7 @@ if payment_method == "BaridiMob":
         <strong style="color: #d9480f;">CCP / BaridiMob :</strong><br>
         Veuillez effectuer le virement CCP ou via l'application BaridiMob vers :<br>
         • <strong>RIP :</strong> 00799999002904112209 (À remplacer par votre RIP)<br>
-        • <strong>Nom :</strong> Votre Nom Complet
+        • <strong>Nom :</strong> Mohamed Bachir Habchi
     </div>
     """, unsafe_allow_html=True)
 
@@ -78,7 +78,7 @@ elif payment_method == "RedotPay":
     <div class="payment-info-box" style="background-color: #e8f7ff; border-left: 5px solid #339af0; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
         <strong style="color: #1c7ed6;">RedotPay :</strong><br>
         Veuillez envoyer le montant exact en USDT ou fiat vers votre compte RedotPay :<br>
-        • <strong>RedotPay ID :</strong> 12345678 (À remplacer par votre ID)<br>
+        • <strong>RedotPay ID :</strong> 1072988159 (À remplacer par votre ID)<br>
         • <strong>Adresse Crypto (Optionnel) :</strong> Adresse de votre portefeuille si nécessaire
     </div>
     """, unsafe_allow_html=True)
