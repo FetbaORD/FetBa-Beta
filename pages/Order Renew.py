@@ -35,11 +35,12 @@ serial_number = st.text_input(
     placeholder="Exemple : XXXX-XXXX-XXXX-XXXX"
 )
 
-# 2. Durée du renouvellement
+# 2. Durée du renouvellement (تعديل: إضافة التوزيع الأفقي)
 duration = st.radio(
     "Choisissez la durée du renouvellement *",
     ["1 mois (1 Month)", "6 mois (6 Months)", "1 an (1 Year)"],
-    index=0
+    index=0,
+    horizontal=True  # هذا السطر يجعل الأزرار بجانب بعضها
 )
 
 # Calcul du prix
