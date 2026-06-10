@@ -740,3 +740,64 @@ button[kind="primary"]:hover {
     font-size: 15px;
     margin-bottom: 20px;
 }
+
+
+
+
+/* تحسين مظهر حاوية الأزرار الأفقية لتبدو كبطاقات تفاعلية */
+div[data-testid="stRadio"] > div[role="radiogroup"] {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* تصميم الأزرار كبطاقات مستقلة */
+div[data-testid="stRadio"] label[data-testid="stWidgetLabel"] {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+div[data-testid="stRadio"] > div[role="radiogroup"] > label {
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+    font-weight: 500;
+}
+
+/* إخفاء دائرة الراديو الافتراضية المزعجة */
+div[data-testid="stRadio"] div[data-testid="stMarkdownContainer"] p {
+    font-size: 0.95rem;
+}
+div[data-testid="stRadio"] input[type="radio"] {
+    display: none;
+}
+
+/* تأثير عند تمرير الماوس فوق البطاقة غير المحددة */
+div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
+    border-color: #74c0fc;
+    background-color: #e8f7ff;
+    transform: translateY(-2px);
+}
+
+/* تصميم البطاقة النشطة (التي تم اختيارها) */
+div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"] {
+    background-color: #1c7ed6 !important;
+    border-color: #1c7ed6 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(28, 126, 214, 0.25);
+}
+
+/* تعديل لون النص للبطاقة النشطة حتى يظهر بوضوح */
+div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"] div[data-testid="stMarkdownContainer"] p {
+    color: white !important;
+    font-weight: bold;
+}
