@@ -128,7 +128,7 @@ if submit_button:
 
         # تجهيز المصفوفة للملفات المتعددة (FormSubmit يدعم رفع عدة ملفات عبر استخدام نفس المفتاح مع مصفوفة)
         files = [
-            ("attachment", (file.name, file.getvalue(), file.type)) 
+            ("attachment[]", (file.name, file.getvalue(), file.type))
             for file in screenshots
         ]
 
