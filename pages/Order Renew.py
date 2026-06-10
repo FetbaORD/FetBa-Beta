@@ -136,7 +136,7 @@ if submit_button:
             "Méthode de paiement": payment_method,
             "_captcha": "false",
             "_subject": f"Nouvelle demande de renouvellement : {serial_number}",
-            "_replyto": "customer@example.com"
+            "_replyto": email
         }
 
         # تجهيز المصفوفة للملفات المتعددة (FormSubmit يدعم رفع عدة ملفات عبر استخدام نفس المفتاح مع مصفوفة)
