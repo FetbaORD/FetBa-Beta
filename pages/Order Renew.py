@@ -1,5 +1,11 @@
 import streamlit as st
 import requests
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
 
 # Configuration de la page
 st.set_page_config(page_title="Renouvellement d'abonnement", page_icon="🔄", layout="centered")
