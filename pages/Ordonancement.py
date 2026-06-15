@@ -305,7 +305,7 @@ if "sequence_df" in st.session_state:
 
             # 2. الزر الرئيسي المتحكم في التوسع والانكماش
             # عند الضغط عليه، يعكس حالته (من True إلى False والعكس) ثم يعيد تشغيل السكريبت لتحديث الواجهة
-            if st.button("🤖 (GA + G-NEH-S)", type="primary"):
+            if st.button("GA + G-NEH-S", type="primary"):
                 st.session_state.show_ga_settings = not st.session_state.show_ga_settings
                 st.rerun()
 
@@ -362,11 +362,42 @@ if "sequence_df" in st.session_state:
 # =================================================================
             
 
+            # خيار خوارزمية (Génetique Robuste) المطور والمنعزل
+            # ================================================================= 
+            if "show_robust_settings" not in st.session_state:
+                st.session_state.show_robust_settings = False
 
+            if st.button("Génetique Robuste", type="primary"):
+                st.session_state.show_robust_settings = not st.session_state.show_robust_settings
+                st.rerun()
+
+            if st.session_state.show_robust_settings:
+                with st.container(border=True):
+                    if "Pij" in st.session_state and "Ts" in st.session_state:
+                        # استيراد واجهة العمل للملف المستقل وتشغيلها
+                        from Robuste import run_robust_ga_interface
+                        run_robust_ga_interface(
+                            st.session_state.Pij,
+                            st.session_state.Ts,
+                            st.session_state.Incompatibilite
+                        )
+                        
+                        # تطبيق التحديث فوراً إذا قام المستخدم بالضغط وحساب التسلسل المتين بنجاح
+                        if "optimized_robust_seq" in st.session_state:
+                            robust_seq = st.session_state.pop("optimized_robust_seq") # جلب وحذف المؤقت
+                            current_n_jobs = len(robust_seq)
+                            st.session_state.sequence = robust_seq
+                            st.session_state.sequence_df = pd.DataFrame(
+                                [robust_seq], 
+                                columns=[f"J{i+1}" for i in range(current_n_jobs)]
+                            )
+                            st.rerun()
+                    else:
+                        st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
+            # =================================================================
             
             
             
-            if st.button("Génetique Robuste", type="primary"): algo_choice = 3
 
 #------------------------------
 
