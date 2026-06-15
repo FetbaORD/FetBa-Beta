@@ -66,7 +66,7 @@ def fun_compute_flowshop_with_breakdown(seq, P, Ts, n, m, breakdown_map):
 
 def run_robust_ga_interface(P_df, Ts_df, Incompat_df):
     """دالة الواجهة وتشغيل الخوارزمية المتينة"""
-    st.markdown("#### ⚙️ إعدادات الخوارزمية الجينية المتينة (Robust GA)")
+    st.markdown("#### Les Parametres de Robust GA")
     
     # تهيئة متغيرات الحالة لمنع التصفير عند التحديث التلقائي
     if "rob_pop_size" not in st.session_state: st.session_state.rob_pop_size = 20
@@ -84,7 +84,7 @@ def run_robust_ga_interface(P_df, Ts_df, Incompat_df):
     mutation_rate = st.slider("Mutation Rate", 0.0, 1.0, key="rob_mutation", step=0.01)
     tournament_size = st.slider("Tournament Size", 2, 10, key="rob_tournament")
     lambda_val = st.slider("Lambda ", 0.0, 1.0, key="rob_lambda", step=0.1)
-    num_scenarios = st.slider("N des Senarios", 2, 30, key="rob_scenarios")
+    num_scenarios = st.slider("Num Scenarios", 2, 30, key="rob_scenarios")
 
     if st.button("Run Algorithm", type="secondary", key="execute_robust_ga_btn"):
         P = P_df.values.astype(float)
