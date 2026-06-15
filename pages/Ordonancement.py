@@ -358,11 +358,8 @@ if "sequence_df" in st.session_state:
                             st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
 
 
-            
 # =================================================================
-            
-
-            # خيار خوارزمية (Génetique Robuste) المطور والمنعزل
+            # خيار خوارزمية (Génetique Robuste) المطور والمنعزل والمقاوم للـ Autorefresh
             # ================================================================= 
             if "show_robust_settings" not in st.session_state:
                 st.session_state.show_robust_settings = False
@@ -374,7 +371,6 @@ if "sequence_df" in st.session_state:
             if st.session_state.show_robust_settings:
                 with st.container(border=True):
                     if "Pij" in st.session_state and "Ts" in st.session_state:
-                        # استيراد واجهة العمل للملف المستقل وتشغيلها
                         from Robuste import run_robust_ga_interface
                         run_robust_ga_interface(
                             st.session_state.Pij,
@@ -382,24 +378,20 @@ if "sequence_df" in st.session_state:
                             st.session_state.Incompatibilite
                         )
                         
-                        # تطبيق التحديث فوراً إذا قام المستخدم بالضغط وحساب التسلسل المتين بنجاح
+                        # استقبال النتيجة المكتملة القادمة من الخلفية وتطبيقها على الجداول فوراً
                         if "optimized_robust_seq" in st.session_state:
-                            robust_seq = st.session_state.pop("optimized_robust_seq") # جلب وحذف المؤقت
+                            robust_seq = st.session_state.pop("optimized_robust_seq")
                             current_n_jobs = len(robust_seq)
                             st.session_state.sequence = robust_seq
                             st.session_state.sequence_df = pd.DataFrame(
                                 [robust_seq], 
                                 columns=[f"J{i+1}" for i in range(current_n_jobs)]
                             )
+                            st.success("🏆 تم تطبيق التسلسل المتين الأفضل بنجاح على المخططات!")
                             st.rerun()
                     else:
                         st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
-            # =================================================================
-            
-            
-            
-
-#------------------------------
+            # =================================================================            
 
 
             run_ga_interface()
