@@ -78,15 +78,15 @@ def run_robust_ga_interface(P_df, Ts_df, Incompat_df):
     if "rob_scenarios" not in st.session_state: st.session_state.rob_scenarios = 4
 
     # عناصر واجهة المستخدم لإدخال الإعدادات
-    pop_size = st.number_input("حجم المجتمع (Population Size)", 4, 200, key="rob_pop_size", step=2)
-    generations = st.number_input("عدد الأجيال (Generations)", 1, 500, key="rob_generations", step=5)
-    crossover_rate = st.slider("معدل العبور (Crossover Rate)", 0.0, 1.0, key="rob_crossover", step=0.05)
-    mutation_rate = st.slider("معدل الطفرة (Mutation Rate)", 0.0, 1.0, key="rob_mutation", step=0.01)
-    tournament_size = st.slider("حجم البطولة (Tournament Size)", 2, 10, key="rob_tournament")
-    lambda_val = st.slider("معامل الأهمية (Lambda - الوزن بين المثالية والمتانة)", 0.0, 1.0, key="rob_lambda", step=0.1)
-    num_scenarios = st.slider("عدد السيناريوهات المضطربة للمحاكاة", 2, 30, key="rob_scenarios")
+    pop_size = st.number_input("Population Size", 4, 200, key="rob_pop_size", step=2)
+    generations = st.number_input("N de Generations", 1, 500, key="rob_generations", step=5)
+    crossover_rate = st.slider("Crossover Rate", 0.0, 1.0, key="rob_crossover", step=0.05)
+    mutation_rate = st.slider("Mutation Rate", 0.0, 1.0, key="rob_mutation", step=0.01)
+    tournament_size = st.slider("Tournament Size", 2, 10, key="rob_tournament")
+    lambda_val = st.slider("Lambda ", 0.0, 1.0, key="rob_lambda", step=0.1)
+    num_scenarios = st.slider("N des Senarios", 2, 30, key="rob_scenarios")
 
-    if st.button("🚀 تشغيل الحساب المتين", type="secondary", key="execute_robust_ga_btn"):
+    if st.button("Run Algorithm", type="secondary", key="execute_robust_ga_btn"):
         P = P_df.values.astype(float)
         Ts = Ts_df.values.astype(float)
         n, m = P.shape
