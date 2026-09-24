@@ -708,7 +708,171 @@ if st.session_state.show_complete_gantt:
         
         # عرض المخطط فوراً وبثبات كامل
         st.plotly_chart(fig_static, use_container_width=True, key="static_gantt_plotly")
+# ==========================================================
+# 📊 TAUX D'UTILISATION DES MACHINES - STYLE FLEXSIM
+# ==========================================================
 
+if "show_machine_utilization" not in st.session_state:
+    st.session_state.show_machine_utilization = False
+
+# زر عرض نسب استعمال الآلات
+col_util1, col_util2 = st.columns([1, 1], gap="large")
+
+with col_util1:
+    if st.button("Afficher les taux d'utilisation des machines", type="primary"):
+        st.session_state.show_machine_utilization = True
+
+with col_util2:
+    if st.session_state.show_machine_utilization:
+        if st.button("Masquer les taux", type="secondary"):
+            st.session_state.show_machine_utilization = False
+            st.rerun()
+
+
+# ==========================================================
+# حساب وعرض الدوائر
+# ==========================================================
+
+if st.session_state.show_machine_utilization:
+
+    Cmax = float(np.max(e_times))
+
+    # حساب حالة كل آلة
+    utilization_data = []
+
+    for m in range(nm):
+
+        processing_time = 0.0
+        setup_time = 0.0
+        breakdown_time = 0.0
+
+        # -----------------------------
+        # 1. Processing + Setup
+        # -----------------------------
+        for i, job_idx in enumerate(static_seq):
+
+            # وقت التشغيل Job
+            processing_time += float(static_pij[job_idx, m])
+
+            # وقت Setup / TS
+            if i > 0:
+                prev_job_idx = static_seq[i - 1]
+                setup_time += float(static_ts[prev_job_idx, job_idx])
+
+        # -----------------------------
+        # 2. الأعطال
+        # -----------------------------
+        machine_key = f"Machine {m + 1}"
+
+        if "machine_faults" in st.session_state:
+            faults = st.session_state.machine_faults.get(machine_key, [])
+
+            for fault in faults:
+                f_start = float(fault["start"])
+
+                if fault["end"] is not None:
+                    f_end = float(fault["end"])
+                else:
+                    f_end = Cmax
+
+                # لا نحسب عطل بعد Cmax
+                if f_start < Cmax:
+                    f_end = min(f_end, Cmax)
+
+                    if f_end > f_start:
+                        breakdown_time += f_end - f_start
+
+        # -----------------------------
+        # 3. Idle
+        # -----------------------------
+        idle_time = Cmax - (
+            processing_time +
+            setup_time +
+            breakdown_time
+        )
+
+        # منع القيم السالبة بسبب التقريب
+        idle_time = max(0, idle_time)
+
+        # -----------------------------
+        # 4. النسب المئوية
+        # -----------------------------
+        total = processing_time + setup_time + breakdown_time + idle_time
+
+        if total > 0:
+            processing_pct = processing_time / total * 100
+            idle_pct = idle_time / total * 100
+            setup_pct = setup_time / total * 100
+            breakdown_pct = breakdown_time / total * 100
+        else:
+            processing_pct = idle_pct = setup_pct = breakdown_pct = 0
+
+        utilization_data.append({
+            "Machine": f"Machine {m + 1}",
+            "Processing": processing_pct,
+            "Idle": idle_pct,
+            "TS": setup_pct,
+            "Arrêt": breakdown_pct
+        })
+
+
+    # ======================================================
+    # رسم الدوائر Donut
+    # ======================================================
+
+    st.subheader("📊 Taux d'utilisation des machines")
+
+    cols = st.columns(nm)
+
+    for m, data in enumerate(utilization_data):
+
+        with cols[m]:
+
+            values = [
+                data["Processing"],
+                data["Idle"],
+                data["TS"],
+                data["Arrêt"]
+            ]
+
+            labels = [
+                "Machine en marche",
+                "Idle",
+                "TS",
+                "Arrêt"
+            ]
+
+            # Donut
+            fig_donut = px.pie(
+                values=values,
+                names=labels,
+                hole=0.62
+            )
+
+            fig_donut.update_traces(
+                textinfo="percent",
+                textposition="inside"
+            )
+
+            fig_donut.update_layout(
+                title=f"<b>{data['Machine']}</b>",
+                showlegend=True,
+                height=350,
+                margin=dict(l=10, r=10, t=50, b=10),
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=-0.25,
+                    xanchor="center",
+                    x=0.5
+                )
+            )
+
+            st.plotly_chart(
+                fig_donut,
+                use_container_width=True,
+                key=f"utilization_machine_{m}"
+            )
 # =========================
 # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
 # =========================
