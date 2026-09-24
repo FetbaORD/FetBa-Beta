@@ -877,6 +877,67 @@ if st.session_state.show_machine_utilization:
                 use_container_width=True,
                 key=f"complete_utilization_{m}"
             )
+
+
+# ==========================================================
+# 📋 TOTAL SETUP / TS / TEMPS DE STÉRILISATION
+# ==========================================================
+
+st.divider()
+
+st.subheader("📋 Total des temps de stérilisation (TS)")
+
+# Liste pour stocker les TS appliqués
+ts_details = []
+
+total_ts_global = 0.0
+
+# Parcours de la séquence complète
+for i in range(1, len(static_seq)):
+
+    prev_job = static_seq[i - 1]
+    current_job = static_seq[i]
+
+    # TS entre le Job précédent et le Job actuel
+    ts_value = float(static_ts[prev_job, current_job])
+
+    total_ts_global += ts_value
+
+    ts_details.append({
+        "Opération": f"Job {prev_job + 1} → Job {current_job + 1}",
+        "Temps TS (s)": ts_value
+    })
+
+
+# ==========================================================
+# Affichage du tableau
+# ==========================================================
+
+if ts_details:
+
+    df_ts = pd.DataFrame(ts_details)
+
+    # Ligne Total
+    df_ts.loc[len(df_ts)] = {
+        "Opération": "TOTAL TS",
+        "Temps TS (s)": total_ts_global
+    }
+
+    st.dataframe(
+        df_ts,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    # Affichage du total en dessous
+    st.success(
+        f"⏱️ Temps total de stérilisation / Setup (TS) : "
+        f"{total_ts_global:.2f} secondes"
+    )
+
+else:
+
+    st.info("Aucun temps TS n'a été appliqué.")
 # =========================
 # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
 # =========================
