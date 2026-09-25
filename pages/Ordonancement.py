@@ -91,12 +91,12 @@ with open("style.css", "r", encoding="utf-8") as f:
 
 if "sim_start_time" in st.session_state:
 
-    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds() * sim_speed
+    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
 
     minutes = int(sim_duration // 60)
     seconds = int(sim_duration % 60)
 
-    st.info(f"⏱️ Runtime (Simulé x{sim_speed}): {minutes} min {seconds} sec")
+    st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
 
 else:
     st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
@@ -726,13 +726,15 @@ with col_util1:
         type="primary"
     ):
         st.session_state.show_machine_utilization = True
-
+	else:
+		st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
 with col_util2:
     if st.session_state.show_machine_utilization:
         if st.button("Masquer les taux", type="secondary"):
             st.session_state.show_machine_utilization = False
             st.rerun()
-
+		else:
+			st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
 
 # ==========================================================
 # TAUX COMPLET — basé sur le Gantt complet
