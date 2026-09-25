@@ -90,13 +90,21 @@ with open("style.css", "r", encoding="utf-8") as f:
 
 if "sim_start_time" in st.session_state:
 
-    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
 
-    minutes = int(sim_duration // 60)
-    seconds = int(sim_duration % 60)
-
-    st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
-
+	# الوقت الحقيقي المنقضي
+	real_elapsed_time = (
+		datetime.now() - st.session_state.sim_start_time
+	).total_seconds()
+	# الوقت المحاكى بعد تطبيق السرعة
+	sim_duration = real_elapsed_time * simulation_speed
+	
+	minutes = int(sim_duration // 60)
+	seconds = int(sim_duration % 60)
+	
+	st.info(
+		f"⏱️ Simulation Time: {minutes:02d} min {seconds:02d} sec "
+		f" | Speed: {simulation_speed}x"
+	)
 else:
     st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
 
