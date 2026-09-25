@@ -801,3 +801,63 @@ div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"]
     color: white !important;
     font-weight: bold;
 }
+
+
+
+/* =========================================================
+   🎨 تنسيقات احترافية للجداول الثلاثة المحددة فقط
+   ========================================================= */
+
+/* 1. تنسيق جدول حالة الآلات (st.table) */
+div[data-testid="stTable"] table {
+    width: 100%;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+div[data-testid="stTable"] th {
+    background: linear-gradient(135deg, #1e293b, #334155) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    padding: 12px 16px !important;
+    font-size: 0.95rem !important;
+}
+
+div[data-testid="stTable"] td {
+    padding: 10px 16px !important;
+    text-align: center !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    font-weight: 600 !important;
+}
+
+div[data-testid="stTable"] tr:hover {
+    background-color: #f8fafc !important;
+}
+
+/* 2. حاوية الجداول التفاعلية المخصصة (st.dataframe) */
+.custom-styled-table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 10px;
+}
+
+/* تخصيص جدول المنتجات المكتملة داخل الحاوية */
+.completed-jobs-table div[data-testid="stDataFrame"] {
+    border-radius: 12px;
+}
+
+.completed-jobs-table [data-testid="stHeader"] {
+    background: linear-gradient(135deg, #059669, #10b981) !important;
+}
+
+/* تخصيص جدول Total TS / Machine داخل الحاوية */
+.ts-machine-table [data-testid="stHeader"] {
+    background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+}
