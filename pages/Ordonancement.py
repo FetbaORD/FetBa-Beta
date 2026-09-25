@@ -880,64 +880,49 @@ if st.session_state.show_machine_utilization:
 
 
 # ==========================================================
-# 📋 TOTAL SETUP / TS / TEMPS DE STÉRILISATION
+# 📋 TOTAL SETUP / TS / TEMPS DE STÉRILISATION PAR MACHINE
 # ==========================================================
 
 st.divider()
 
-st.subheader("📋 Total des temps de stérilisation (TS)")
+st.subheader("📋 Total des temps de stérilisation (TS) par machine")
 
-# Liste pour stocker les TS appliqués
-ts_details = []
+# حساب أوقات التعقيم لكل آلة مستقلم
+machine_ts_totals = {f"Machine {m+1}": 0.0 for m in range(nm)}
 
-total_ts_global = 0.0
-
-# Parcours de la séquence complète
 for i in range(1, len(static_seq)):
-
     prev_job = static_seq[i - 1]
     current_job = static_seq[i]
-
-    # TS entre le Job précédent et le Job actuel
     ts_value = float(static_ts[prev_job, current_job])
+    
+    # يضاف TS لكل آلة على حدة في Flow Shop
+    for m in range(nm):
+        machine_ts_totals[f"Machine {m+1}"] += ts_value
 
-    total_ts_global += ts_value
+# تحويل البيانات إلى الجدول
+df_ts_machines = pd.DataFrame([
+    {"Machine": machine, "Total TS (s)": total_ts}
+    for machine, total_ts in machine_ts_totals.items()
+])
 
-    ts_details.append({
-        "Opération": f"Job {prev_job + 1} → Job {current_job + 1}",
-        "Temps TS (s)": ts_value
-    })
+# إضافة سطر المجموع الكلي لجميع الآلات
+total_ts_all_machines = sum(machine_ts_totals.values())
+df_ts_machines.loc[len(df_ts_machines)] = {
+    "Machine": "TOTAL GLOBAL",
+    "Total TS (s)": total_ts_all_machines
+}
 
+# عرض الجدول
+st.dataframe(
+    df_ts_machines,
+    use_container_width=True,
+    hide_index=True
+)
 
-# ==========================================================
-# Affichage du tableau
-# ==========================================================
-
-if ts_details:
-
-    df_ts = pd.DataFrame(ts_details)
-
-    # Ligne Total
-    df_ts.loc[len(df_ts)] = {
-        "Opération": "TOTAL TS",
-        "Temps TS (s)": total_ts_global
-    }
-
-    st.dataframe(
-        df_ts,
-        use_container_width=True,
-        hide_index=True
-    )
-
-    # Affichage du total en dessous
-    st.success(
-        f"⏱️ Temps total de stérilisation / Setup (TS) : "
-        f"{total_ts_global:.2f} secondes"
-    )
-
-else:
-
-    st.info("Aucun temps TS n'a été appliqué.")
+st.success(
+    f"⏱️ Temps total de stérilisation cumulé (Toutes machines) : "
+    f"{total_ts_all_machines:.2f} secondes"
+)
 # =========================
 # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
 # =========================
