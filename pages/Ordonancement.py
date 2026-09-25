@@ -883,50 +883,6 @@ if st.session_state.show_machine_utilization:
             )
 
 
-# ==========================================================
-# 📋 TOTAL SETUP / TS / TEMPS DE STÉRILISATION PAR MACHINE
-# ==========================================================
-
-st.divider()
-
-st.subheader("📋 Total des temps de stérilisation (TS) par machine")
-
-# حساب أوقات التعقيم لكل آلة مستقلم
-machine_ts_totals = {f"Machine {m+1}": 0.0 for m in range(nm)}
-
-for i in range(1, len(static_seq)):
-    prev_job = static_seq[i - 1]
-    current_job = static_seq[i]
-    ts_value = float(static_ts[prev_job, current_job])
-    
-    # يضاف TS لكل آلة على حدة في Flow Shop
-    for m in range(nm):
-        machine_ts_totals[f"Machine {m+1}"] += ts_value
-
-# تحويل البيانات إلى الجدول
-df_ts_machines = pd.DataFrame([
-    {"Machine": machine, "Total TS (s)": total_ts}
-    for machine, total_ts in machine_ts_totals.items()
-])
-
-# إضافة سطر المجموع الكلي لجميع الآلات
-total_ts_all_machines = sum(machine_ts_totals.values())
-df_ts_machines.loc[len(df_ts_machines)] = {
-    "Machine": "TOTAL GLOBAL",
-    "Total TS (s)": total_ts_all_machines
-}
-
-# عرض الجدول
-st.dataframe(
-    df_ts_machines,
-    use_container_width=True,
-    hide_index=True
-)
-
-st.success(
-    f"⏱️ Temps total de stérilisation cumulé (Toutes machines) : "
-    f"{total_ts_all_machines:.2f} secondes"
-)
 # =========================
 # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
 # =========================
@@ -939,24 +895,61 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     sequence = [int(i) - 1 for i in st.session_state.sequence] # تحويل التسلسل لـ index (0-based)
     n_machines = st.session_state.n_machines
 
+# 1. تغيير التقسيم إلى 3 أعمدة
     col1, col2, col3 = st.columns([1, 1.5, 1.2])
 
     with col1:
         st.subheader("🖥️ حالة الآلات الآن")
         machine_status = []
-        
-        # استخدام n_machines بعد الإصلاح السابق
         for m in range(n_machines):
             current_job = "متوقفة (Idle)"
-            for j_idx, job_id in enumerate(sequence):  # الآن سيتعرف بايثون على sequence بدون مشاكل
-                # التحقق إذا كان الوقت الحالي يقع بين بداية ونهاية الوظيفة على هذه الآلة
+            for j_idx, job_id in enumerate(sequence):
                 if start_times[j_idx, m] <= current_sim_time <= end_times[j_idx, m]:
                     current_job = f"🔨 Job {job_id + 1}"
                     break
             machine_status.append({"الآلة": f"Machine {m+1}", "المنتج الحالي": current_job})
-        
         st.table(pd.DataFrame(machine_status))
 
+    with col2:
+        st.subheader("✅ المنتجات المكتملة")
+        completed_jobs = []
+        for j_idx, job_id in enumerate(sequence):
+            finish_time_on_last_machine = end_times[j_idx, n_machines - 1]
+            if current_sim_time >= finish_time_on_last_machine:
+                completed_jobs.append({
+                    "المنتج": f"Job {job_id + 1}",
+                    "وقت البدء (ث)": f"{start_times[j_idx, 0]:.1f}", 
+                    "وقت الانتهاء (ث)": f"{finish_time_on_last_machine:.1f}", 
+                    "الحالة": "تم الإنجاز"
+                })
+        if completed_jobs:
+            st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
+        else:
+            st.info("لا توجد منتجات مكتملة بالكامل حتى الآن.")
+
+    # 2. العمود الثالث الجديد (يتحكم به زر Gantt Complete)
+    with col3:
+        if st.session_state.get("show_complete_gantt", False):
+            st.subheader("📋 Total TS / Machine")
+            
+            static_ts = st.session_state.Ts.values
+            static_seq = [int(x) - 1 for x in st.session_state.sequence]
+            
+            machine_ts_totals = {f"Machine {m+1}": 0.0 for m in range(n_machines)}
+            
+            for i in range(1, len(static_seq)):
+                prev_job = static_seq[i - 1]
+                current_job = static_seq[i]
+                ts_value = float(static_ts[prev_job, current_job])
+                for m in range(n_machines):
+                    machine_ts_totals[f"Machine {m+1}"] += ts_value
+
+            df_ts_machines = pd.DataFrame([
+                {"Machine": m_name, "Total TS (s)": total_ts}
+                for m_name, total_ts in machine_ts_totals.items()
+            ])
+            
+            st.dataframe(df_ts_machines, use_container_width=True, hide_index=True)
 	
 	
 	
