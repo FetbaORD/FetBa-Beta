@@ -908,6 +908,8 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     current_job = f"🔨 Job {job_id + 1}"
                     break
             machine_status.append({"الآلة": f"Machine {m+1}", "المنتج الحالي": current_job})
+        
+        # الجدول الأول (st.table)
         st.table(pd.DataFrame(machine_status))
 
     with col2:
@@ -923,7 +925,10 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     "الحالة": "تم الإنجاز"
                 })
         if completed_jobs:
-            st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
+            # الجدول الثاني (مغلف بتغليف زردي للتأثير بالألوان)
+            st.markdown('<div class="custom-styled-table completed-jobs-table">', unsafe_allow_html=True)
+            st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True, hide_index=True)
+            st.markdown('</div>', unsafe_allow_html=True)
         else:
             st.info("لا توجد منتجات مكتملة بالكامل حتى الآن.")
 
@@ -949,16 +954,13 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                 for m_name, total_ts in machine_ts_totals.items()
             ])
             
+            # الجدول الثالث (مغلف بتغليف زردي للتأثير بالألوان)
+            st.markdown('<div class="custom-styled-table ts-machine-table">', unsafe_allow_html=True)
             st.dataframe(df_ts_machines, use_container_width=True, hide_index=True)
-	
-	
-	
-	
-	
-	
-	
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    # =========================
+	
+	# =========================
     # 9. إحصائيات سريعة
     # =========================
     if completed_jobs:
