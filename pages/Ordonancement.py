@@ -104,8 +104,6 @@ st.info(
     f"⏱️ Simulation Time: {minutes:02d} min {seconds:02d} sec "
     f" | Speed: {simulation_speed}x"
 )
-
-
 else:
     st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
 
@@ -128,7 +126,6 @@ simulation_speed = st.sidebar.slider(
     step=1,
     format="%dx"
 )
-
 # ==========================================================
 # تحديث المحاكاة حسب سرعة المحاكاة
 # 1x  = تحديث كل 1 ثانية
