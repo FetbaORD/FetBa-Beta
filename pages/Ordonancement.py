@@ -90,8 +90,10 @@ with open("style.css", "r", encoding="utf-8") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 if "sim_start_time" in st.session_state:
-    real_elapsed_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
-	current_sim_time = real_elapsed_time * simulation_speed
+
+    sim_duration = (
+        datetime.now() - st.session_state.sim_start_time
+    ).total_seconds()
     minutes = int(sim_duration // 60)
     seconds = int(sim_duration % 60)
 
