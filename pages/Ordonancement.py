@@ -466,13 +466,18 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     end_times = np.zeros((n_j, n_m))
 
     # الحصول على الوقت الحالي للمحاكاة (ثواني)
-    if "sim_start_time" in st.session_state:
-        current_sim_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
-		real_elapsed_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
-		current_sim_time = real_elapsed_time * simulation_speed
-	
-    else:
-        current_sim_time = 0
+if "sim_start_time" in st.session_state:
+
+    real_elapsed_time = (
+        datetime.now() - st.session_state.sim_start_time
+    ).total_seconds()
+
+    current_sim_time = (
+        real_elapsed_time * simulation_speed
+    )
+
+else:
+    current_sim_time = 0
 
     # حساب الجدولة الديناميكية (Flow Shop مع إزاحة الأعطال)
     for j_idx, job_id in enumerate(sequence):
