@@ -956,28 +956,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 	
 	
 	
-		
-
-    with col2:
-        st.subheader("✅ المنتجات المكتملة")
-        completed_jobs = []
-        
-        # نمر على كل وظيفة ونتحقق من آخر آلة في الخط
-        for j_idx, job_id in enumerate(sequence):
-            finish_time_on_last_machine = end_times[j_idx, n_machines - 1]
-            
-            if current_sim_time >= finish_time_on_last_machine:
-                completed_jobs.append({
-                    "المنتج": f"Job {job_id + 1}",
-                    "وقت البدء (ث)": f"{start_times[j_idx, 0]:.1f}", 
-                    "وقت الانتهاء (ث)": f"{finish_time_on_last_machine:.1f}", 
-                    "الحالة": "تم الإنجاز"
-                })
-        
-        if completed_jobs:
-            st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
-        else:
-            st.info("لا توجد منتجات مكتملة بالكامل حتى الآن.")
+	
 
     # =========================
     # 9. إحصائيات سريعة
