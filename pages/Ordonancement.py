@@ -883,790 +883,89 @@ if st.session_state.show_machine_utilization:
             )
 
 
-# ==========================================================
-# 8. PROFESSIONAL DASHBOARD
-#    Machine Status + Completed Products + Total TS / Machine
-# ==========================================================
-
+# =========================
+# 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
+# =========================
 st.divider()
 
+# تأكد أولاً من أن الجداول والتسلسل قد تم إنشاؤهم بنجاح قبل عرض اللوحة
 if "Pij" in st.session_state and "sequence" in st.session_state:
-
-    # ------------------------------------------------------
-    # CSS - Professional Dashboard
-    # ------------------------------------------------------
-    st.markdown("""
-    <style>
-
-    /* Main dashboard */
-    .dashboard-section {
-        margin-top: 10px;
-        margin-bottom: 20px;
-    }
-
-    .dashboard-title {
-        font-size: 26px;
-        font-weight: 800;
-        color: #172033;
-        margin-bottom: 5px;
-    }
-
-    .dashboard-subtitle {
-        color: #6b7280;
-        font-size: 14px;
-        margin-bottom: 22px;
-    }
-
-    /* Cards */
-    .metric-card {
-        background: linear-gradient(145deg, #ffffff, #f8fafc);
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        padding: 18px;
-        box-shadow: 0 5px 18px rgba(15, 23, 42, 0.07);
-        margin-bottom: 12px;
-        transition: all 0.2s ease;
-    }
-
-    .metric-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.10);
-    }
-
-    .metric-label {
-        color: #64748b;
-        font-size: 13px;
-        font-weight: 600;
-        margin-bottom: 6px;
-    }
-
-    .metric-value {
-        color: #111827;
-        font-size: 25px;
-        font-weight: 800;
-    }
-
-    .metric-icon {
-        font-size: 25px;
-        float: right;
-    }
-
-    /* Section cards */
-    .panel {
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 18px;
-        padding: 20px;
-        box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
-        margin-bottom: 15px;
-    }
-
-    .panel-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 18px;
-        font-weight: 800;
-        color: #172033;
-        margin-bottom: 16px;
-    }
-
-    .panel-header-icon {
-        font-size: 22px;
-    }
-
-    /* Machine status */
-    .machine-card {
-        border-radius: 14px;
-        padding: 14px 16px;
-        margin-bottom: 10px;
-        border: 1px solid #e5e7eb;
-        background: #f8fafc;
-    }
-
-    .machine-card.running {
-        background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
-        border-color: #86efac;
-    }
-
-    .machine-card.idle {
-        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-        border-color: #cbd5e1;
-    }
-
-    .machine-name {
-        font-size: 15px;
-        font-weight: 800;
-        color: #1e293b;
-    }
-
-    .machine-job {
-        font-size: 13px;
-        color: #64748b;
-        margin-top: 5px;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 800;
-        margin-top: 8px;
-    }
-
-    .status-running {
-        background: #dcfce7;
-        color: #15803d;
-    }
-
-    .status-idle {
-        background: #e2e8f0;
-        color: #475569;
-    }
-
-    /* Products table */
-    .products-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        overflow: hidden;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-    }
-
-    .products-table th {
-        background: #f1f5f9;
-        color: #475569;
-        font-size: 12px;
-        font-weight: 800;
-        padding: 12px 10px;
-        text-align: center;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .products-table td {
-        padding: 12px 10px;
-        text-align: center;
-        font-size: 13px;
-        color: #334155;
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-    .products-table tr:last-child td {
-        border-bottom: none;
-    }
-
-    .product-name {
-        font-weight: 800;
-        color: #1e293b;
-    }
-
-    .completed-badge {
-        background: #dcfce7;
-        color: #15803d;
-        padding: 5px 11px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 800;
-    }
-
-    /* TS cards */
-    .ts-card {
-        background: linear-gradient(145deg, #f8fafc, #ffffff);
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 10px;
-        text-align: center;
-    }
-
-    .ts-machine {
-        color: #475569;
-        font-size: 13px;
-        font-weight: 700;
-    }
-
-    .ts-value {
-        color: #2563eb;
-        font-size: 24px;
-        font-weight: 900;
-        margin-top: 5px;
-    }
-
-    .ts-unit {
-        color: #94a3b8;
-        font-size: 11px;
-    }
-
-    /* Empty state */
-    .empty-state {
-        text-align: center;
-        padding: 35px 15px;
-        color: #94a3b8;
-        background: #f8fafc;
-        border-radius: 12px;
-        border: 1px dashed #cbd5e1;
-    }
-
-    .empty-icon {
-        font-size: 30px;
-        margin-bottom: 8px;
-    }
-
-    /* Progress */
-    .progress-wrapper {
-        background: #f8fafc;
-        border-radius: 14px;
-        padding: 15px 18px;
-        border: 1px solid #e5e7eb;
-        margin-top: 10px;
-    }
-
-    .progress-title {
-        font-size: 13px;
-        font-weight: 700;
-        color: #475569;
-        margin-bottom: 8px;
-    }
-
-    .progress-bar {
-        height: 9px;
-        width: 100%;
-        background: #e2e8f0;
-        border-radius: 999px;
-        overflow: hidden;
-    }
-
-    .progress-fill {
-        height: 100%;
-        border-radius: 999px;
-        background: linear-gradient(90deg, #22c55e, #16a34a);
-    }
-
-    .progress-percent {
-        text-align: right;
-        margin-top: 6px;
-        font-size: 12px;
-        font-weight: 800;
-        color: #15803d;
-    }
-
-    </style>
-    """, unsafe_allow_html=True)
-
-
-    # ------------------------------------------------------
-    # Data
-    # ------------------------------------------------------
-    sequence = [int(i) - 1 for i in st.session_state.sequence]
+    
+    # جلب المتغيرات بشكل آمن ليتعرف عليها بايثون في هذا النطاق
+    sequence = [int(i) - 1 for i in st.session_state.sequence] # تحويل التسلسل لـ index (0-based)
     n_machines = st.session_state.n_machines
 
-    # ------------------------------------------------------
-    # Current Machine Status
-    # ------------------------------------------------------
-    machine_status = []
-
-    for m in range(n_machines):
-
-        current_job = None
-
-        for j_idx, job_id in enumerate(sequence):
-
-            if (
-                start_times[j_idx, m]
-                <= current_sim_time
-                <= end_times[j_idx, m]
-            ):
-                current_job = f"Job {job_id + 1}"
-                break
-
-        if current_job:
-
-            machine_status.append({
-                "machine": f"Machine {m + 1}",
-                "job": current_job,
-                "running": True
-            })
-
-        else:
-
-            machine_status.append({
-                "machine": f"Machine {m + 1}",
-                "job": "Aucune opération en cours",
-                "running": False
-            })
-
-
-    # ------------------------------------------------------
-    # Completed Products
-    # ------------------------------------------------------
-    completed_jobs = []
-
-    for j_idx, job_id in enumerate(sequence):
-
-        finish_time_on_last_machine = end_times[
-            j_idx,
-            n_machines - 1
-        ]
-
-        if current_sim_time >= finish_time_on_last_machine:
-
-            completed_jobs.append({
-
-                "product": f"Job {job_id + 1}",
-
-                "start": f"{start_times[j_idx, 0]:.1f}",
-
-                "finish": f"{finish_time_on_last_machine:.1f}"
-
-            })
-
-
-    # ------------------------------------------------------
-    # Total TS / Machine
-    # ------------------------------------------------------
-    static_ts = st.session_state.Ts.values
-
-    static_seq = [
-        int(x) - 1
-        for x in st.session_state.sequence
-    ]
-
-    machine_ts_totals = {
-        f"Machine {m + 1}": 0.0
-        for m in range(n_machines)
-    }
-
-    for i in range(1, len(static_seq)):
-
-        prev_job = static_seq[i - 1]
-        current_job = static_seq[i]
-
-        ts_value = float(
-            static_ts[prev_job, current_job]
-        )
-
-        for m in range(n_machines):
-
-            machine_ts_totals[
-                f"Machine {m + 1}"
-            ] += ts_value
-
-
-    total_ts_global = sum(
-        machine_ts_totals.values()
-    )
-
-
-    # ------------------------------------------------------
-    # Global statistics
-    # ------------------------------------------------------
-    total_products = len(sequence)
-
-    completed_count = len(completed_jobs)
-
-    progress = (
-        completed_count / total_products
-        if total_products > 0
-        else 0
-    )
-
-    running_machines = sum(
-        1 for x in machine_status
-        if x["running"]
-    )
-
-    idle_machines = (
-        n_machines - running_machines
-    )
-
-
-    # ======================================================
-    # DASHBOARD HEADER
-    # ======================================================
-
-    st.markdown("""
-    <div class="dashboard-section">
-
-        <div class="dashboard-title">
-            📊 Production Monitoring Dashboard
-        </div>
-
-        <div class="dashboard-subtitle">
-            Suivi en temps réel des machines et des produits
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-
-    # ======================================================
-    # TOP METRICS
-    # ======================================================
-
-    metric_cols = st.columns(4)
-
-    with metric_cols[0]:
-
-        st.markdown(f"""
-        <div class="metric-card">
-
-            <div class="metric-icon">🏭</div>
-
-            <div class="metric-label">
-                TOTAL MACHINES
-            </div>
-
-            <div class="metric-value">
-                {n_machines}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-
-    with metric_cols[1]:
-
-        st.markdown(f"""
-        <div class="metric-card">
-
-            <div class="metric-icon">⚙️</div>
-
-            <div class="metric-label">
-                MACHINES EN MARCHE
-            </div>
-
-            <div class="metric-value">
-                {running_machines}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-
-    with metric_cols[2]:
-
-        st.markdown(f"""
-        <div class="metric-card">
-
-            <div class="metric-icon">✅</div>
-
-            <div class="metric-label">
-                PRODUITS TERMINÉS
-            </div>
-
-            <div class="metric-value">
-                {completed_count} / {total_products}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-
-    with metric_cols[3]:
-
-        st.markdown(f"""
-        <div class="metric-card">
-
-            <div class="metric-icon">🔄</div>
-
-            <div class="metric-label">
-                TOTAL TS
-            </div>
-
-            <div class="metric-value">
-                {total_ts_global:.1f} s
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-
-    # ======================================================
-    # MAIN DASHBOARD
-    # ======================================================
-
-    col1, col2, col3 = st.columns(
-        [1, 1.7, 1.1],
-        gap="large"
-    )
-
-
-    # ======================================================
-    # MACHINE STATUS
-    # ======================================================
+# 1. تغيير التقسيم إلى 3 أعمدة
+    col1, col2, col3 = st.columns([1, 1.5, 1.2])
 
     with col1:
-
-        st.markdown("""
-        <div class="panel">
-
-            <div class="panel-header">
-                <span class="panel-header-icon">🖥️</span>
-                État des machines
-            </div>
-
-        """, unsafe_allow_html=True)
-
-        for machine in machine_status:
-
-            if machine["running"]:
-
-                st.markdown(f"""
-                <div class="machine-card running">
-
-                    <div class="machine-name">
-                        🟢 {machine["machine"]}
-                    </div>
-
-                    <div class="machine-job">
-                        ⚙️ {machine["job"]}
-                    </div>
-
-                    <span class="status-badge status-running">
-                        EN PRODUCTION
-                    </span>
-
-                </div>
-                """, unsafe_allow_html=True)
-
-            else:
-
-                st.markdown(f"""
-                <div class="machine-card idle">
-
-                    <div class="machine-name">
-                        ⚪ {machine["machine"]}
-                    </div>
-
-                    <div class="machine-job">
-                        {machine["job"]}
-                    </div>
-
-                    <span class="status-badge status-idle">
-                        IDLE
-                    </span>
-
-                </div>
-                """, unsafe_allow_html=True)
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-    # ======================================================
-    # COMPLETED PRODUCTS
-    # ======================================================
+        st.subheader("🖥️ حالة الآلات الآن")
+        machine_status = []
+        for m in range(n_machines):
+            current_job = "متوقفة (Idle)"
+            for j_idx, job_id in enumerate(sequence):
+                if start_times[j_idx, m] <= current_sim_time <= end_times[j_idx, m]:
+                    current_job = f"🔨 Job {job_id + 1}"
+                    break
+            machine_status.append({"الآلة": f"Machine {m+1}", "المنتج الحالي": current_job})
+        st.table(pd.DataFrame(machine_status))
 
     with col2:
-
-        st.markdown("""
-        <div class="panel">
-
-            <div class="panel-header">
-                <span class="panel-header-icon">✅</span>
-                Produits complétés
-            </div>
-
-        """, unsafe_allow_html=True)
-
-
+        st.subheader("✅ المنتجات المكتملة")
+        completed_jobs = []
+        for j_idx, job_id in enumerate(sequence):
+            finish_time_on_last_machine = end_times[j_idx, n_machines - 1]
+            if current_sim_time >= finish_time_on_last_machine:
+                completed_jobs.append({
+                    "المنتج": f"Job {job_id + 1}",
+                    "وقت البدء (ث)": f"{start_times[j_idx, 0]:.1f}", 
+                    "وقت الانتهاء (ث)": f"{finish_time_on_last_machine:.1f}", 
+                    "الحالة": "تم الإنجاز"
+                })
         if completed_jobs:
-
-            table_html = """
-            <table class="products-table">
-
-                <thead>
-                    <tr>
-                        <th>PRODUIT</th>
-                        <th>DÉBUT</th>
-                        <th>FIN</th>
-                        <th>ÉTAT</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-            """
-
-            for job in completed_jobs:
-
-                table_html += f"""
-                    <tr>
-
-                        <td>
-                            <span class="product-name">
-                                {job["product"]}
-                            </span>
-                        </td>
-
-                        <td>
-                            {job["start"]} s
-                        </td>
-
-                        <td>
-                            {job["finish"]} s
-                        </td>
-
-                        <td>
-                            <span class="completed-badge">
-                                ✓ TERMINÉ
-                            </span>
-                        </td>
-
-                    </tr>
-                """
-
-            table_html += """
-                </tbody>
-            </table>
-            """
-
-            st.markdown(
-                table_html,
-                unsafe_allow_html=True
-            )
-
+            st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
         else:
+            st.info("لا توجد منتجات مكتملة بالكامل حتى الآن.")
 
-            st.markdown("""
-            <div class="empty-state">
-
-                <div class="empty-icon">
-                    📦
-                </div>
-
-                Aucun produit terminé
-                pour le moment.
-
-            </div>
-            """, unsafe_allow_html=True)
-
-
-        # Progression
-
-        progress_percent = progress * 100
-
-        st.markdown(f"""
-        <div class="progress-wrapper">
-
-            <div class="progress-title">
-                📈 Progression globale
-            </div>
-
-            <div class="progress-bar">
-
-                <div
-                    class="progress-fill"
-                    style="width:{progress_percent:.1f}%">
-                </div>
-
-            </div>
-
-            <div class="progress-percent">
-                {progress_percent:.1f}%
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-    # ======================================================
-    # TOTAL TS / MACHINE
-    # ======================================================
-
+    # 2. العمود الثالث الجديد (يتحكم به زر Gantt Complete)
     with col3:
+        if st.session_state.get("show_complete_gantt", False):
+            st.subheader("📋 Total TS / Machine")
+            
+            static_ts = st.session_state.Ts.values
+            static_seq = [int(x) - 1 for x in st.session_state.sequence]
+            
+            machine_ts_totals = {f"Machine {m+1}": 0.0 for m in range(n_machines)}
+            
+            for i in range(1, len(static_seq)):
+                prev_job = static_seq[i - 1]
+                current_job = static_seq[i]
+                ts_value = float(static_ts[prev_job, current_job])
+                for m in range(n_machines):
+                    machine_ts_totals[f"Machine {m+1}"] += ts_value
 
-        st.markdown("""
-        <div class="panel">
+            df_ts_machines = pd.DataFrame([
+                {"Machine": m_name, "Total TS (s)": total_ts}
+                for m_name, total_ts in machine_ts_totals.items()
+            ])
+            
+            st.dataframe(df_ts_machines, use_container_width=True, hide_index=True)
+	
+	
+	
+	
+	
+	
+	
 
-            <div class="panel-header">
-                <span class="panel-header-icon">⏱️</span>
-                Total TS / Machine
-            </div>
+    # =========================
+    # 9. إحصائيات سريعة
+    # =========================
+    if completed_jobs:
+        progress = len(completed_jobs) / len(sequence)
+        st.progress(progress)
+        st.write(f"📊 نسبة الإنجاز الكلية: {progress*100:.1f}%")
 
-        """, unsafe_allow_html=True)
-
-
-        for machine_name, total_ts in machine_ts_totals.items():
-
-            st.markdown(f"""
-            <div class="ts-card">
-
-                <div class="ts-machine">
-                    {machine_name}
-                </div>
-
-                <div class="ts-value">
-                    {total_ts:.1f}
-                </div>
-
-                <div class="ts-unit">
-                    secondes de Setup / TS
-                </div>
-
-            </div>
-            """, unsafe_allow_html=True)
-
-
-        # Total TS global
-
-        st.markdown(f"""
-        <div class="ts-card"
-             style="border:2px solid #bfdbfe;
-                    background:linear-gradient(145deg,#eff6ff,#ffffff);">
-
-            <div class="ts-machine">
-                TOTAL TS GLOBAL
-            </div>
-
-            <div class="ts-value"
-                 style="color:#1d4ed8;">
-                {total_ts_global:.1f}
-            </div>
-
-            <div class="ts-unit">
-                secondes
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-    # ======================================================
-    # FOOTER INFORMATION
-    # ======================================================
-
-    st.markdown(f"""
-    <div style="
-        margin-top:10px;
-        padding:12px 18px;
-        border-radius:12px;
-        background:#f8fafc;
-        border:1px solid #e2e8f0;
-        color:#64748b;
-        font-size:12px;
-        text-align:center;
-    ">
-
-        ⏱️ Temps simulation :
-        <b>{current_sim_time:.1f} s</b>
-        &nbsp;&nbsp;•&nbsp;&nbsp;
-
-        🏭 Machines actives :
-        <b>{running_machines}/{n_machines}</b>
-        &nbsp;&nbsp;•&nbsp;&nbsp;
-
-        📦 Produits terminés :
-        <b>{completed_count}/{total_products}</b>
-
-    </div>
-    """, unsafe_allow_html=True)
 else:
     # رسالة تظهر للمستخدم إذا فتح الصفحة لأول مرة قبل توليد البيانات
     st.info("⏳ الرجاء الضغط على زر 'إنشاء الجداول' أولاً لتوليد البيانات وعرض حالة الآلات.")
