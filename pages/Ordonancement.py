@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
-import textwrap
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 from GA import run_ga_interface
@@ -884,23 +883,16 @@ if st.session_state.show_machine_utilization:
             )
 
 
-
-
-
-
 # =========================
 # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
 # =========================
-
 st.divider()
 
+# تأكد أولاً من أن الجداول والتسلسل قد تم إنشاؤهم بنجاح قبل عرض اللوحة
 if "Pij" in st.session_state and "sequence" in st.session_state:
-
-    sequence = [
-        int(i) - 1
-        for i in st.session_state.sequence
-    ]
-
+    
+    # جلب المتغيرات بشكل آمن ليتعرف عليها بايثون في هذا النطاق
+    sequence = [int(i) - 1 for i in st.session_state.sequence] # تحويل التسلسل لـ index (0-based)
     n_machines = st.session_state.n_machines
 
 # 1. تغيير التقسيم إلى 3 أعمدة
@@ -916,8 +908,6 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     current_job = f"🔨 Job {job_id + 1}"
                     break
             machine_status.append({"الآلة": f"Machine {m+1}", "المنتج الحالي": current_job})
-        
-        # الجدول الأول (st.table)
         st.table(pd.DataFrame(machine_status))
 
     with col2:
@@ -933,10 +923,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     "الحالة": "تم الإنجاز"
                 })
         if completed_jobs:
-            # الجدول الثاني (مغلف بتغليف زردي للتأثير بالألوان)
-            st.markdown('<div class="custom-styled-table completed-jobs-table">', unsafe_allow_html=True)
-            st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True, hide_index=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
         else:
             st.info("لا توجد منتجات مكتملة بالكامل حتى الآن.")
 
@@ -962,7 +949,23 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                 for m_name, total_ts in machine_ts_totals.items()
             ])
             
-            # الجدول الثالث (مغلف بتغليف زردي للتأثير بالألوان)
-            st.markdown('<div class="custom-styled-table ts-machine-table">', unsafe_allow_html=True)
             st.dataframe(df_ts_machines, use_container_width=True, hide_index=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+	
+	
+	
+	
+	
+	
+	
+
+    # =========================
+    # 9. إحصائيات سريعة
+    # =========================
+    if completed_jobs:
+        progress = len(completed_jobs) / len(sequence)
+        st.progress(progress)
+        st.write(f"📊 نسبة الإنجاز الكلية: {progress*100:.1f}%")
+
+else:
+    # رسالة تظهر للمستخدم إذا فتح الصفحة لأول مرة قبل توليد البيانات
+    st.info("⏳ الرجاء الضغط على زر 'إنشاء الجداول' أولاً لتوليد البيانات وعرض حالة الآلات.")
