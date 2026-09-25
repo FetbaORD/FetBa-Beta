@@ -80,7 +80,6 @@ def smartSwapMutation(seq, pm, P, Incompat, Ts):
 
 
 
-st_autorefresh(interval=2000, key="refresh_clock")
 st.set_page_config(page_title="Ordonancement de la production", layout="wide")
 
 st.title("Ordonancement de la production")
@@ -91,12 +90,18 @@ with open("style.css", "r", encoding="utf-8") as f:
 
 if "sim_start_time" in st.session_state:
 
-    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
-
-    minutes = int(sim_duration // 60)
-    seconds = int(sim_duration % 60)
-
-    st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
+    # الوقت الحقيقي المنقضي
+	real_elapsed_time = (
+		datetime.now() - st.session_state.sim_start_time
+	).total_seconds()
+	sim_duration = real_elapsed_time * simulation_speed
+	minutes = int(sim_duration // 60)
+	seconds = int(sim_duration % 60)
+	st.info(
+		f"⏱️ Simulation Time: {minutes:02d} min {seconds:02d} sec "
+		f" | Speed: {simulation_speed}x"
+	)
+	
 
 else:
     st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
@@ -121,6 +126,18 @@ simulation_speed = st.sidebar.slider(
     format="%dx"
 )
 
+# ==========================================================
+# تحديث المحاكاة حسب سرعة المحاكاة
+# 1x  = تحديث كل 1 ثانية
+# 2x  = تحديث كل 0.5 ثانية
+# 10x = تحديث كل 0.1 ثانية
+# ==========================================================
+refresh_interval = max(100, int(1000 / simulation_speed))
+
+st_autorefresh(
+    interval=refresh_interval,
+    key="refresh_clock"
+)
 
 # =========================
 # 2. زر إنشاء الجداول
