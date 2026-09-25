@@ -607,6 +607,7 @@ if "show_complete_gantt" not in st.session_state:
     st.session_state.show_complete_gantt = False
 
 # 2. أزرار التحكم بالعرض في سطر أنيق ومتباعد
+# أضفنا gap="large" لضمان وجود مسافة أمان واضحة بين الأعمدة
 col_gantt_btn1, col_gantt_btn2 = st.columns([1, 1], gap="large")
 
 with col_gantt_btn1:
@@ -619,7 +620,7 @@ with col_gantt_btn2:
             st.session_state.show_complete_gantt = False
             st.rerun()
 
-# 3. إذا كانت الحالة True، يتم رسم المخطط الكامل وجميع الجداول التابعة له
+# 3. إذا كانت الحالة True، يتم رسم المخطط الكامل فوراً
 if st.session_state.show_complete_gantt:
     
     # دالة حساب الجدولة الكاملة الثابتة (بدون اقتطاع الوقت الحالي)
@@ -666,6 +667,7 @@ if st.session_state.show_complete_gantt:
                 prev_job_idx = static_seq[i-1]
                 setup_duration = static_ts[prev_job_idx, job_idx]
                 if setup_duration > 0:
+                    # وقت بداية الإعداد هو وقت فراغ الآلة السابق (والذي يساوي وقت بدء المهمة الحالية ناقص وقت الإعداد)
                     setup_start = s_times[job_idx, m] - setup_duration
                     if setup_start >= 0:
                         static_gantt_data.append(dict(
@@ -685,6 +687,8 @@ if st.session_state.show_complete_gantt:
             
     if static_gantt_data:
         df_static_gantt = pd.DataFrame(static_gantt_data)
+        
+        # خريطة ألوان مخصصة: تجعل وقت الإعداد رمادياً داكناً ومميزاً والمنتجات بألوانها المعتادة
         color_map = {"Temps d'opération (Setup)": "#555555"}
         
         fig_static = px.timeline(
@@ -694,6 +698,7 @@ if st.session_state.show_complete_gantt:
             y="Machine",
             color="Type",
             color_discrete_map=color_map,
+            # استخدمنا وسم span لتلوين القيمة باللون الأحمر كمثال
             title=f"Diagramme de Gantt Complet Static | Cmax = <span style='color:red; font-weight:bold;'>{int(np.max(e_times))}</span> Seconds"
         )
         
@@ -705,97 +710,282 @@ if st.session_state.show_complete_gantt:
             height=400
         )
         
+        # عرض المخطط فوراً وبثبات كامل
         st.plotly_chart(fig_static, use_container_width=True, key="static_gantt_plotly")
+# ==========================================================
+# 📊 TAUX D'UTILISATION COMPLET DES MACHINES
+# ==========================================================
 
-    # ==========================================================
-    # 📋 TOTAL SETUP / TS / TEMPS DE STÉRILISATION PAR MACHINE
-    # (مضمّن الآن ليعرض بعد Diagramme de Gantt Complete مباشرة)
-    # ==========================================================
+if "show_machine_utilization" not in st.session_state:
+    st.session_state.show_machine_utilization = False
 
-    st.divider()
-    st.subheader("📋 Total des temps de stérilisation (TS) par machine")
+col_util1, col_util2 = st.columns([1, 1], gap="large")
 
-    machine_ts_totals = {f"Machine {m+1}": 0.0 for m in range(nm)}
+with col_util1:
+    if st.button(
+        "Afficher les taux d'utilisation des machines",
+        type="primary"
+    ):
+        st.session_state.show_machine_utilization = True
 
-    for i in range(1, len(static_seq)):
-        prev_job = static_seq[i - 1]
-        current_job = static_seq[i]
-        ts_value = float(static_ts[prev_job, current_job])
+with col_util2:
+    if st.session_state.show_machine_utilization:
+        if st.button("Masquer les taux", type="secondary"):
+            st.session_state.show_machine_utilization = False
+            st.rerun()
+
+
+# ==========================================================
+# TAUX COMPLET — basé sur le Gantt complet
+# ==========================================================
+
+if st.session_state.show_machine_utilization:
+
+    # Cmax COMPLET de la planification
+    Cmax = float(np.max(e_times))
+
+    st.subheader("📊 Taux d'utilisation complet des machines")
+
+    utilization_data = []
+
+    for m in range(nm):
+
+        processing_time = 0.0
+        setup_time = 0.0
+
+        # ------------------------------------------
+        # Temps Processing + TS
+        # ------------------------------------------
+        for i, job_idx in enumerate(static_seq):
+
+            # Temps de production
+            processing_time += float(static_pij[job_idx, m])
+
+            # Temps de setup / TS
+            if i > 0:
+                prev_job_idx = static_seq[i - 1]
+                setup_time += float(static_ts[prev_job_idx, job_idx])
+
+        # ------------------------------------------
+        # Temps d'arrêt / panne
+        # ------------------------------------------
+        breakdown_time = 0.0
+
+        machine_key = f"Machine {m + 1}"
+
+        if "machine_faults" in st.session_state:
+
+            faults = st.session_state.machine_faults.get(
+                machine_key, []
+            )
+
+            for fault in faults:
+
+                f_start = float(fault["start"])
+
+                if fault["end"] is not None:
+                    f_end = float(fault["end"])
+                else:
+                    f_end = Cmax
+
+                # Limiter la panne à Cmax
+                f_start = max(0, min(f_start, Cmax))
+                f_end = max(0, min(f_end, Cmax))
+
+                if f_end > f_start:
+                    breakdown_time += f_end - f_start
+
+        # ------------------------------------------
+        # Idle = temps restant
+        # ------------------------------------------
+        idle_time = Cmax - (
+            processing_time
+            + setup_time
+            + breakdown_time
+        )
+
+        idle_time = max(0, idle_time)
+
+        # ------------------------------------------
+        # Pourcentages
+        # ------------------------------------------
+        processing_pct = (processing_time / Cmax) * 100
+        idle_pct = (idle_time / Cmax) * 100
+        setup_pct = (setup_time / Cmax) * 100
+        breakdown_pct = (breakdown_time / Cmax) * 100
+
+        utilization_data.append({
+            "Machine": f"Machine {m + 1}",
+            "Processing": processing_pct,
+            "Idle": idle_pct,
+            "TS": setup_pct,
+            "Arrêt": breakdown_pct
+        })
+
+    # ======================================================
+    # AFFICHAGE DES DONUTS
+    # ======================================================
+
+    cols = st.columns(nm)
+
+    for m, data in enumerate(utilization_data):
+
+        with cols[m]:
+
+            values = [
+                data["Processing"],
+                data["Idle"],
+                data["TS"],
+                data["Arrêt"]
+            ]
+
+            labels = [
+                "Machine en marche",
+                "Idle",
+                "TS",
+                "Arrêt"
+            ]
+
+            fig_donut = px.pie(
+                values=values,
+                names=labels,
+                hole=0.62
+            )
+
+            fig_donut.update_traces(
+                textinfo="percent",
+                textposition="inside"
+            )
+
+            fig_donut.update_layout(
+                title=f"<b>{data['Machine']}</b>",
+                showlegend=True,
+                height=350,
+                margin=dict(
+                    l=10,
+                    r=10,
+                    t=50,
+                    b=10
+                ),
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=-0.25,
+                    xanchor="center",
+                    x=0.5
+                )
+            )
+
+            st.plotly_chart(
+                fig_donut,
+                use_container_width=True,
+                key=f"complete_utilization_{m}"
+            )
+
+
+# ==========================================================
+# 📋 TOTAL SETUP / TS / TEMPS DE STÉRILISATION PAR MACHINE
+# ==========================================================
+
+st.divider()
+
+st.subheader("📋 Total des temps de stérilisation (TS) par machine")
+
+# حساب أوقات التعقيم لكل آلة مستقلم
+machine_ts_totals = {f"Machine {m+1}": 0.0 for m in range(nm)}
+
+for i in range(1, len(static_seq)):
+    prev_job = static_seq[i - 1]
+    current_job = static_seq[i]
+    ts_value = float(static_ts[prev_job, current_job])
+    
+    # يضاف TS لكل آلة على حدة في Flow Shop
+    for m in range(nm):
+        machine_ts_totals[f"Machine {m+1}"] += ts_value
+
+# تحويل البيانات إلى الجدول
+df_ts_machines = pd.DataFrame([
+    {"Machine": machine, "Total TS (s)": total_ts}
+    for machine, total_ts in machine_ts_totals.items()
+])
+
+# إضافة سطر المجموع الكلي لجميع الآلات
+total_ts_all_machines = sum(machine_ts_totals.values())
+df_ts_machines.loc[len(df_ts_machines)] = {
+    "Machine": "TOTAL GLOBAL",
+    "Total TS (s)": total_ts_all_machines
+}
+
+# عرض الجدول
+st.dataframe(
+    df_ts_machines,
+    use_container_width=True,
+    hide_index=True
+)
+
+st.success(
+    f"⏱️ Temps total de stérilisation cumulé (Toutes machines) : "
+    f"{total_ts_all_machines:.2f} secondes"
+)
+# =========================
+# 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
+# =========================
+st.divider()
+
+# تأكد أولاً من أن الجداول والتسلسل قد تم إنشاؤهم بنجاح قبل عرض اللوحة
+if "Pij" in st.session_state and "sequence" in st.session_state:
+    
+    # جلب المتغيرات بشكل آمن ليتعرف عليها بايثون في هذا النطاق
+    sequence = [int(i) - 1 for i in st.session_state.sequence] # تحويل التسلسل لـ index (0-based)
+    n_machines = st.session_state.n_machines
+
+    col1, col2 = st.columns([1, 2])
+
+    with col1:
+        st.subheader("🖥️ حالة الآلات الآن")
+        machine_status = []
         
-        for m in range(nm):
-            machine_ts_totals[f"Machine {m+1}"] += ts_value
+        # استخدام n_machines بعد الإصلاح السابق
+        for m in range(n_machines):
+            current_job = "متوقفة (Idle)"
+            for j_idx, job_id in enumerate(sequence):  # الآن سيتعرف بايثون على sequence بدون مشاكل
+                # التحقق إذا كان الوقت الحالي يقع بين بداية ونهاية الوظيفة على هذه الآلة
+                if start_times[j_idx, m] <= current_sim_time <= end_times[j_idx, m]:
+                    current_job = f"🔨 Job {job_id + 1}"
+                    break
+            machine_status.append({"الآلة": f"Machine {m+1}", "المنتج الحالي": current_job})
+        
+        st.table(pd.DataFrame(machine_status))
 
-    df_ts_machines = pd.DataFrame([
-        {"Machine": machine, "Total TS (s)": total_ts}
-        for machine, total_ts in machine_ts_totals.items()
-    ])
-
-    total_ts_all_machines = sum(machine_ts_totals.values())
-    df_ts_machines.loc[len(df_ts_machines)] = {
-        "Machine": "TOTAL GLOBAL",
-        "Total TS (s)": total_ts_all_machines
-    }
-
-    st.dataframe(
-        df_ts_machines,
-        use_container_width=True,
-        hide_index=True
-    )
-
-    st.success(
-        f"⏱️ Temps total de stérilisation cumulé (Toutes machines) : "
-        f"{total_ts_all_machines:.2f} secondes"
-    )
-
-    # =========================
-    # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
-    # =========================
-    st.divider()
-
-    if "Pij" in st.session_state and "sequence" in st.session_state:
-        sequence = [int(i) - 1 for i in st.session_state.sequence]
-        n_machines = st.session_state.n_machines
-
-        col1, col2 = st.columns([1, 2])
-
-        with col1:
-            st.subheader("🖥️ حالة الآلات الآن")
-            machine_status = []
+    with col2:
+        st.subheader("✅ المنتجات المكتملة")
+        completed_jobs = []
+        
+        # نمر على كل وظيفة ونتحقق من آخر آلة في الخط
+        for j_idx, job_id in enumerate(sequence):
+            finish_time_on_last_machine = end_times[j_idx, n_machines - 1]
             
-            for m in range(n_machines):
-                current_job = "متوقفة (Idle)"
-                for j_idx, job_id in enumerate(sequence):
-                    if start_times[j_idx, m] <= current_sim_time <= end_times[j_idx, m]:
-                        current_job = f"🔨 Job {job_id + 1}"
-                        break
-                machine_status.append({"الآلة": f"Machine {m+1}", "المنتج الحالي": current_job})
-            
-            st.table(pd.DataFrame(machine_status))
-
-        with col2:
-            st.subheader("✅ المنتجات المكتملة")
-            completed_jobs = []
-            
-            for j_idx, job_id in enumerate(sequence):
-                finish_time_on_last_machine = end_times[j_idx, n_machines - 1]
-                
-                if current_sim_time >= finish_time_on_last_machine:
-                    completed_jobs.append({
-                        "المنتج": f"Job {job_id + 1}",
-                        "وقت البدء (ث)": f"{start_times[j_idx, 0]:.1f}", 
-                        "وقت الانتهاء (ث)": f"{finish_time_on_last_machine:.1f}", 
-                        "الحالة": "تم الإنجاز"
-                    })
-            
-            if completed_jobs:
-                st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
-            else:
-                st.info("لا توجد منتجات مكتملة بالكامل حتى الآن.")
-
-        # =========================
-        # 9. إحصائيات سريعة
-        # =========================
+            if current_sim_time >= finish_time_on_last_machine:
+                completed_jobs.append({
+                    "المنتج": f"Job {job_id + 1}",
+                    "وقت البدء (ث)": f"{start_times[j_idx, 0]:.1f}", 
+                    "وقت الانتهاء (ث)": f"{finish_time_on_last_machine:.1f}", 
+                    "الحالة": "تم الإنجاز"
+                })
+        
         if completed_jobs:
-            progress = len(completed_jobs) / len(sequence)
-            st.progress(progress)
-            st.write(f"📊 نسبة الإنجاز الكلية: {progress*100:.1f}%")
+            st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
+        else:
+            st.info("لا توجد منتجات مكتملة بالكامل حتى الآن.")
+
+    # =========================
+    # 9. إحصائيات سريعة
+    # =========================
+    if completed_jobs:
+        progress = len(completed_jobs) / len(sequence)
+        st.progress(progress)
+        st.write(f"📊 نسبة الإنجاز الكلية: {progress*100:.1f}%")
+
+else:
+    # رسالة تظهر للمستخدم إذا فتح الصفحة لأول مرة قبل توليد البيانات
+    st.info("⏳ الرجاء الضغط على زر 'إنشاء الجداول' أولاً لتوليد البيانات وعرض حالة الآلات.")
