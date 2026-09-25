@@ -898,13 +898,6 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 # 1. تغيير التقسيم إلى 3 أعمدة
     col1, col2, col3 = st.columns([1, 1.5, 1.2])
 
-# ==========================================================
-# 3 FINAL TABLES - STYLED ONLY
-# ==========================================================
-
-col1, col2, col3 = st.columns([1, 1.5, 1.2], gap="large")
-
-
     with col1:
         st.subheader("🖥️ حالة الآلات الآن")
         machine_status = []
@@ -957,8 +950,11 @@ col1, col2, col3 = st.columns([1, 1.5, 1.2], gap="large")
             ])
             
             st.dataframe(df_ts_machines, use_container_width=True, hide_index=True)
-
-
+	
+	
+	
+	
+	
 	
 	
 
