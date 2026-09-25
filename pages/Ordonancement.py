@@ -113,7 +113,8 @@ st.sidebar.header("⚙️ Paramètres")
 n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
 n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
 
-
+# أضف هذا السطر في الشريط الجانبي
+sim_speed = st.sidebar.slider("تسريع المحاكاة (Vitesse)", min_value=1, max_value=100, value=1, step=1)
 
 # =========================
 # 2. زر إنشاء الجداول
