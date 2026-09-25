@@ -91,12 +91,12 @@ with open("style.css", "r", encoding="utf-8") as f:
 
 if "sim_start_time" in st.session_state:
 
-    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds() * sim_speed
+    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
 
     minutes = int(sim_duration // 60)
     seconds = int(sim_duration % 60)
 
-    st.info(f"⏱️ Runtime (Simulé x{sim_speed}): {minutes} min {seconds} sec")
+    st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
 
 else:
     st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
@@ -113,8 +113,7 @@ st.sidebar.header("⚙️ Paramètres")
 n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
 n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
 
-# أضف هذا السطر في الشريط الجانبي
-sim_speed = st.sidebar.slider("تسريع المحاكاة (Vitesse)", min_value=1, max_value=100, value=1, step=1)
+
 
 # =========================
 # 2. زر إنشاء الجداول
@@ -461,11 +460,9 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     start_times = np.zeros((n_j, n_m))
     end_times = np.zeros((n_j, n_m))
 
-
-
-	# الحصول على الوقت الحالي للمحاكاة (مضروباً في معامل التسريع)
+    # الحصول على الوقت الحالي للمحاكاة (ثواني)
     if "sim_start_time" in st.session_state:
-        current_sim_time = (datetime.now() - st.session_state.sim_start_time).total_seconds() * sim_speed
+        current_sim_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
     else:
         current_sim_time = 0
 
