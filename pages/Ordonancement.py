@@ -939,7 +939,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     sequence = [int(i) - 1 for i in st.session_state.sequence] # تحويل التسلسل لـ index (0-based)
     n_machines = st.session_state.n_machines
 
-    col1, col2 = st.columns([1, 2])
+    col1, col2, col3 = st.columns([1, 1.5, 1.2])
 
     with col1:
         st.subheader("🖥️ حالة الآلات الآن")
@@ -956,6 +956,37 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
             machine_status.append({"الآلة": f"Machine {m+1}", "المنتج الحالي": current_job})
         
         st.table(pd.DataFrame(machine_status))
+
+	with col3:
+		# يظهر فقط عند الضغط على زر Afficher Gantt Complete
+		if st.session_state.get("show_complete_gantt", False):
+			st.subheader("📋 Total TS par machine")
+			
+			# جلب تسلسل static_seq ومصفوفة static_ts المحسوبة في Gantt Complete
+			static_ts = st.session_state.Ts.values
+			static_seq = [int(x) - 1 for x in st.session_state.sequence]
+			
+			machine_ts_totals = {f"Machine {m+1}": 0.0 for m in range(n_machines)}
+			
+			for i in range(1, len(static_seq)):
+				prev_job = static_seq[i - 1]
+				current_job = static_seq[i]
+				ts_value = float(static_ts[prev_job, current_job])
+				for m in range(n_machines):
+					machine_ts_totals[f"Machine {m+1}"] += ts_value
+		
+			df_ts_machines = pd.DataFrame([
+				{"Machine": m_name, "Total TS (s)": total_ts}
+				for m_name, total_ts in machine_ts_totals.items()
+			])
+			
+			st.dataframe(df_ts_machines, use_container_width=True, hide_index=True)
+	
+	
+	
+	
+	
+		
 
     with col2:
         st.subheader("✅ المنتجات المكتملة")
