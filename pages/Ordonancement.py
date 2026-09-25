@@ -96,7 +96,7 @@ if "sim_start_time" in st.session_state:
     minutes = int(sim_duration // 60)
     seconds = int(sim_duration % 60)
 
-    st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
+    st.info(f"⏱️ Runtime (Simulé x{sim_speed}): {minutes} min {seconds} sec")
 
 else:
     st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
