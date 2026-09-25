@@ -496,7 +496,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
             datetime.now() - st.session_state.sim_start_time
         ).total_seconds()
         # تطبيق سرعة المحاكاة
-		current_sim_time = real_elapsed_time * simulation_speed
+        current_sim_time = real_elapsed_time * simulation_speed
     else:
         current_sim_time = 0
 
