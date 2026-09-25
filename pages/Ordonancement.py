@@ -112,7 +112,14 @@ st.sidebar.header("⚙️ Paramètres")
 # =========================
 n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
 n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
-
+simulation_speed = st.sidebar.slider(
+    "⚡ Vitesse de simulation",
+    min_value=1,
+    max_value=50,
+    value=1,
+    step=1,
+    format="%dx"
+)
 
 
 # =========================
@@ -460,11 +467,19 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     start_times = np.zeros((n_j, n_m))
     end_times = np.zeros((n_j, n_m))
 
-    # الحصول على الوقت الحالي للمحاكاة (ثواني)
-    if "sim_start_time" in st.session_state:
-        current_sim_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
-    else:
-        current_sim_time = 0
+if "sim_start_time" in st.session_state:
+
+    real_elapsed_time = (
+        datetime.now() - st.session_state.sim_start_time
+    ).total_seconds()
+
+    current_sim_time = (
+        real_elapsed_time * simulation_speed
+    )
+
+else:
+
+    current_sim_time = 0
 
     # حساب الجدولة الديناميكية (Flow Shop مع إزاحة الأعطال)
     for j_idx, job_id in enumerate(sequence):
