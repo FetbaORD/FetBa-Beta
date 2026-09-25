@@ -883,184 +883,110 @@ if st.session_state.show_machine_utilization:
             )
 
 
+
+
+
+
 # =========================
 # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
 # =========================
+
 st.divider()
 
-# تأكد أولاً من أن الجداول والتسلسل قد تم إنشاؤهم بنجاح قبل عرض اللوحة
 if "Pij" in st.session_state and "sequence" in st.session_state:
-    
-    # جلب المتغيرات بشكل آمن ليتعرف عليها بايثون في هذا النطاق
-    sequence = [int(i) - 1 for i in st.session_state.sequence] # تحويل التسلسل لـ index (0-based)
+
+    sequence = [
+        int(i) - 1
+        for i in st.session_state.sequence
+    ]
+
     n_machines = st.session_state.n_machines
 
-# ==========================================================
-# 3 FINAL TABLES - STYLED ONLY
-# ==========================================================
+    # ==========================================================
+    # 3 FINAL TABLES - STYLED ONLY
+    # ==========================================================
 
-col1, col2, col3 = st.columns([1, 1.5, 1.2], gap="large")
-
-
-# ==========================================================
-# 1. MACHINE STATUS
-# ==========================================================
-
-with col1:
-
-    st.markdown(
-        '<div class="final-table-title">🖥️ حالة الآلات الآن</div>',
-        unsafe_allow_html=True
+    col1, col2, col3 = st.columns(
+        [1, 1.5, 1.2],
+        gap="large"
     )
 
-    machine_status = []
+    # ==========================================================
+    # 1. MACHINE STATUS
+    # ==========================================================
 
-    for m in range(n_machines):
+    with col1:
 
-        current_job = None
-
-        for j_idx, job_id in enumerate(sequence):
-
-            if (
-                start_times[j_idx, m]
-                <= current_sim_time
-                <= end_times[j_idx, m]
-            ):
-                current_job = f"Job {job_id + 1}"
-                break
-
-        machine_status.append({
-            "machine": f"Machine {m+1}",
-            "job": current_job
-        })
-
-
-    html = """
-    <table class="machine-status-table">
-        <thead>
-            <tr>
-                <th>Machine</th>
-                <th>État actuel</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
-
-    for item in machine_status:
-
-        if item["job"]:
-
-            html += f"""
-            <tr>
-                <td class="machine-name-cell">
-                    {item["machine"]}
-                </td>
-
-                <td>
-                    <span class="machine-running">
-                        🟢 {item["job"]}
-                    </span>
-                </td>
-            </tr>
-            """
-
-        else:
-
-            html += f"""
-            <tr>
-                <td class="machine-name-cell">
-                    {item["machine"]}
-                </td>
-
-                <td>
-                    <span class="machine-idle">
-                        ⚪ Idle
-                    </span>
-                </td>
-            </tr>
-            """
-
-    html += """
-        </tbody>
-    </table>
-    """
-
-    st.markdown(
-        html,
-        unsafe_allow_html=True
-    )
-
-
-# ==========================================================
-# 2. COMPLETED PRODUCTS
-# ==========================================================
-
-with col2:
-
-    st.markdown(
-        '<div class="final-table-title">✅ المنتجات المكتملة</div>',
-        unsafe_allow_html=True
-    )
-
-    completed_jobs = []
-
-    for j_idx, job_id in enumerate(sequence):
-
-        finish_time_on_last_machine = (
-            end_times[j_idx, n_machines - 1]
+        st.markdown(
+            '<div class="final-table-title">🖥️ حالة الآلات الآن</div>',
+            unsafe_allow_html=True
         )
 
-        if current_sim_time >= finish_time_on_last_machine:
+        machine_status = []
 
-            completed_jobs.append({
-                "product": f"Job {job_id + 1}",
-                "start": f"{start_times[j_idx, 0]:.1f}",
-                "finish": f"{finish_time_on_last_machine:.1f}"
+        for m in range(n_machines):
+
+            current_job = None
+
+            for j_idx, job_id in enumerate(sequence):
+
+                if (
+                    start_times[j_idx, m]
+                    <= current_sim_time
+                    <= end_times[j_idx, m]
+                ):
+                    current_job = f"Job {job_id + 1}"
+                    break
+
+            machine_status.append({
+                "machine": f"Machine {m + 1}",
+                "job": current_job
             })
 
-
-    if completed_jobs:
-
         html = """
-        <table class="completed-products-table">
-
+        <table class="machine-status-table">
             <thead>
                 <tr>
-                    <th>Produit</th>
-                    <th>Début</th>
-                    <th>Fin</th>
-                    <th>État</th>
+                    <th>Machine</th>
+                    <th>État actuel</th>
                 </tr>
             </thead>
-
             <tbody>
         """
 
-        for job in completed_jobs:
+        for item in machine_status:
 
-            html += f"""
-            <tr>
+            if item["job"]:
 
-                <td class="product-cell">
-                    {job["product"]}
-                </td>
+                html += f"""
+                <tr>
+                    <td class="machine-name-cell">
+                        {item["machine"]}
+                    </td>
 
-                <td>
-                    {job["start"]} s
-                </td>
+                    <td>
+                        <span class="machine-running">
+                            🟢 {item["job"]}
+                        </span>
+                    </td>
+                </tr>
+                """
 
-                <td>
-                    {job["finish"]} s
-                </td>
+            else:
 
-                <td>
-                    <span class="completed-status">
-                        ✓ Terminé
-                    </span>
-                </td>
+                html += f"""
+                <tr>
+                    <td class="machine-name-cell">
+                        {item["machine"]}
+                    </td>
 
-            </tr>
-            """
+                    <td>
+                        <span class="machine-idle">
+                            ⚪ Idle
+                        </span>
+                    </td>
+                </tr>
+                """
 
         html += """
             </tbody>
@@ -1072,131 +998,203 @@ with col2:
             unsafe_allow_html=True
         )
 
-    else:
+    # ==========================================================
+    # 2. COMPLETED PRODUCTS
+    # ==========================================================
 
-        st.info(
-            "📦 لا توجد منتجات مكتملة بالكامل حتى الآن."
+    with col2:
+
+        st.markdown(
+            '<div class="final-table-title">✅ المنتجات المكتملة</div>',
+            unsafe_allow_html=True
         )
 
+        completed_jobs = []
 
-# ==========================================================
-# 3. TOTAL TS / MACHINE
-# ==========================================================
+        for j_idx, job_id in enumerate(sequence):
 
-with col3:
+            finish_time_on_last_machine = (
+                end_times[j_idx, n_machines - 1]
+            )
 
-    st.markdown(
-        '<div class="final-table-title">⏱️ Total TS / Machine</div>',
-        unsafe_allow_html=True
-    )
+            if current_sim_time >= finish_time_on_last_machine:
 
-    static_ts = st.session_state.Ts.values
+                completed_jobs.append({
+                    "product": f"Job {job_id + 1}",
+                    "start": f"{start_times[j_idx, 0]:.1f}",
+                    "finish": f"{finish_time_on_last_machine:.1f}"
+                })
 
-    static_seq = [
-        int(x) - 1
-        for x in st.session_state.sequence
-    ]
+        if completed_jobs:
 
-    machine_ts_totals = {
-        f"Machine {m+1}": 0.0
-        for m in range(n_machines)
-    }
+            html = """
+            <table class="completed-products-table">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Début</th>
+                        <th>Fin</th>
+                        <th>État</th>
+                    </tr>
+                </thead>
 
+                <tbody>
+            """
 
-    for i in range(1, len(static_seq)):
+            for job in completed_jobs:
 
-        prev_job = static_seq[i - 1]
-        current_job = static_seq[i]
+                html += f"""
+                <tr>
 
-        ts_value = float(
-            static_ts[prev_job, current_job]
+                    <td class="product-cell">
+                        {job["product"]}
+                    </td>
+
+                    <td>
+                        {job["start"]} s
+                    </td>
+
+                    <td>
+                        {job["finish"]} s
+                    </td>
+
+                    <td>
+                        <span class="completed-status">
+                            ✓ Terminé
+                        </span>
+                    </td>
+
+                </tr>
+                """
+
+            html += """
+                </tbody>
+            </table>
+            """
+
+            st.markdown(
+                html,
+                unsafe_allow_html=True
+            )
+
+        else:
+
+            st.info(
+                "📦 لا توجد منتجات مكتملة بالكامل حتى الآن."
+            )
+
+    # ==========================================================
+    # 3. TOTAL TS / MACHINE
+    # ==========================================================
+
+    with col3:
+
+        st.markdown(
+            '<div class="final-table-title">⏱️ Total TS / Machine</div>',
+            unsafe_allow_html=True
         )
 
-        for m in range(n_machines):
+        static_ts = st.session_state.Ts.values
 
-            machine_ts_totals[
-                f"Machine {m+1}"
-            ] += ts_value
+        static_seq = [
+            int(x) - 1
+            for x in st.session_state.sequence
+        ]
 
+        machine_ts_totals = {
+            f"Machine {m + 1}": 0.0
+            for m in range(n_machines)
+        }
 
-    total_ts = sum(
-        machine_ts_totals.values()
-    )
+        for i in range(1, len(static_seq)):
 
+            prev_job = static_seq[i - 1]
+            current_job = static_seq[i]
 
-    html = """
-    <table class="ts-machine-table">
+            ts_value = float(
+                static_ts[prev_job, current_job]
+            )
 
-        <thead>
-            <tr>
-                <th>Machine</th>
-                <th>Total TS (s)</th>
-            </tr>
-        </thead>
+            for m in range(n_machines):
 
-        <tbody>
-    """
+                machine_ts_totals[
+                    f"Machine {m + 1}"
+                ] += ts_value
 
+        total_ts = sum(
+            machine_ts_totals.values()
+        )
 
-    for machine, value in machine_ts_totals.items():
+        html = """
+        <table class="ts-machine-table">
 
-        html += f"""
-        <tr>
+            <thead>
+                <tr>
+                    <th>Machine</th>
+                    <th>Total TS (s)</th>
+                </tr>
+            </thead>
 
-            <td class="ts-machine-cell">
-                {machine}
-            </td>
-
-            <td class="ts-value-cell">
-                {value:.1f}
-            </td>
-
-        </tr>
+            <tbody>
         """
 
+        for machine, value in machine_ts_totals.items():
 
-    # Total global
+            html += f"""
+            <tr>
 
-    html += f"""
-        <tr class="ts-total-row">
+                <td class="ts-machine-cell">
+                    {machine}
+                </td>
 
-            <td>
-                TOTAL
-            </td>
+                <td class="ts-value-cell">
+                    {value:.1f}
+                </td>
 
-            <td>
-                {total_ts:.1f} s
-            </td>
+            </tr>
+            """
 
-        </tr>
-    """
+        html += f"""
+            <tr class="ts-total-row">
 
+                <td>
+                    TOTAL
+                </td>
 
-    html += """
-        </tbody>
-    </table>
-    """
+                <td>
+                    {total_ts:.1f} s
+                </td>
 
-    st.markdown(
-        html,
-        unsafe_allow_html=True
-    )
-	
-	
-	
-	
-	
-	
-	
+            </tr>
+        """
+
+        html += """
+            </tbody>
+        </table>
+        """
+
+        st.markdown(
+            html,
+            unsafe_allow_html=True
+        )
 
     # =========================
     # 9. إحصائيات سريعة
     # =========================
+
     if completed_jobs:
+
         progress = len(completed_jobs) / len(sequence)
+
         st.progress(progress)
-        st.write(f"📊 نسبة الإنجاز الكلية: {progress*100:.1f}%")
+
+        st.write(
+            f"📊 نسبة الإنجاز الكلية: {progress * 100:.1f}%"
+        )
 
 else:
-    # رسالة تظهر للمستخدم إذا فتح الصفحة لأول مرة قبل توليد البيانات
-    st.info("⏳ الرجاء الضغط على زر 'إنشاء الجداول' أولاً لتوليد البيانات وعرض حالة الآلات.")
+
+    st.info(
+        "⏳ الرجاء الضغط على زر 'إنشاء الجداول' أولاً "
+        "لتوليد البيانات وعرض حالة الآلات."
+    )
