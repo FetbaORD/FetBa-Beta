@@ -623,6 +623,52 @@ with col_gantt_btn2:
 # 3. إذا كانت الحالة True، يتم رسم المخطط الكامل فوراً
 if st.session_state.show_complete_gantt:
     
+	# ==========================================================
+# 📋 TOTAL SETUP / TS / TEMPS DE STÉRILISATION PAR MACHINE
+# ==========================================================
+
+st.divider()
+
+st.subheader("📋 Total des temps de stérilisation (TS) par machine")
+
+# حساب أوقات التعقيم لكل آلة مستقلم
+machine_ts_totals = {f"Machine {m+1}": 0.0 for m in range(nm)}
+
+for i in range(1, len(static_seq)):
+    prev_job = static_seq[i - 1]
+    current_job = static_seq[i]
+    ts_value = float(static_ts[prev_job, current_job])
+    
+    # يضاف TS لكل آلة على حدة في Flow Shop
+    for m in range(nm):
+        machine_ts_totals[f"Machine {m+1}"] += ts_value
+
+# تحويل البيانات إلى الجدول
+df_ts_machines = pd.DataFrame([
+    {"Machine": machine, "Total TS (s)": total_ts}
+    for machine, total_ts in machine_ts_totals.items()
+])
+
+# إضافة سطر المجموع الكلي لجميع الآلات
+total_ts_all_machines = sum(machine_ts_totals.values())
+df_ts_machines.loc[len(df_ts_machines)] = {
+    "Machine": "TOTAL GLOBAL",
+    "Total TS (s)": total_ts_all_machines
+}
+
+# عرض الجدول
+st.dataframe(
+    df_ts_machines,
+    use_container_width=True,
+    hide_index=True
+)
+
+st.success(
+    f"⏱️ Temps total de stérilisation cumulé (Toutes machines) : "
+    f"{total_ts_all_machines:.2f} secondes"
+)
+	
+	
     # دالة حساب الجدولة الكاملة الثابتة (بدون اقتطاع الوقت الحالي)
     def solve_flow_shop_static_plotly(pij, ts, job_sequence):
         n_jobs, m_machines = pij.shape
