@@ -91,12 +91,12 @@ with open("style.css", "r", encoding="utf-8") as f:
 
 if "sim_start_time" in st.session_state:
 
-    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
+    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds() * sim_speed
 
     minutes = int(sim_duration // 60)
     seconds = int(sim_duration % 60)
 
-    st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
+    st.info(f"⏱️ Runtime (Simulé x{sim_speed}): {minutes} min {seconds} sec")
 
 else:
     st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
