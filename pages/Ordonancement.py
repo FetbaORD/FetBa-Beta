@@ -106,8 +106,6 @@ simulation_speed = st.sidebar.slider(
 )
 
 if "sim_start_time" in st.session_state:
-
-
 	# الوقت الحقيقي المنقضي
 	real_elapsed_time = (
 		datetime.now() - st.session_state.sim_start_time
@@ -501,6 +499,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 		current_sim_time = real_elapsed_time * simulation_speed
 	else:
 		current_sim_time = 0
+		
     # حساب الجدولة الديناميكية (Flow Shop مع إزاحة الأعطال)
     for j_idx, job_id in enumerate(sequence):
         for m in range(n_m):
