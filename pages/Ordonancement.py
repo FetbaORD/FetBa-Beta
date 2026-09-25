@@ -91,7 +91,7 @@ with open("style.css", "r", encoding="utf-8") as f:
 
 if "sim_start_time" in st.session_state:
     real_elapsed_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
-	sim_duration = real_elapsed_time * simulation_speed
+	current_sim_time = real_elapsed_time * simulation_speed
     minutes = int(sim_duration // 60)
     seconds = int(sim_duration % 60)
 
