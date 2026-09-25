@@ -801,3 +801,368 @@ div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"]
     color: white !important;
     font-weight: bold;
 }
+
+/* =========================================================
+   PRODUCTION MONITORING DASHBOARD
+   ========================================================= */
+
+.dashboard-section {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.dashboard-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #172033;
+    margin-bottom: 5px;
+}
+
+.dashboard-subtitle {
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 22px;
+}
+
+
+/* =========================================================
+   TOP METRIC CARDS
+   ========================================================= */
+
+.metric-card {
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, 0.07);
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.10);
+}
+
+.metric-label {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.metric-value {
+    color: #111827;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.metric-icon {
+    font-size: 25px;
+    float: right;
+}
+
+
+/* =========================================================
+   GENERAL PANELS
+   ========================================================= */
+
+.panel {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+    margin-bottom: 15px;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #172033;
+    margin-bottom: 16px;
+}
+
+.panel-header-icon {
+    font-size: 22px;
+}
+
+
+/* =========================================================
+   MACHINE STATUS
+   ========================================================= */
+
+.machine-card {
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 1px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+.machine-card.running {
+    background: linear-gradient(
+        135deg,
+        #ecfdf5,
+        #f0fdf4
+    );
+
+    border-color: #86efac;
+}
+
+.machine-card.idle {
+    background: linear-gradient(
+        135deg,
+        #f8fafc,
+        #f1f5f9
+    );
+
+    border-color: #cbd5e1;
+}
+
+.machine-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.machine-job {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 5px;
+}
+
+
+/* Status badges */
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    margin-top: 8px;
+}
+
+.status-running {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-idle {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+
+/* =========================================================
+   COMPLETED PRODUCTS TABLE
+   ========================================================= */
+
+.products-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.products-table th {
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.products-table td {
+    padding: 12px 10px;
+    text-align: center;
+    font-size: 13px;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.products-table tr:last-child td {
+    border-bottom: none;
+}
+
+.products-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.products-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.product-name {
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.completed-badge {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   TOTAL TS / MACHINE
+   ========================================================= */
+
+.ts-card {
+    background: linear-gradient(
+        145deg,
+        #f8fafc,
+        #ffffff
+    );
+
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+    text-align: center;
+
+    transition: all 0.2s ease;
+}
+
+.ts-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+}
+
+.ts-machine {
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.ts-value {
+    color: #2563eb;
+    font-size: 24px;
+    font-weight: 900;
+    margin-top: 5px;
+}
+
+.ts-unit {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+    text-align: center;
+    padding: 35px 15px;
+    color: #94a3b8;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+}
+
+.empty-icon {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+
+/* =========================================================
+   PROGRESS BAR
+   ========================================================= */
+
+.progress-wrapper {
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 15px 18px;
+    border: 1px solid #e5e7eb;
+    margin-top: 10px;
+}
+
+.progress-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.progress-bar {
+    height: 9px;
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(
+        90deg,
+        #22c55e,
+        #16a34a
+    );
+}
+
+.progress-percent {
+    text-align: right;
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #15803d;
+}
+
+
+/* =========================================================
+   DASHBOARD FOOTER
+   ========================================================= */
+
+.dashboard-footer {
+    margin-top: 10px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 12px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   GLOBAL RESPONSIVE ADJUSTMENTS
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .dashboard-title {
+        font-size: 22px;
+    }
+
+    .metric-value {
+        font-size: 21px;
+    }
+
+    .panel {
+        padding: 15px;
+    }
+
+    .products-table th,
+    .products-table td {
+        padding: 9px 6px;
+        font-size: 11px;
+    }
+
+}
