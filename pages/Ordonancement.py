@@ -995,7 +995,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
         """
 
         st.markdown(
-            html,
+            textwrap.dedent(html),
             unsafe_allow_html=True
         )
 
@@ -1074,7 +1074,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
             """
 
             st.markdown(
-                html,
+                textwrap.dedent(html),
                 unsafe_allow_html=True
             )
 
@@ -1175,7 +1175,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
         """
 
         st.markdown(
-            html,
+            textwrap.dedent(html),
             unsafe_allow_html=True
         )
 
