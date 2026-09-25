@@ -91,9 +91,8 @@ with open("style.css", "r", encoding="utf-8") as f:
 
 if "sim_start_time" in st.session_state:
 
-    sim_duration = (
-        datetime.now() - st.session_state.sim_start_time
-    ).total_seconds()
+    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
+
     minutes = int(sim_duration // 60)
     seconds = int(sim_duration % 60)
 
@@ -113,14 +112,7 @@ st.sidebar.header("⚙️ Paramètres")
 # =========================
 n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
 n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
-simulation_speed = st.sidebar.slider(
-    "⚡ Vitesse de simulation",
-    min_value=1,
-    max_value=50,
-    value=1,
-    step=1,
-    format="%dx"
-)
+
 
 
 # =========================
@@ -469,19 +461,10 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     end_times = np.zeros((n_j, n_m))
 
     # الحصول على الوقت الحالي للمحاكاة (ثواني)
-if "sim_start_time" in st.session_state:
-
-    real_elapsed_time = (
-        datetime.now() - st.session_state.sim_start_time
-    ).total_seconds()
-
-    current_sim_time = (
-        real_elapsed_time * simulation_speed
-    )
-
-else:
-
-    current_sim_time = 0
+    if "sim_start_time" in st.session_state:
+        current_sim_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
+    else:
+        current_sim_time = 0
 
     # حساب الجدولة الديناميكية (Flow Shop مع إزاحة الأعطال)
     for j_idx, job_id in enumerate(sequence):
@@ -925,8 +908,6 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     current_job = f"🔨 Job {job_id + 1}"
                     break
             machine_status.append({"الآلة": f"Machine {m+1}", "المنتج الحالي": current_job})
-        
-        # الجدول الأول (st.table)
         st.table(pd.DataFrame(machine_status))
 
     with col2:
@@ -939,13 +920,10 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     "المنتج": f"Job {job_id + 1}",
                     "وقت البدء (ث)": f"{start_times[j_idx, 0]:.1f}", 
                     "وقت الانتهاء (ث)": f"{finish_time_on_last_machine:.1f}", 
-                    "الحالة": '<span class="badge-success">تم الإنجاز</span>'
+                    "الحالة": "تم الإنجاز"
                 })
         if completed_jobs:
-            # تحويل البيانات إلى جدول HTML وتطبيق كلاس CSS الملون عليه
-            df_comp = pd.DataFrame(completed_jobs)
-            html_table = df_comp.to_html(classes='styled-table-success', escape=False, index=False)
-            st.markdown(html_table, unsafe_allow_html=True)
+            st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
         else:
             st.info("لا توجد منتجات مكتملة بالكامل حتى الآن.")
 
@@ -967,18 +945,20 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     machine_ts_totals[f"Machine {m+1}"] += ts_value
 
             df_ts_machines = pd.DataFrame([
-                {"Machine": m_name, "Total TS (s)": f"{total_ts:.1f}"}
+                {"Machine": m_name, "Total TS (s)": total_ts}
                 for m_name, total_ts in machine_ts_totals.items()
             ])
             
-            # تحويل البيانات إلى جدول HTML وتطبيق كلاس CSS الملون عليه
-            html_ts_table = df_ts_machines.to_html(classes='styled-table-primary', escape=False, index=False)
-            st.markdown(html_ts_table, unsafe_allow_html=True)
-
-        
-
+            st.dataframe(df_ts_machines, use_container_width=True, hide_index=True)
 	
-	# =========================
+	
+	
+	
+	
+	
+	
+
+    # =========================
     # 9. إحصائيات سريعة
     # =========================
     if completed_jobs:
