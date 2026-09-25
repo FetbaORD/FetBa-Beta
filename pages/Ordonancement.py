@@ -96,7 +96,7 @@ if "sim_start_time" in st.session_state:
     minutes = int(sim_duration // 60)
     seconds = int(sim_duration % 60)
 
-    st.info(f"⏱️ Runtime (Simulé x{sim_speed}): {minutes} min {seconds} sec")
+    st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
 
 else:
     st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
@@ -113,8 +113,7 @@ st.sidebar.header("⚙️ Paramètres")
 n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
 n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
 
-# أضف هذا السطر في الشريط الجانبي
-sim_speed = st.sidebar.slider("تسريع المحاكاة (Vitesse)", min_value=1, max_value=100, value=1, step=1)
+
 
 # =========================
 # 2. زر إنشاء الجداول
@@ -461,8 +460,6 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     start_times = np.zeros((n_j, n_m))
     end_times = np.zeros((n_j, n_m))
 
-
-
     # الحصول على الوقت الحالي للمحاكاة (ثواني)
     if "sim_start_time" in st.session_state:
         current_sim_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
@@ -711,223 +708,7 @@ if st.session_state.show_complete_gantt:
         
         # عرض المخطط فوراً وبثبات كامل
         st.plotly_chart(fig_static, use_container_width=True, key="static_gantt_plotly")
-# ==========================================================
-# 📊 TAUX D'UTILISATION COMPLET DES MACHINES
-# ==========================================================
 
-if "show_machine_utilization" not in st.session_state:
-    st.session_state.show_machine_utilization = False
-
-col_util1, col_util2 = st.columns([1, 1], gap="large")
-
-with col_util1:
-    if st.button(
-        "Afficher les taux d'utilisation des machines",
-        type="primary"
-    ):
-        st.session_state.show_machine_utilization = True
-	else:
-		st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
-with col_util2:
-    if st.session_state.show_machine_utilization:
-        if st.button("Masquer les taux", type="secondary"):
-            st.session_state.show_machine_utilization = False
-            st.rerun()
-		else:
-			st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
-
-# ==========================================================
-# TAUX COMPLET — basé sur le Gantt complet
-# ==========================================================
-
-if st.session_state.show_machine_utilization:
-
-    # Cmax COMPLET de la planification
-    Cmax = float(np.max(e_times))
-
-    st.subheader("📊 Taux d'utilisation complet des machines")
-
-    utilization_data = []
-
-    for m in range(nm):
-
-        processing_time = 0.0
-        setup_time = 0.0
-
-        # ------------------------------------------
-        # Temps Processing + TS
-        # ------------------------------------------
-        for i, job_idx in enumerate(static_seq):
-
-            # Temps de production
-            processing_time += float(static_pij[job_idx, m])
-
-            # Temps de setup / TS
-            if i > 0:
-                prev_job_idx = static_seq[i - 1]
-                setup_time += float(static_ts[prev_job_idx, job_idx])
-
-        # ------------------------------------------
-        # Temps d'arrêt / panne
-        # ------------------------------------------
-        breakdown_time = 0.0
-
-        machine_key = f"Machine {m + 1}"
-
-        if "machine_faults" in st.session_state:
-
-            faults = st.session_state.machine_faults.get(
-                machine_key, []
-            )
-
-            for fault in faults:
-
-                f_start = float(fault["start"])
-
-                if fault["end"] is not None:
-                    f_end = float(fault["end"])
-                else:
-                    f_end = Cmax
-
-                # Limiter la panne à Cmax
-                f_start = max(0, min(f_start, Cmax))
-                f_end = max(0, min(f_end, Cmax))
-
-                if f_end > f_start:
-                    breakdown_time += f_end - f_start
-
-        # ------------------------------------------
-        # Idle = temps restant
-        # ------------------------------------------
-        idle_time = Cmax - (
-            processing_time
-            + setup_time
-            + breakdown_time
-        )
-
-        idle_time = max(0, idle_time)
-
-        # ------------------------------------------
-        # Pourcentages
-        # ------------------------------------------
-        processing_pct = (processing_time / Cmax) * 100
-        idle_pct = (idle_time / Cmax) * 100
-        setup_pct = (setup_time / Cmax) * 100
-        breakdown_pct = (breakdown_time / Cmax) * 100
-
-        utilization_data.append({
-            "Machine": f"Machine {m + 1}",
-            "Processing": processing_pct,
-            "Idle": idle_pct,
-            "TS": setup_pct,
-            "Arrêt": breakdown_pct
-        })
-
-    # ======================================================
-    # AFFICHAGE DES DONUTS
-    # ======================================================
-
-    cols = st.columns(nm)
-
-    for m, data in enumerate(utilization_data):
-
-        with cols[m]:
-
-            values = [
-                data["Processing"],
-                data["Idle"],
-                data["TS"],
-                data["Arrêt"]
-            ]
-
-            labels = [
-                "Machine en marche",
-                "Idle",
-                "TS",
-                "Arrêt"
-            ]
-
-            fig_donut = px.pie(
-                values=values,
-                names=labels,
-                hole=0.62
-            )
-
-            fig_donut.update_traces(
-                textinfo="percent",
-                textposition="inside"
-            )
-
-            fig_donut.update_layout(
-                title=f"<b>{data['Machine']}</b>",
-                showlegend=True,
-                height=350,
-                margin=dict(
-                    l=10,
-                    r=10,
-                    t=50,
-                    b=10
-                ),
-                legend=dict(
-                    orientation="h",
-                    yanchor="bottom",
-                    y=-0.25,
-                    xanchor="center",
-                    x=0.5
-                )
-            )
-
-            st.plotly_chart(
-                fig_donut,
-                use_container_width=True,
-                key=f"complete_utilization_{m}"
-            )
-
-
-# ==========================================================
-# 📋 TOTAL SETUP / TS / TEMPS DE STÉRILISATION PAR MACHINE
-# ==========================================================
-
-st.divider()
-
-st.subheader("📋 Total des temps de stérilisation (TS) par machine")
-
-# حساب أوقات التعقيم لكل آلة مستقلم
-machine_ts_totals = {f"Machine {m+1}": 0.0 for m in range(nm)}
-
-for i in range(1, len(static_seq)):
-    prev_job = static_seq[i - 1]
-    current_job = static_seq[i]
-    ts_value = float(static_ts[prev_job, current_job])
-    
-    # يضاف TS لكل آلة على حدة في Flow Shop
-    for m in range(nm):
-        machine_ts_totals[f"Machine {m+1}"] += ts_value
-
-# تحويل البيانات إلى الجدول
-df_ts_machines = pd.DataFrame([
-    {"Machine": machine, "Total TS (s)": total_ts}
-    for machine, total_ts in machine_ts_totals.items()
-])
-
-# إضافة سطر المجموع الكلي لجميع الآلات
-total_ts_all_machines = sum(machine_ts_totals.values())
-df_ts_machines.loc[len(df_ts_machines)] = {
-    "Machine": "TOTAL GLOBAL",
-    "Total TS (s)": total_ts_all_machines
-}
-
-# عرض الجدول
-st.dataframe(
-    df_ts_machines,
-    use_container_width=True,
-    hide_index=True
-)
-
-st.success(
-    f"⏱️ Temps total de stérilisation cumulé (Toutes machines) : "
-    f"{total_ts_all_machines:.2f} secondes"
-)
 # =========================
 # 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
 # =========================
