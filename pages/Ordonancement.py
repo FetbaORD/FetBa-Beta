@@ -9,33 +9,6 @@ from GA import run_ga_interface
 from G_NEH_S import run_g_neh_s_interface
 
 
-# =========================
-# 1. إدخال الحجم
-# =========================
-st.sidebar.header("⚙️ Paramètres")
-# =========================
-n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
-n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
-simulation_speed = st.sidebar.slider(
-    "⚡ Vitesse de simulation",
-    min_value=1,
-    max_value=50,
-    value=1,
-    step=1,
-    format="%dx"
-)
-# ==========================================================
-# تحديث المحاكاة حسب سرعة المحاكاة
-# 1x  = تحديث كل 1 ثانية
-# 2x  = تحديث كل 0.5 ثانية
-# 10x = تحديث كل 0.1 ثانية
-# ==========================================================
-refresh_interval = max(100, int(1000 / simulation_speed))
-
-st_autorefresh(
-    interval=refresh_interval,
-    key="refresh_clock"
-)
 
 # ==========================================================
 # ================== GA FUNCTIONS AREA =====================
@@ -107,6 +80,7 @@ def smartSwapMutation(seq, pm, P, Incompat, Ts):
 
 
 
+st_autorefresh(interval=2000, key="refresh_clock")
 st.set_page_config(page_title="Ordonancement de la production", layout="wide")
 
 st.title("Ordonancement de la production")
@@ -117,37 +91,27 @@ with open("style.css", "r", encoding="utf-8") as f:
 
 if "sim_start_time" in st.session_state:
 
+    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
 
-	# الوقت الحقيقي المنقضي
-	real_elapsed_time = (
-		datetime.now() - st.session_state.sim_start_time
-	).total_seconds()
-	
-	# الوقت المحاكى بعد تطبيق السرعة
-	sim_duration = real_elapsed_time * simulation_speed
-	
-	minutes = int(sim_duration // 60)
-	seconds = int(sim_duration % 60)
-	
-	st.info(
-		f"⏱️ Simulation Time: {minutes:02d} min {seconds:02d} sec "
-		f" | Speed: {simulation_speed}x"
-	)
+    minutes = int(sim_duration // 60)
+    seconds = int(sim_duration % 60)
 
-
-
-
-
-
-
-	
-
+    st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
 
 else:
     st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
 
 
 
+
+
+# =========================
+# 1. إدخال الحجم
+# =========================
+st.sidebar.header("⚙️ Paramètres")
+# =========================
+n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
+n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
 
 
 
@@ -496,19 +460,11 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     start_times = np.zeros((n_j, n_m))
     end_times = np.zeros((n_j, n_m))
 
-if "sim_start_time" in st.session_state:
-
-    real_elapsed_time = (
-        datetime.now() - st.session_state.sim_start_time
-    ).total_seconds()
-
-    current_sim_time = (
-        real_elapsed_time * simulation_speed
-    )
-
-else:
-
-    current_sim_time = 0
+    # الحصول على الوقت الحالي للمحاكاة (ثواني)
+    if "sim_start_time" in st.session_state:
+        current_sim_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
+    else:
+        current_sim_time = 0
 
     # حساب الجدولة الديناميكية (Flow Shop مع إزاحة الأعطال)
     for j_idx, job_id in enumerate(sequence):
