@@ -801,3 +801,194 @@ div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"]
     color: white !important;
     font-weight: bold;
 }
+
+
+/* ==========================================================
+   FINAL 3 TABLES - PROFESSIONAL STYLE
+   ========================================================== */
+
+/* ---------- Machine Status Table ---------- */
+
+.machine-status-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid #dfe5ec;
+    background: white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.machine-status-table th {
+    background: #eef3f8;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 11px 8px;
+    text-align: center;
+    border-bottom: 1px solid #d9e1ea;
+}
+
+.machine-status-table td {
+    padding: 11px 8px;
+    text-align: center;
+    font-size: 13px;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.machine-status-table tr:last-child td {
+    border-bottom: none;
+}
+
+.machine-status-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.machine-name-cell {
+    font-weight: 700;
+    color: #344054;
+}
+
+.machine-running {
+    color: #16803c;
+    background: #eaf8ef;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.machine-idle {
+    color: #667085;
+    background: #f1f3f5;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+
+/* ---------- Completed Products Table ---------- */
+
+.completed-products-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #dfe5ec;
+    background: white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.completed-products-table th {
+    background: #eef7f1;
+    color: #285943;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 11px 8px;
+    text-align: center;
+    border-bottom: 1px solid #d7e9dc;
+}
+
+.completed-products-table td {
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 13px;
+    color: #344054;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.completed-products-table tr:last-child td {
+    border-bottom: none;
+}
+
+.completed-products-table tbody tr:hover {
+    background: #f7fcf8;
+}
+
+.product-cell {
+    font-weight: 700;
+    color: #1d2939;
+}
+
+.completed-status {
+    display: inline-block;
+    background: #dcfce7;
+    color: #15803d;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+/* ---------- Total TS / Machine Table ---------- */
+
+.ts-machine-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #dfe5ec;
+    background: white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.ts-machine-table th {
+    background: #eef4ff;
+    color: #31558f;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 11px 8px;
+    text-align: center;
+    border-bottom: 1px solid #d8e4f5;
+}
+
+.ts-machine-table td {
+    padding: 11px 8px;
+    text-align: center;
+    font-size: 13px;
+    color: #344054;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.ts-machine-table tr:last-child td {
+    border-bottom: none;
+}
+
+.ts-machine-table tbody tr:hover {
+    background: #f6f9ff;
+}
+
+.ts-machine-cell {
+    font-weight: 700;
+    color: #344054;
+}
+
+.ts-value-cell {
+    font-weight: 800;
+    color: #2563eb;
+}
+
+.ts-total-row {
+    background: #eef4ff !important;
+    font-weight: 800;
+}
+
+.ts-total-row td {
+    border-top: 2px solid #c7d8f2;
+    color: #1d4ed8;
+}
+
+
+/* ---------- Common title decoration ---------- */
+
+.final-table-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #1f2937;
+}
