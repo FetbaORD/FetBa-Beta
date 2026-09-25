@@ -461,6 +461,8 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     start_times = np.zeros((n_j, n_m))
     end_times = np.zeros((n_j, n_m))
 
+
+
     # الحصول على الوقت الحالي للمحاكاة (ثواني)
     if "sim_start_time" in st.session_state:
         current_sim_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
