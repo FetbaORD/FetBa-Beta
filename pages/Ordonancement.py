@@ -922,13 +922,13 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     "المنتج": f"Job {job_id + 1}",
                     "وقت البدء (ث)": f"{start_times[j_idx, 0]:.1f}", 
                     "وقت الانتهاء (ث)": f"{finish_time_on_last_machine:.1f}", 
-                    "الحالة": "تم الإنجاز"
+                    "الحالة": '<span class="badge-success">تم الإنجاز</span>'
                 })
         if completed_jobs:
-            # الجدول الثاني (مغلف بتغليف زردي للتأثير بالألوان)
-            st.markdown('<div class="custom-styled-table completed-jobs-table">', unsafe_allow_html=True)
-            st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True, hide_index=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            # تحويل البيانات إلى جدول HTML وتطبيق كلاس CSS الملون عليه
+            df_comp = pd.DataFrame(completed_jobs)
+            html_table = df_comp.to_html(classes='styled-table-success', escape=False, index=False)
+            st.markdown(html_table, unsafe_allow_html=True)
         else:
             st.info("لا توجد منتجات مكتملة بالكامل حتى الآن.")
 
@@ -950,14 +950,15 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     machine_ts_totals[f"Machine {m+1}"] += ts_value
 
             df_ts_machines = pd.DataFrame([
-                {"Machine": m_name, "Total TS (s)": total_ts}
+                {"Machine": m_name, "Total TS (s)": f"{total_ts:.1f}"}
                 for m_name, total_ts in machine_ts_totals.items()
             ])
             
-            # الجدول الثالث (مغلف بتغليف زردي للتأثير بالألوان)
-            st.markdown('<div class="custom-styled-table ts-machine-table">', unsafe_allow_html=True)
-            st.dataframe(df_ts_machines, use_container_width=True, hide_index=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            # تحويل البيانات إلى جدول HTML وتطبيق كلاس CSS الملون عليه
+            html_ts_table = df_ts_machines.to_html(classes='styled-table-primary', escape=False, index=False)
+            st.markdown(html_ts_table, unsafe_allow_html=True)
+
+        
 
 	
 	# =========================
