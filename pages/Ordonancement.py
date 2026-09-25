@@ -91,7 +91,8 @@ with open("style.css", "r", encoding="utf-8") as f:
 
 if "sim_start_time" in st.session_state:
 
-    sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
+    real_elapsed_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
+	sim_duration = real_elapsed_time * simulation_speed
 
     minutes = int(sim_duration // 60)
     seconds = int(sim_duration % 60)
@@ -112,7 +113,14 @@ st.sidebar.header("⚙️ Paramètres")
 # =========================
 n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
 n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
-
+simulation_speed = st.sidebar.slider(
+    "⚡ Vitesse de simulation",
+    min_value=1,
+    max_value=50,
+    value=1,
+    step=1,
+    format="%dx"
+)
 
 
 # =========================
@@ -463,6 +471,10 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     # الحصول على الوقت الحالي للمحاكاة (ثواني)
     if "sim_start_time" in st.session_state:
         current_sim_time = (datetime.now() - st.session_state.sim_start_time).total_seconds()
+		real_elapsed_time = (
+			datetime.now() - st.session_state.sim_start_time).total_seconds()
+		current_sim_time = real_elapsed_time * simulation_speed
+	
     else:
         current_sim_time = 0
 
