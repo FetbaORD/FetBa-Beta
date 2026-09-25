@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
+import textwrap
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 from GA import run_ga_interface
