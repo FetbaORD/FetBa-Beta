@@ -80,7 +80,7 @@ def smartSwapMutation(seq, pm, P, Incompat, Ts):
 
 
 
-st_autorefresh(interval=1000, key="refresh_clock")
+st_autorefresh(interval=200, key="refresh_clock")
 st.set_page_config(page_title="Ordonancement de la production", layout="wide")
 
 st.title("Ordonancement de la production")
