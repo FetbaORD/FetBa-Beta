@@ -1020,48 +1020,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     )
 
 
-    # ======================================================
-    # DASHBOARD HEADER
-    # ======================================================
 
-    st.markdown("""
-    <div class="dashboard-section">
-
-        <div class="dashboard-title">
-            📊 Production Monitoring Dashboard
-        </div>
-
-        <div class="dashboard-subtitle">
-            Suivi en temps réel des machines et des produits
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-
-    # ======================================================
-    # TOP METRICS
-    # ======================================================
-
-    metric_cols = st.columns(4)
-
-    with metric_cols[0]:
-
-        st.markdown(f"""
-        <div class="metric-card">
-
-            <div class="metric-icon">🏭</div>
-
-            <div class="metric-label">
-                TOTAL MACHINES
-            </div>
-
-            <div class="metric-value">
-                {n_machines}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
 
 
     with metric_cols[1]:
