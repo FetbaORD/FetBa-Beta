@@ -857,3 +857,97 @@ div[data-testid="stTable"] tr:hover {
 .ts-machine-table [data-testid="stHeader"] {
     background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
 }
+
+/* =========================================================
+   🎨 جداول احترافية ملونة للمنتجات المكتملة و Total TS
+   ========================================================= */
+
+/* الجدول الأول: المنتجات المكتملة (أخضر احترافي) */
+.styled-table-success {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+    font-family: inherit;
+}
+
+.styled-table-success thead tr {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #ffffff;
+    text-align: center;
+    font-weight: bold;
+}
+
+.styled-table-success th, 
+.styled-table-success td {
+    padding: 12px 15px;
+    text-align: center;
+}
+
+.styled-table-success tbody tr {
+    border-bottom: 1px solid #dddddd;
+    background-color: #ffffff;
+    transition: background-color 0.2s ease;
+}
+
+.styled-table-success tbody tr:nth-of-type(even) {
+    background-color: #f8fafc;
+}
+
+.styled-table-success tbody tr:hover {
+    background-color: #ecfdf5;
+}
+
+/* الجدول الثاني: Total TS / Machine (بنفسجي/أزرق احترافي) */
+.styled-table-primary {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+    font-family: inherit;
+}
+
+.styled-table-primary thead tr {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #ffffff;
+    text-align: center;
+    font-weight: bold;
+}
+
+.styled-table-primary th, 
+.styled-table-primary td {
+    padding: 12px 15px;
+    text-align: center;
+}
+
+.styled-table-primary tbody tr {
+    border-bottom: 1px solid #dddddd;
+    background-color: #ffffff;
+    transition: background-color 0.2s ease;
+}
+
+.styled-table-primary tbody tr:nth-of-type(even) {
+    background-color: #f8fafc;
+}
+
+.styled-table-primary tbody tr:hover {
+    background-color: #eef2ff;
+}
+
+/* شارات الحالة داخل الجدول */
+.badge-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
