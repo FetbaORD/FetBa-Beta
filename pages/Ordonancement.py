@@ -80,7 +80,6 @@ def smartSwapMutation(seq, pm, P, Incompat, Ts):
 
 
 
-st_autorefresh(interval=2000, key="refresh_clock")
 st.set_page_config(page_title="Ordonancement de la production", layout="wide")
 
 st.title("Ordonancement de la production")
@@ -112,8 +111,30 @@ st.sidebar.header("⚙️ Paramètres")
 # =========================
 n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
 n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
+simulation_speed = st.sidebar.slider(
+    "⚡ Vitesse de simulation",
+    min_value=1,
+    max_value=50,
+    value=1,
+    step=1,
+    format="%dx"
+)
 
 
+
+
+# ==========================================================
+# تحديث المحاكاة حسب سرعة المحاكاة
+# 1x  = تحديث كل 1 ثانية
+# 2x  = تحديث كل 0.5 ثانية
+# 10x = تحديث كل 0.1 ثانية
+# ==========================================================
+refresh_interval = max(100, int(2000 / simulation_speed))
+
+st_autorefresh(
+    interval=refresh_interval,
+    key="refresh_clock"
+)
 
 # =========================
 # 2. زر إنشاء الجداول
