@@ -148,7 +148,7 @@ st_autorefresh(
 # =========================
 # 2. زر إنشاء الجداول
 # =========================
-if st.button("إنشاء الجداول"):
+if st.button("Crée des tables"):
 
     # حفظ الحجم
     st.session_state.n_jobs = n_jobs
