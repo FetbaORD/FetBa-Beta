@@ -121,7 +121,7 @@ if "sim_start_time" in st.session_state:
 		f" | Speed: {simulation_speed}x"
 	)
 else:
-    st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
+    st.warning("La simulation n'a pas été lancée depuis la page d'accueil.")
 
 
 
@@ -138,7 +138,7 @@ else:
 # 2x  = تحديث كل 0.5 ثانية
 # 10x = تحديث كل 0.1 ثانية
 # ==========================================================
-refresh_interval = max(100, int(2000 / simulation_speed))
+refresh_interval = max(100, int(5000 / simulation_speed))
 
 st_autorefresh(
     interval=refresh_interval,
@@ -148,7 +148,7 @@ st_autorefresh(
 # =========================
 # 2. زر إنشاء الجداول
 # =========================
-if st.button("إنشاء الجداول"):
+if st.button("Crée des tables"):
 
     # حفظ الحجم
     st.session_state.n_jobs = n_jobs
@@ -433,33 +433,25 @@ if "sequence_df" in st.session_state:
             
 #-----------------------
             
-            if st.button("Algorithme 5", type="primary"):
-                if "Pij" not in st.session_state or "Ts" not in st.session_state or "Incompatibilite" not in st.session_state:
-                    st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل Algorithme 5.")
-                else:
-                    from cplex import solve_algorithm5
+            if st.button("Algorithme 5", type="primary"): algo_choice = 5
 
-                    with st.spinner("🔄 Résolution du modèle d'optimisation..."):
-                        try:
-                            optimized_seq, best_cmax = solve_algorithm5(
-                                st.session_state.Pij,
-                                st.session_state.Ts,
-                                st.session_state.Incompatibilite
-                            )
-
-                            current_n_jobs = len(optimized_seq)
-                            st.session_state.sequence = optimized_seq
-                            st.session_state.sequence_df = pd.DataFrame(
-                                [optimized_seq],
-                                columns=[f"J{i+1}" for i in range(current_n_jobs)]
-                            )
-                            st.session_state.algorithm5_cmax = best_cmax
-
-                            st.success(f"✅ Algorithme 5 terminé ! Cmax = {best_cmax:.2f}")
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"❌ Erreur pendant l'exécution de Algorithme 5 : {e}")
-
+            if algo_choice:
+                import random
+                current_n_jobs = len(st.session_state.Pij)
+                new_seq = list(range(1, current_n_jobs + 1))
+                
+                # هنا يمكنك تخصيص منطق كل خوارزمية مستقبلاً
+                # حالياً جميعها تقوم بعمل Shuffle عشوائي كمثال
+                random.shuffle(new_seq)
+                
+                # تحديث الجلسة
+                st.session_state.sequence = new_seq
+                st.session_state.sequence_df = pd.DataFrame(
+                    [new_seq], 
+                    columns=[f"J{i+1}" for i in range(current_n_jobs)]
+                )
+                st.success(f"C'est fait ! (Algo {algo_choice})")
+                st.rerun()
 
     # عرض الجدول القابل للتعديل
     edited_seq = st.data_editor(
@@ -1010,4 +1002,4 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 
 else:
     # رسالة تظهر للمستخدم إذا فتح الصفحة لأول مرة قبل توليد البيانات
-    st.info("⏳ الرجاء الضغط على زر 'إنشاء الجداول' أولاً لتوليد البيانات وعرض حالة الآلات.")
+    st.info("⏳ Veuillez d'abord cliquer sur le bouton « Créer des tables » pour générer des données et afficher l'état de la machine.")
