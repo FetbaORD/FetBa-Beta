@@ -121,7 +121,7 @@ if "sim_start_time" in st.session_state:
 		f" | Speed: {simulation_speed}x"
 	)
 else:
-    st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
+    st.warning("La simulation n'a pas été lancée depuis la page d'accueil.")
 
 
 
@@ -138,7 +138,7 @@ else:
 # 2x  = تحديث كل 0.5 ثانية
 # 10x = تحديث كل 0.1 ثانية
 # ==========================================================
-refresh_interval = max(100, int(2000 / simulation_speed))
+refresh_interval = max(100, int(5000 / simulation_speed))
 
 st_autorefresh(
     interval=refresh_interval,
@@ -1002,4 +1002,4 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 
 else:
     # رسالة تظهر للمستخدم إذا فتح الصفحة لأول مرة قبل توليد البيانات
-    st.info("⏳ الرجاء الضغط على زر 'إنشاء الجداول' أولاً لتوليد البيانات وعرض حالة الآلات.")
+    st.info("⏳ Veuillez d'abord cliquer sur le bouton « Créer des tables » pour générer des données et afficher l'état de la machine.")
