@@ -89,6 +89,68 @@ with open("style.css", "r", encoding="utf-8") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
+st.markdown("""
+<style>
+
+/* ================================
+   🎨 ألوان أزرار الخوارزميات
+   ================================ */
+
+/* الزر 1 - G-NEH-S */
+div[data-testid="stPopover"] button:nth-of-type(1) {
+    background-color: #2563EB !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* الزر 2 - GA + G-NEH-S */
+div[data-testid="stPopover"] button:nth-of-type(2) {
+    background-color: #7C3AED !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* الزر 3 - Génetique Robuste */
+div[data-testid="stPopover"] button:nth-of-type(3) {
+    background-color: #0891B2 !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* الزر 4 - GA */
+div[data-testid="stPopover"] button:nth-of-type(4) {
+    background-color: #059669 !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* الزر 5 - MILP / Algorithme 5 */
+div[data-testid="stPopover"] button:nth-of-type(5) {
+    background-color: #D97706 !important;
+    color: white !important;
+    border: none !important;
+}
+
+
+/* تأثير Hover */
+div[data-testid="stPopover"] button:hover {
+    filter: brightness(1.12);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.18);
+}
+
+
+/* شكل احترافي موحد */
+div[data-testid="stPopover"] button {
+    border-radius: 9px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
 # =========================
 # 1. إدخال الحجم
 # =========================
