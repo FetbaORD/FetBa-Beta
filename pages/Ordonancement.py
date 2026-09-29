@@ -433,7 +433,7 @@ if "sequence_df" in st.session_state:
             
 #-----------------------
             
-            if st.button("Algorithme 5", type="primary"):
+            if st.button("MILP", type="primary"):
                 if "Pij" not in st.session_state or "Ts" not in st.session_state or "Incompatibilite" not in st.session_state:
                     st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل Algorithme 5.")
                 else:
