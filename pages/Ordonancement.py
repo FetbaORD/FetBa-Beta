@@ -7,7 +7,7 @@ from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 from GA import run_ga_interface
 from G_NEH_S import run_g_neh_s_interface
-from cplex import solve_algorithm5
+
 
 
 # ==========================================================
@@ -121,7 +121,7 @@ if "sim_start_time" in st.session_state:
 		f" | Speed: {simulation_speed}x"
 	)
 else:
-    st.warning("La simulation n'a pas été lancée depuis la page d'accueil.")
+    st.warning("لم يتم تشغيل المحاكاة من الصفحة الرئيسية")
 
 
 
@@ -138,7 +138,7 @@ else:
 # 2x  = تحديث كل 0.5 ثانية
 # 10x = تحديث كل 0.1 ثانية
 # ==========================================================
-refresh_interval = max(100, int(5000 / simulation_speed))
+refresh_interval = max(100, int(2000 / simulation_speed))
 
 st_autorefresh(
     interval=refresh_interval,
@@ -148,7 +148,7 @@ st_autorefresh(
 # =========================
 # 2. زر إنشاء الجداول
 # =========================
-if st.button("Crée des tables"):
+if st.button("إنشاء الجداول"):
 
     # حفظ الحجم
     st.session_state.n_jobs = n_jobs
@@ -461,8 +461,6 @@ if "sequence_df" in st.session_state:
                             st.error(f"❌ Erreur pendant l'exécution de Algorithme 5 : {e}")
 
 
-
-	
     # عرض الجدول القابل للتعديل
     edited_seq = st.data_editor(
         st.session_state.sequence_df,
@@ -1012,4 +1010,4 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 
 else:
     # رسالة تظهر للمستخدم إذا فتح الصفحة لأول مرة قبل توليد البيانات
-    st.info("⏳ Veuillez d'abord cliquer sur le bouton « Créer des tables » pour générer des données et afficher l'état de la machine.")
+    st.info("⏳ الرجاء الضغط على زر 'إنشاء الجداول' أولاً لتوليد البيانات وعرض حالة الآلات.")
