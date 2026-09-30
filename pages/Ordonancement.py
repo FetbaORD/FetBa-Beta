@@ -591,7 +591,7 @@ if "sequence_df" in st.session_state:
 
                     with st.spinner("🔄 Résolution du modèle d'optimisation..."):
                         try:
-                            optimized_seq, best_cmax = solve_algorithm5(
+                            optimized_seq, best_cmax = solve_algorithm5_cplex(
                                 st.session_state.Pij,
                                 st.session_state.Ts,
                                 st.session_state.Incompatibilite
