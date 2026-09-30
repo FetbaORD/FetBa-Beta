@@ -314,7 +314,7 @@ def read_matrix_txt(uploaded_file):
 	
 if "Pij" in st.session_state:
 
-    col_title, col_upload = st.columns([1, 1])
+    col_title, col_upload = st.columns([2, 1])
 
 with col_title:
     st.subheader("📊 Pij (Processing Time)")
