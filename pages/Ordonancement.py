@@ -1096,7 +1096,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
         st.subheader("🖥️ état actuel des machines")
         machine_status = []
         for m in range(n_machines):
-            current_job = "متوقفة (Idle)"
+            current_job = "arreté (Idle)"
             for j_idx, job_id in enumerate(sequence):
                 if start_times[j_idx, m] <= current_sim_time <= end_times[j_idx, m]:
                     current_job = f"🔨 Job {job_id + 1}"
