@@ -600,30 +600,29 @@ if "sequence_df" in st.session_state:
 
                             current_n_jobs = len(optimized_seq)
                             st.session_state.sequence = optimized_seq
-							st.session_state.sequence_df = pd.DataFrame(
-								[optimized_seq],
-								columns=[f"J{i+1}" for i in range(current_n_jobs)]
-							)
-							st.session_state.pop("Seq_editor", None)
-							st.session_state.algorithm5_cmax = best_cmax
+                            st.session_state.sequence_df = pd.DataFrame(
+                                [optimized_seq],
+                                columns=[f"J{i+1}" for i in range(current_n_jobs)]
+                            )
+                            st.session_state.algorithm5_cmax = best_cmax
 
                             st.success(f"✅ Algorithme 5 terminé ! Cmax = {best_cmax:.2f}")
                             st.rerun()
                         except Exception as e:
                             st.error(f"❌ Erreur pendant l'exécution de Algorithme 5 : {e}")
-edited_seq = st.data_editor(
-    st.session_state.sequence_df,
-    key="Seq_editor",
-    use_container_width=True
-)
-
-# تحديث التسلسل فقط إذا قام المستخدم بتغيير الجدول فعلياً
-if edited_seq is not None:
-    new_sequence = [int(x) for x in edited_seq.values.flatten().tolist()]
-
-    if new_sequence != st.session_state.sequence:
-        st.session_state.sequence = new_sequence
-        st.session_state.sequence_df = edited_seq
+    # عرض الجدول القابل للتعديل
+    edited_seq = st.data_editor(
+        st.session_state.sequence_df,
+        key="Seq_editor",
+        use_container_width=True
+    )
+    
+    if edited_seq is not None:
+        try:
+            st.session_state.sequence_df = edited_seq
+            st.session_state.sequence = [int(x) for x in edited_seq.values.flatten().tolist()]
+        except ValueError:
+            st.error("الرجاء إدخال أرقام فقط")
 
 
 
