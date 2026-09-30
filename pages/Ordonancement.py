@@ -314,7 +314,17 @@ def read_matrix_txt(uploaded_file):
 	
 if "Pij" in st.session_state:
 
+    col_title, col_upload = st.columns([5, 1])
+
+with col_title:
     st.subheader("📊 Pij (Processing Time)")
+
+with col_upload:
+    pij_file = st.file_uploader(
+        "📂 Importer Pij",
+        type=["txt"],
+        key="pij_txt_file"
+    )
     edited_pij = st.data_editor(
         st.session_state.Pij,
         key="Pij_editor",
