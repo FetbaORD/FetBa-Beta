@@ -613,15 +613,15 @@ if "sequence_df" in st.session_state:
                         except Exception as e:
                             st.error(f"❌ Erreur pendant l'exécution de Algorithme 5 : {e}")
     edited_seq = st.data_editor(
-		st.session_state.sequence_df,
-		key="Seq_editor",
-		use_container_width=True
-	)
-	if edited_seq is not None:
-		new_sequence = [int(x) for x in edited_seq.values.flatten().tolist()]
-		if new_sequence != st.session_state.sequence:
-			st.session_state.sequence = new_sequence
-			st.session_state.sequence_df = edited_seq
+        st.session_state.sequence_df,
+        key="Seq_editor",
+        use_container_width=True
+    )
+    if edited_seq is not None:
+        new_sequence = [int(x) for x in edited_seq.values.flatten().tolist()]
+        if new_sequence != st.session_state.sequence:
+            st.session_state.sequence = new_sequence
+            st.session_state.sequence_df = edited_seq
 
 
 
