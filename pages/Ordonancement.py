@@ -1101,7 +1101,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                 if start_times[j_idx, m] <= current_sim_time <= end_times[j_idx, m]:
                     current_job = f"🔨 Job {job_id + 1}"
                     break
-            machine_status.append({"الآلة": f"Machine {m+1}", "المنتج الحالي": current_job})
+            machine_status.append({"Machine": f"Machine {m+1}", "produit actuel": current_job})
         st.table(pd.DataFrame(machine_status))
 
     with col2:
