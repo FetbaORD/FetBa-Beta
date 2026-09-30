@@ -601,11 +601,13 @@ if "sequence_df" in st.session_state:
                             current_n_jobs = len(optimized_seq)
                             st.session_state.sequence = optimized_seq
 							st.session_state.sequence_df = pd.DataFrame(
-								[optimized_seq],
+							    [optimized_seq],
 								columns=[f"J{i+1}" for i in range(current_n_jobs)]
 							)
 							st.session_state.pop("Seq_editor", None)
+							
 							st.session_state.algorithm5_cmax = best_cmax
+							
                             st.success(f"✅ Algorithme 5 terminé ! Cmax = {best_cmax:.2f}")
                             st.rerun()
                         except Exception as e:
