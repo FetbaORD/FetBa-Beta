@@ -162,7 +162,7 @@ def solve_algorithm5(Pij, Ts, Incompatibilite):
         integrality=integrality,
         bounds=Bounds(lower, upper),
         constraints=LinearConstraint(A.tocsr(), np.asarray(lbs), np.asarray(ubs)),
-        options={"disp": False},
+        options={"disp": False, "time_limit": 30.0}, # إضافة وقت أقصى (30 ثانية مثلاً)
     )
 
     if not result.success:
