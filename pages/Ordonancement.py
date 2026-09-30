@@ -283,7 +283,35 @@ if st.button("Crée des tables"):
 # 6. عرض الجداول
 # =========================
 
+# ==========================================================
+# 📂 استيراد المصفوفات من ملفات TXT منفصلة
+# ==========================================================
 
+def read_matrix_txt(uploaded_file):
+    content = uploaded_file.read().decode("utf-8")
+
+    rows = []
+
+    for line in content.splitlines():
+        line = line.strip()
+
+        if not line:
+            continue
+
+        row = [float(x) for x in line.replace(",", " ").split()]
+        rows.append(row)
+
+    if not rows:
+        raise ValueError("Le fichier est vide.")
+
+    # التأكد من أن جميع الصفوف لها نفس الطول
+    n_cols = len(rows[0])
+
+    if any(len(row) != n_cols for row in rows):
+        raise ValueError("Toutes les lignes doivent avoir le même nombre de colonnes.")
+
+    return np.array(rows)
+	
 if "Pij" in st.session_state:
 
     st.subheader("📊 Pij (Processing Time)")
