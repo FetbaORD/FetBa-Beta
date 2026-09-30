@@ -1111,10 +1111,10 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
             finish_time_on_last_machine = end_times[j_idx, n_machines - 1]
             if current_sim_time >= finish_time_on_last_machine:
                 completed_jobs.append({
-                    "المنتج": f"Job {job_id + 1}",
-                    "وقت البدء (ث)": f"{start_times[j_idx, 0]:.1f}", 
-                    "وقت الانتهاء (ث)": f"{finish_time_on_last_machine:.1f}", 
-                    "الحالة": "c'est terminé"
+                    "produit": f"Job {job_id + 1}",
+                    "date de debut (s)": f"{start_times[j_idx, 0]:.1f}", 
+                    "date de fin (s)": f"{finish_time_on_last_machine:.1f}", 
+                    "etat": "c'est terminé"
                 })
         if completed_jobs:
             st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
