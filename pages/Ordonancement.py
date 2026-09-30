@@ -587,7 +587,7 @@ if "sequence_df" in st.session_state:
                 if "Pij" not in st.session_state or "Ts" not in st.session_state or "Incompatibilite" not in st.session_state:
                     st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل Algorithme 5.")
                 else:
-                    from cplex import solve_algorithm5
+                    from cplex import solve_algorithm5_cplex
 
                     with st.spinner("🔄 Résolution du modèle d'optimisation..."):
                         try:
