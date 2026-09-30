@@ -609,6 +609,10 @@ if "sequence_df" in st.session_state:
                             st.rerun()
                         except Exception as e:
                             st.error(f"❌ Erreur pendant l'exécution de Algorithme 5 : {e}")
+
+
+
+	
     # عرض الجدول القابل للتعديل
     edited_seq = st.data_editor(
         st.session_state.sequence_df,
