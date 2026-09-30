@@ -354,7 +354,40 @@ if pij_file is not None:
     
 if "Ts" in st.session_state:
 
+    col_title, col_upload = st.columns([5, 1])
+
+with col_title:
     st.subheader("Ts (Setup / Sterilization Time)")
+
+with col_upload:
+    ts_file = st.file_uploader(
+        "📂 Importer Ts",
+        type=["txt"],
+        key="ts_txt_file"
+    )
+if ts_file is not None:
+    try:
+        matrix = read_matrix_txt(ts_file)
+
+        Ts = pd.DataFrame(
+            matrix,
+            columns=[f"Job {i+1}" for i in range(matrix.shape[1])],
+            index=[f"Job {i+1}" for i in range(matrix.shape[0])]
+        )
+
+        st.session_state.Ts = Ts
+
+        # تحديث Incompatibilité automatiquement
+        st.session_state.Incompatibilite = pd.DataFrame(
+            np.where(matrix > 0, 1, 0),
+            columns=Ts.columns,
+            index=Ts.index
+        )
+
+        st.success("✅ Matrice Ts importée avec succès.")
+
+    except Exception as e:
+        st.error(f"❌ Erreur Ts : {e}")
     edited_ts = st.data_editor(
         st.session_state.Ts,
         key="Ts_editor",
