@@ -325,6 +325,24 @@ with col_upload:
         type=["txt"],
         key="pij_txt_file"
     )
+if pij_file is not None:
+    try:
+        matrix = read_matrix_txt(pij_file)
+
+        Pij = pd.DataFrame(
+            matrix,
+            columns=[f"M{i+1}" for i in range(matrix.shape[1])],
+            index=[f"Job {i+1}" for i in range(matrix.shape[0])]
+        )
+
+        st.session_state.Pij = Pij
+        st.session_state.n_jobs = matrix.shape[0]
+        st.session_state.n_machines = matrix.shape[1]
+
+        st.success("✅ Matrice Pij importée avec succès.")
+
+    except Exception as e:
+        st.error(f"❌ Erreur Pij : {e}")
     edited_pij = st.data_editor(
         st.session_state.Pij,
         key="Pij_editor",
