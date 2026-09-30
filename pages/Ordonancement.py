@@ -1158,7 +1158,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     if completed_jobs:
         progress = len(completed_jobs) / len(sequence)
         st.progress(progress)
-        st.write(f"📊 نسبة الإنجاز الكلية: {progress*100:.1f}%")
+        st.write(f"📊 taux d'avancement global: {progress*100:.1f}%")
 
 else:
     # رسالة تظهر للمستخدم إذا فتح الصفحة لأول مرة قبل توليد البيانات
