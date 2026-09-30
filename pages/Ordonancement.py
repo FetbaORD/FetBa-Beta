@@ -155,8 +155,8 @@ div[data-testid="stPopover"] button {
 # =========================
 st.sidebar.header("⚙️ Paramètres")
 # =========================
-n_jobs = st.sidebar.number_input("عدد المنتجات (Jobs)", 2, 50, 5)
-n_machines = st.sidebar.number_input("عدد الآلات (Machines)", 2, 10, 3)
+n_jobs = st.sidebar.number_input("nombre des taches (Jobs)", 2, 50, 5)
+n_machines = st.sidebar.number_input("nombre des machines (Machines)", 2, 10, 3)
 simulation_speed = st.sidebar.slider(
     "⚡ Vitesse de simulation",
     min_value=1,
