@@ -1,3 +1,5 @@
+docplex
+cplex
 streamlit
 bcrypt
 numpy
