@@ -3,7 +3,6 @@ bcrypt
 numpy
 pandas
 requests
-pulp
 streamlit-autorefresh
 twilio
 plotly
