@@ -162,8 +162,13 @@ def solve_algorithm5(Pij, Ts, Incompatibilite):
         integrality=integrality,
         bounds=Bounds(lower, upper),
         constraints=LinearConstraint(A.tocsr(), np.asarray(lbs), np.asarray(ubs)),
-        options={"disp": False, "time_limit": 30.0}, # إضافة وقت أقصى (30 ثانية مثلاً)
+        options={"time_limit": 15.0, "disp": False},
     )
+    # التحقق مما إذا كان هناك حل جزئي (حتى لو لم يكتمل البحث الكلي للأمثلية)
+    if result.x is None:
+        raise RuntimeError(f"لم يستطع الحلّال إيجاد أي حل خلال الوقت المحدد: {result.message}")
+
+    solution = result.x
 
     if not result.success:
         raise RuntimeError(f"Le solveur n'a pas trouvé une solution : {result.message}")
