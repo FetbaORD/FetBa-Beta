@@ -1093,7 +1093,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     col1, col2, col3 = st.columns([1, 1.5, 1.2])
 
     with col1:
-        st.subheader("🖥️ حالة الآلات الآن")
+        st.subheader("🖥️ état actuel des machines")
         machine_status = []
         for m in range(n_machines):
             current_job = "متوقفة (Idle)"
@@ -1105,7 +1105,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
         st.table(pd.DataFrame(machine_status))
 
     with col2:
-        st.subheader("✅ المنتجات المكتملة")
+        st.subheader("✅ Produits finis")
         completed_jobs = []
         for j_idx, job_id in enumerate(sequence):
             finish_time_on_last_machine = end_times[j_idx, n_machines - 1]
@@ -1114,7 +1114,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     "المنتج": f"Job {job_id + 1}",
                     "وقت البدء (ث)": f"{start_times[j_idx, 0]:.1f}", 
                     "وقت الانتهاء (ث)": f"{finish_time_on_last_machine:.1f}", 
-                    "الحالة": "تم الإنجاز"
+                    "الحالة": "c'est terminé"
                 })
         if completed_jobs:
             st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
