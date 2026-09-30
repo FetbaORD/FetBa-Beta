@@ -33,7 +33,13 @@ def run_ga_g_neh_s_interface(P_df, Ts_df, Incompat_df, popSize=100, nGen=200, pc
 
     # توليد بقية الأفراد (من 1 إلى popSize) عبر طفرات عشوائية من سلسلة G-NEH-S أو عشوائياً بالكامل لضمان التنوع
     for i in range(1, popSize):
-        population[i, :] = np.random.permutation(nJobs) + 1  # 1-based indexing
+        population[i, :] = np.array(optimized_neh_seq).copy()
+        if nJobs > 1:
+            a, b = np.random.choice(nJobs, 2, replace=False)
+            population[i, a], population[i, b] = (
+                population[i, b],
+                population[i, a]
+            )
 
     bestOverallCmax = float("inf")
     bestOverallSeq = []
