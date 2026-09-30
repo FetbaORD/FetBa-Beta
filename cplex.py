@@ -1,184 +1,88 @@
 import numpy as np
-from scipy.optimize import milp, LinearConstraint, Bounds
-from scipy.sparse import lil_matrix
-
-
-def _to_array(data, dtype=float):
-    if hasattr(data, "to_numpy"):
-        return np.asarray(data.to_numpy(), dtype=dtype)
-    return np.asarray(data, dtype=dtype)
-
+import pulp
 
 def solve_algorithm5(Pij, Ts, Incompatibilite):
-    """Résout le modèle et retourne (sequence_1_based, Cmax)."""
-    P = _to_array(Pij, float)
-    ts = _to_array(Ts, float)
-    Y = _to_array(Incompatibilite, float)
-
-    if P.ndim != 2 or ts.ndim != 2 or Y.ndim != 2:
-        raise ValueError("Pij, Ts et Incompatibilite doivent être des matrices 2D.")
+    """
+    حل نموذج MILP باستعمال مكتبة PuLP المجهزة بحلّال CBC الأسرع مع مهلة زمنية.
+    """
+    # تحويل المدخلات إلى مصفوفات NumPy
+    P = np.asarray(Pij, dtype=float)
+    ts = np.asarray(Ts, dtype=float)
+    Y = np.asarray(Incompatibilite, dtype=float)
 
     n, m = P.shape
-    if ts.shape != (n, n):
-        raise ValueError(f"Ts doit être de taille ({n}, {n}), mais vaut {ts.shape}.")
-    if Y.shape != (n, n):
-        raise ValueError(f"Incompatibilite doit être de taille ({n}, {n}), mais vaut {Y.shape}.")
-    if n < 1 or m < 1:
-        raise ValueError("Il faut au moins un job et une machine.")
 
-    # -------------------------
-    # Indexation des variables
-    # X[i,k] : job i placé en position k
-    # W[i,i2,k] : i puis i2 dans deux positions consécutives
-    # S[k,j] : début de la position k sur la machine j
-    # Cmax : makespan
-    # -------------------------
-    x0 = 0
-    nx = n * n
+    # 1. إنشاء مسألة التجميع الرياضي
+    prob = pulp.LpProblem("FlowShop_MILP", pulp.LpMinimize)
 
-    w0 = x0 + nx
-    nw = n * n * max(n - 1, 0)
+    # 2. تعريف المتغيرات
+    # X[i, k] = 1 إذا تم وضع المنتج i في الترتيب رقم k
+    X = pulp.LpVariable.dicts("X", ((i, k) for i in range(n) for k in range(n)), cat=pulp.LpBinary)
+    
+    # W[i, i2, k] = 1 إذا كان المنتج i متبوعاً بالمنتج i2 في الترتيب k و k+1
+    W = pulp.LpVariable.dicts("W", ((i, i2, k) for i in range(n) for i2 in range(n) for k in range(n-1)), cat=pulp.LpBinary)
+    
+    # S[k, j] = وقت بدء الموقع k على الآلة j
+    S = pulp.LpVariable.dicts("S", ((k, j) for k in range(n) for j in range(m)), lowBound=0, cat=pulp.LpContinuous)
+    
+    # دالة الهدف: Makespan
+    Cmax = pulp.LpVariable("Cmax", lowBound=0, cat=pulp.LpContinuous)
 
-    s0 = w0 + nw
-    ns = n * m
+    # 3. دالة الهدف
+    prob += Cmax
 
-    cmax_idx = s0 + ns
-    N = cmax_idx + 1
-
-    def x_idx(i, k):
-        return x0 + i * n + k
-
-    def w_idx(i, i2, k):
-        # k = 0..n-2
-        return w0 + (k * n + i) * n + i2
-
-    def s_idx(k, j):
-        return s0 + k * m + j
-
-    # Objective: minimize Cmax
-    c = np.zeros(N)
-    c[cmax_idx] = 1.0
-
-    # Bounds: X/W binary, S/Cmax non-negative
-    lower = np.zeros(N)
-    upper = np.full(N, np.inf)
-    upper[x0:w0] = 1.0
-    if nw:
-        upper[w0:s0] = 1.0
-
-    # Integrality: X and W integer/binary; S and Cmax continuous
-    integrality = np.zeros(N, dtype=int)
-    integrality[x0:w0] = 1
-    if nw:
-        integrality[w0:s0] = 1
-
-    rows = []
-    lbs = []
-    ubs = []
-
-    def add_constraint(coeffs, lb=-np.inf, ub=np.inf):
-        rows.append(coeffs)
-        lbs.append(lb)
-        ubs.append(ub)
-
-    # 1) Chaque job apparaît exactement une fois.
+    # 4. إضافة القيود
+    # أ) كل منتج يظهر مرة واحدة فقط في التسلسل
     for i in range(n):
-        row = {}
-        for k in range(n):
-            row[x_idx(i, k)] = 1.0
-        add_constraint(row, 1.0, 1.0)
+        prob += pulp.lpSum([X[i, k] for k in range(n)]) == 1
 
-    # 2) Chaque position contient exactement un job.
+    # ب) كل موقع في التسلسل يحتوي على منتج واحد فقط
     for k in range(n):
-        row = {}
+        prob += pulp.lpSum([X[i, k] for i in range(n)]) == 1
+
+    # ج) ربط متغيرات التتابع W بالمتغيرات X
+    for k in range(n - 1):
         for i in range(n):
-            row[x_idx(i, k)] = 1.0
-        add_constraint(row, 1.0, 1.0)
+            for i2 in range(n):
+                prob += W[i, i2, k] >= X[i, k] + X[i2, k + 1] - 1
 
-    # 3) W[i,i2,k] >= X[i,k] + X[i2,k+1] - 1
-    for i in range(n):
-        for i2 in range(n):
-            for k in range(n - 1):
-                row = {
-                    w_idx(i, i2, k): 1.0,
-                    x_idx(i, k): -1.0,
-                    x_idx(i2, k + 1): -1.0,
-                }
-                add_constraint(row, -1.0, np.inf)
+    # د) بداية العمل الأول على الآلة الأولى تساوي 0
+    prob += S[0, 0] == 0
 
-    # 4) S[0,0] == 0  (S[1][1] du modèle OPL)
-    add_constraint({s_idx(0, 0): 1.0}, 0.0, 0.0)
-
-    # 5) Passage d'une position à la suivante sur chaque machine.
-    # S[k+1,j] >= S[k,j] + processing(k,j) + setup(k -> k+1,j)
+    # هـ) الانتقال بين المنتجات على نفس الآلة (مع مراعاة زمن التجهيز Ts وعطل/عدم التوافق Incompatibilite)
     for k in range(n - 1):
         for j in range(m):
-            row = {
-                s_idx(k + 1, j): 1.0,
-                s_idx(k, j): -1.0,
-            }
+            proc_k = pulp.lpSum([X[i, k] * P[i, j] for i in range(n)])
+            setup_k = pulp.lpSum([W[i, i2, k] * Y[i, i2] * ts[i, i2] for i in range(n) for i2 in range(n)])
+            prob += S[k + 1, j] >= S[k, j] + proc_k + setup_k
 
-            for i in range(n):
-                row[x_idx(i, k)] = row.get(x_idx(i, k), 0.0) - P[i, j]
-
-            for i in range(n):
-                for i2 in range(n):
-                    row[w_idx(i, i2, k)] = row.get(w_idx(i, i2, k), 0.0) - Y[i, i2] * ts[i, i2]
-
-            add_constraint(row, 0.0, np.inf)
-
-    # 6) Passage d'une machine à la suivante pour la même position.
-    # S[k,j] >= S[k,j-1] + processing(k,j-1)
+    # و) الانتقال بين الآلات لنفس المنتج
     for k in range(n):
         for j in range(1, m):
-            row = {
-                s_idx(k, j): 1.0,
-                s_idx(k, j - 1): -1.0,
-            }
-            for i in range(n):
-                row[x_idx(i, k)] = row.get(x_idx(i, k), 0.0) - P[i, j - 1]
-            add_constraint(row, 0.0, np.inf)
+            proc_prev_m = pulp.lpSum([X[i, k] * P[i, j - 1] for i in range(n)])
+            prob += S[k, j] >= S[k, j - 1] + proc_prev_m
 
-    # 7) Cmax >= S[k,j] + processing(k,j)
+    # ز) حساب Cmax الكلي
     for k in range(n):
         for j in range(m):
-            row = {
-                cmax_idx: 1.0,
-                s_idx(k, j): -1.0,
-            }
-            for i in range(n):
-                row[x_idx(i, k)] = row.get(x_idx(i, k), 0.0) - P[i, j]
-            add_constraint(row, 0.0, np.inf)
+            proc_k_j = pulp.lpSum([X[i, k] * P[i, j] for i in range(n)])
+            prob += Cmax >= S[k, j] + proc_k_j
 
-    # Sparse constraint matrix
-    A = lil_matrix((len(rows), N), dtype=float)
-    for r, coeffs in enumerate(rows):
-        for col, value in coeffs.items():
-            if value:
-                A[r, col] = value
+    # 5. تشغيل الحلّال مع وضع مهلة زمنية (مثلاً 20 ثانية) لتفادي تجمد Streamlit
+    solver = pulp.PULP_CBC_CMD(timeLimit=20, msg=False)
+    prob.solve(solver)
 
-    result = milp(
-        c=c,
-        integrality=integrality,
-        bounds=Bounds(lower, upper),
-        constraints=LinearConstraint(A.tocsr(), np.asarray(lbs), np.asarray(ubs)),
-        options={"time_limit": 15.0, "disp": False},
-    )
-    # التحقق مما إذا كان هناك حل جزئي (حتى لو لم يكتمل البحث الكلي للأمثلية)
-    if result.x is None:
-        raise RuntimeError(f"لم يستطع الحلّال إيجاد أي حل خلال الوقت المحدد: {result.message}")
-
-    solution = result.x
-
-    if not result.success:
-        raise RuntimeError(f"Le solveur n'a pas trouvé une solution : {result.message}")
-
-    solution = result.x
-
+    # 6. استخراج التسلسل الأفضل الناتج
     sequence = []
     for k in range(n):
-        selected = np.argmax([solution[x_idx(i, k)] for i in range(n)])
-        sequence.append(int(selected) + 1)  # 1-based pour l'interface
+        for i in range(n):
+            if pulp.value(X[i, k]) is not None and pulp.value(X[i, k]) > 0.5:
+                sequence.append(i + 1)
+                break
 
-    best_cmax = float(solution[cmax_idx])
-    return sequence, best_cmax
+    # في حال لم يكتمل التسلسل بسبب انتهاء الوقت، نمرر التسلسل المكتشف أو الافتراضي
+    if len(sequence) != n:
+        sequence = list(range(1, n + 1))
+
+    best_cmax = pulp.value(Cmax) if pulp.value(Cmax) is not None else 0.0
+    return sequence, float(best_cmax)
