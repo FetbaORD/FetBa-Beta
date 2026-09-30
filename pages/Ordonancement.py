@@ -168,20 +168,20 @@ simulation_speed = st.sidebar.slider(
 )
 
 if "sim_start_time" in st.session_state:
-	# الوقت الحقيقي المنقضي
-	real_elapsed_time = (
-		datetime.now() - st.session_state.sim_start_time
-	).total_seconds()
-	# الوقت المحاكى بعد تطبيق السرعة
-	sim_duration = real_elapsed_time * simulation_speed
-	
-	minutes = int(sim_duration // 60)
-	seconds = int(sim_duration % 60)
-	
-	st.info(
-		f"⏱️ Simulation Time: {minutes:02d} min {seconds:02d} sec "
-		f" | Speed: {simulation_speed}x"
-	)
+    # الوقت الحقيقي المنقضي
+    real_elapsed_time = (
+        datetime.now() - st.session_state.sim_start_time
+    ).total_seconds()
+    # الوقت المحاكى بعد تطبيق السرعة
+    sim_duration = real_elapsed_time * simulation_speed
+    
+    minutes = int(sim_duration // 60)
+    seconds = int(sim_duration % 60)
+    
+    st.info(
+        f"⏱️ Simulation Time: {minutes:02d} min {seconds:02d} sec "
+        f" | Speed: {simulation_speed}x"
+    )
 else:
     st.warning("La simulation n'a pas été lancée depuis la page d'accueil.")
 
@@ -311,7 +311,7 @@ def read_matrix_txt(uploaded_file):
         raise ValueError("Toutes les lignes doivent avoir le même nombre de colonnes.")
 
     return np.array(rows)
-	
+    
 if "Pij" in st.session_state:
 
     col_title, col_upload = st.columns([2, 1])
@@ -1140,14 +1140,6 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
             ])
             
             st.dataframe(df_ts_machines, use_container_width=True, hide_index=True)
-	
-	
-	
-	
-	
-	
-	
-
     # =========================
     # 9. إحصائيات سريعة
     # =========================
