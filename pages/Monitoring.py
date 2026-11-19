@@ -155,6 +155,12 @@ def format_duration(total_seconds):
     return f"{s} s"
 
 
+def format_sim_time(total_seconds):
+    """Formate un temps de simulation en « mm:ss »."""
+    total_seconds = max(0, int(total_seconds))
+    return f"{total_seconds // 60:02d}:{total_seconds % 60:02d}"
+
+
 def send_real_notifications(machine_name, fault_label, worker_info, value_str, start_clock):
     """
     Envoi de vraies notifications (Telegram, e-mail et WhatsApp) au technicien responsable.
@@ -270,9 +276,8 @@ def build_fault_journal(current_sim_seconds):
             rows.append({
                 "Machine": machine,
                 "Type de panne": f.get("type", "Panne"),
-                "Date": start_clock.strftime("%Y-%m-%d") if start_clock else "—",
-                "Heure de début": start_clock.strftime("%H:%M:%S") if start_clock else "—",
-                "Heure de fin": ("En cours…" if ongoing else (end_clock.strftime("%H:%M:%S") if end_clock else "—")),
+                "Heure de début (simulation)": format_sim_time(f["start"]),
+                "Heure de fin (simulation)": ("En cours…" if ongoing else format_sim_time(f["end"])),
                 "Durée de la panne": format_duration(end_s - f["start"]),
                 "Source": f.get("source", "—"),
                 "Intervenant": f.get("worker", "—"),
@@ -281,7 +286,7 @@ def build_fault_journal(current_sim_seconds):
             })
     if not rows:
         return pd.DataFrame(columns=[
-            "Machine", "Type de panne", "Date", "Heure de début", "Heure de fin",
+            "Machine", "Type de panne", "Heure de début (simulation)", "Heure de fin (simulation)",
             "Durée de la panne", "Source", "Intervenant", "État"
         ])
     df = pd.DataFrame(rows).sort_values("_sort", ascending=False).drop(columns="_sort")
@@ -577,10 +582,10 @@ for machine, data in all_data.items():
             open_faults = [f for f in st.session_state.machine_faults[machine] if f["end"] is None]
             if open_faults:
                 f = open_faults[-1]
-                started = f["start_clock"].strftime("%H:%M:%S") if f.get("start_clock") else "—"
+                started = format_sim_time(f["start"])
                 st.warning(
                     f"⚠️ Cette machine est en panne ({f.get('type', 'Panne')}) — "
-                    f"début à **{started}** — durée : **{format_duration(sim_duration - f['start'])}**"
+                    f"début à **{started}** (temps de simulation) — durée : **{format_duration(sim_duration - f['start'])}**"
                 )
             else:
                 st.warning("⚠️ Cette machine est en panne.")
@@ -614,7 +619,10 @@ with st.expander(":material/add_circle: Ajouter une panne manuellement", expande
                 [CAT_TEMP, CAT_HUM, CAT_PRESS, CAT_VIBE, CAT_CURR, "Autre"]
             )
         with fc2:
-            f_start_time = st.time_input("Heure de début", value=datetime.now().time().replace(microsecond=0), step=60)
+            st.caption("Heure de début : temps écoulé depuis le début de la simulation")
+            s1, s2 = st.columns(2)
+            f_start_min = s1.number_input("Début (minutes)", min_value=0, max_value=1440, value=int(sim_duration // 60), step=1)
+            f_start_sec = s2.number_input("Début (secondes)", min_value=0, max_value=59, value=int(sim_duration % 60), step=1)
             d1, d2 = st.columns(2)
             f_min = d1.number_input("Durée (minutes)", min_value=0, max_value=1440, value=5, step=1)
             f_sec = d2.number_input("Durée (secondes)", min_value=0, max_value=59, value=0, step=1)
@@ -625,8 +633,8 @@ with st.expander(":material/add_circle: Ajouter une panne manuellement", expande
         if duration_s <= 0:
             st.error("La durée de la panne doit être supérieure à 0.")
         else:
-            start_dt = datetime.combine(datetime.now().date(), f_start_time)
-            start_s = max(0.0, (start_dt - st.session_state.sim_start_time).total_seconds())
+            start_s = float(int(f_start_min) * 60 + int(f_start_sec))
+            start_dt = st.session_state.sim_start_time + timedelta(seconds=start_s)
             st.session_state.machine_faults[f_machine].append({
                 "start": start_s,
                 "end": start_s + duration_s,
@@ -636,7 +644,7 @@ with st.expander(":material/add_circle: Ajouter une panne manuellement", expande
                 "source": "Manuel 👤",
                 "worker": "—",
             })
-            st.success(f"Panne ajoutée sur {f_machine} : début {f_start_time.strftime('%H:%M:%S')}, durée {format_duration(duration_s)}.")
+            st.success(f"Panne ajoutée sur {f_machine} : début à {format_sim_time(start_s)} (simulation), durée {format_duration(duration_s)}.")
 
 # =========================
 # 10. Graphiques + journal
