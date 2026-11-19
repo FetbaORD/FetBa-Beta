@@ -1,6 +1,6 @@
-To purchase a license key, please contact us via email at: bachirhabchi3@gmail.com
-Or telegram : 
+Pour acheter une clé de licence, veuillez nous contacter par e-mail : bachirhabchi3@gmail.com
+Ou via Telegram :
 @CCryptomic
 
-description 
-An advanced Flow Shop Scheduling Platform driven by powerful metaheuristics to optimize production sequencing within smart factories. The platform features an integrated real-time remote monitoring system with automated anomaly alerts dispatched instantly to maintenance teams via SMS, Telegram, and Email. Additionally, it includes a robust Matrix Generator and a built-in Incompatibility Rate Calculator to streamline operational constraints.
+Description
+Une plateforme avancée d'ordonnancement de type Flow Shop, pilotée par de puissantes métaheuristiques afin d'optimiser la séquence de production au sein des usines intelligentes. La plateforme intègre un système de surveillance à distance en temps réel, avec des alertes automatiques d'anomalies envoyées instantanément aux équipes de maintenance par SMS, Telegram et e-mail. Elle comprend également un générateur de matrices robuste et un calculateur intégré du taux d'incompatibilité pour simplifier la gestion des contraintes opérationnelles.

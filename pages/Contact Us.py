@@ -1,50 +1,50 @@
 import streamlit as st
 
-# إعدادات الصفحة
-st.set_page_config(page_title="Contact Us", page_icon="✉️", layout="centered")
+# Paramètres de la page
+st.set_page_config(page_title="Contactez-nous", page_icon="✉️", layout="centered")
 
-# دالة لقراءة ملف CSS وتطبيقه
+# Fonction de lecture et d'application du fichier CSS
 def local_css(file_name):
     with open(file_name, "r", encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# استدعاء ملف الستايل
+# Appel de la feuille de style
 local_css("style.css")
 
-# واجهة المستخدم الحاوية للعنوان
-st.markdown("<h1 class='main-title'>تواصل معنا</h1>", unsafe_allow_html=True)
-st.markdown("<p class='sub-title'>يسعدنا استقبال استفساراتك ورسائلك، سنقوم بالرد عليك في أقرب وقت ممكن.</p>", unsafe_allow_html=True)
+# Interface : titre de la page
+st.markdown("<h1 class='main-title'>Contactez-nous</h1>", unsafe_allow_html=True)
+st.markdown("<p class='sub-title'>Nous serons heureux de recevoir vos questions et vos messages ; nous vous répondrons dans les plus brefs délais.</p>", unsafe_allow_html=True)
 
-# رابط الإرسال الخاص بـ FormSubmit مع إيميلك
+# Lien d'envoi FormSubmit avec votre adresse e-mail
 FORM_SUBMIT_URL = "https://formsubmit.co/markandreas03@gmail.com"
 
-# إنشاء النموذج داخل حاوية HTML مخصصة
+# Création du formulaire dans un conteneur HTML personnalisé
 st.markdown('<div class="contact-container">', unsafe_allow_html=True)
 
-# استخدام st.form للتحكم في الإدخال والضغط
+# Utilisation de st.form pour gérer la saisie et l'envoi
 with st.form(key="contact_form", clear_on_submit=True):
     
-    # حقول الإدخال
-    name = st.text_input("الاسم الكامل", placeholder="أدخل اسمك هنا...")
-    email = st.text_input("البريد الإلكتروني", placeholder="example@domain.com")
-    message = st.text_area("محتوى الرسالة", placeholder="اكتب رسالتك هنا...", height=150)
+    # Champs de saisie
+    name = st.text_input("Nom complet", placeholder="Saisissez votre nom ici...")
+    email = st.text_input("Adresse e-mail", placeholder="example@domain.com")
+    message = st.text_area("Contenu du message", placeholder="Écrivez votre message ici...", height=150)
     
-    # حقل خفي لتجنب الرسائل العشوائية (Captcha/Anti-Spam) من FormSubmit
+    # Champ masqué pour éviter le spam (Captcha / anti-spam) de FormSubmit
     st.markdown(f'<input type="hidden" name="_captcha" value="false">', unsafe_allow_html=True)
     
-    # زر الإرسال
-    submit_button = st.form_submit_button(label="إرسال الرسالة")
+    # Bouton d'envoi
+    submit_button = st.form_submit_button(label="Envoyer le message")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# معالجة عملية الإرسال عند الضغط على الزر
+# Traitement de l'envoi au clic sur le bouton
 if submit_button:
     if not email or not message:
-        st.error("الرجاء ملء حقل البريد الإلكتروني ومحتوى الرسالة!")
+        st.error("Veuillez renseigner l'adresse e-mail et le contenu du message !")
     elif "@" not in email:
-        st.error("الرجاء إدخال بريد إلكتروني صحيح!")
+        st.error("Veuillez saisir une adresse e-mail valide !")
     else:
-        # إرسال البيانات خلف الكواليس باستخدام requests دون إعادة توجيه المستخدم
+        # Envoi des données en arrière-plan avec requests, sans redirection de l'utilisateur
         import requests
         
         data = {
@@ -56,8 +56,8 @@ if submit_button:
         try:
             response = requests.post(FORM_SUBMIT_URL, data=data)
             if response.status_code == 200:
-                st.success("🎉 تم إرسال رسالتك بنجاح! شكرًا لتواصلك معنا.")
+                st.success("🎉 Votre message a été envoyé avec succès ! Merci de nous avoir contactés.")
             else:
-                st.error("عذرًا، حدث خطأ أثناء إرسال الرسالة. حاول مرة أخرى لاحقًا.")
+                st.error("Désolé, une erreur est survenue lors de l'envoi du message. Veuillez réessayer plus tard.")
         except Exception as e:
-            st.error("تعذر الاتصال بالسيرفر، تحقق من اتصال الإنترنت الخاص بك.")
+            st.error("Impossible de se connecter au serveur, vérifiez votre connexion Internet.")

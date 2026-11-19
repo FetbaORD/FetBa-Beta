@@ -3,13 +3,13 @@ import numpy as np
 import random
 import pandas as pd
 
-# إعدادات الصفحة
+# Paramètres de la page
 st.set_page_config(page_title="Générateur de Matrice d'Incompatibilité", layout="wide")
 
 st.title("📊 Générateur Optimisé de Matrice d'Incompatibilité & Stérilisation")
-st.write("قم بتحديد المدخلات من الشريط الجانبي ثم اضغط على الأزرار لتوليد المصفوفات المطلوبة.")
+st.write("Définissez les entrées dans la barre latérale, puis cliquez sur les boutons pour générer les matrices souhaitées.")
 
-# تهيئة الـ session_state للاحتفاظ بالبيانات عند الانتقال بين الأزرار
+# Initialisation du session_state pour conserver les données lors du passage d'un bouton à l'autre
 if 'Incomp' not in st.session_state:
     st.session_state.Incomp = None
 if 'N' not in st.session_state:
@@ -24,12 +24,12 @@ if 'nb_final' not in st.session_state:
     st.session_state.nb_final = 0
 if 'total_pairs' not in st.session_state:
     st.session_state.total_pairs = 0
-# إضافة متغير للاحتفاظ بمصفوفة التعقيم المستوردة أو المولدة لتسهيل التعامل مع الملفات الخارجة
+# Ajout d'une variable pour conserver la matrice de stérilisation importée ou générée afin de faciliter la gestion des fichiers externes
 if 'Ts_matrix' not in st.session_state:
     st.session_state.Ts_matrix = None
 
 # =========================================================
-# وظائف الحساب الأساسية
+# Fonctions de calcul de base
 # =========================================================
 
 def calculer_incomp_matrix(categories):
@@ -51,28 +51,28 @@ def generer_matrice_sterilisation(Incomp):
     for i in range(N):
         for j in range(i + 1, N):
             if Incomp[i, j] == 1:
-                # توليد قيمة عشوائية متناظرة بين 1 و 99 لـ Ts(i,j) و Ts(j,i)
+                # Génération d'une valeur aléatoire symétrique entre 1 et 99 pour Ts(i,j) et Ts(j,i)
                 valeur_aleatoire = random.randint(1, 99)
                 Ts[i, j] = valeur_aleatoire
                 Ts[j, i] = valeur_aleatoire
             else:
-                # القيمة 10 ثابتة عند التوافق
+                # La valeur 10 est fixe en cas de compatibilité
                 Ts[i, j] = 0
                 Ts[j, i] = 0
                 
-    # تأكيد أن القطر الرئيسي صفر تماماً Ts(i,i) = 0
+    # Garantie que la diagonale principale est strictement nulle Ts(i,i) = 0
     np.fill_diagonal(Ts, 0)
     return Ts
 
 # =========================================================
-# محرك البحث والتحسين
+# Moteur de recherche et d'optimisation
 # =========================================================
 def optimiser_repartition(N, taux_cible, max_classes):
     total_pairs = N * (N - 1)
     nb_cible = round((taux_cible / 100) * total_pairs)
     
-    # ✅ الحل: نبدأ بجعل كل المنتجات في الفئة 1 (نسبة عدم توافق = 0%)
-    # هذا يمنح الخوارزمية حرية كاملة للصعود تدريجياً وبدقة نحو النسبة المطلوبة
+    # ✅ Solution : on commence par placer tous les produits dans la classe 1 (taux d'incompatibilité = 0 %)
+    # Cela laisse à l'algorithme toute liberté pour monter progressivement et précisément vers le taux souhaité
     categories = np.ones(N, dtype=int)
     
     best_categories = categories.copy()
@@ -90,12 +90,12 @@ def optimiser_repartition(N, taux_cible, max_classes):
         categories[idx] = new_val
         new_diff = abs(calculer_nb_incompatibilites(categories) - nb_cible)
 
-        # قبول التغيير إذا كان يقربنا من الهدف أو إذا كان مساوياً له
+        # Accepter le changement s'il nous rapproche de l'objectif ou s'il lui est égal
         if new_diff <= min_diff:
             min_diff = new_diff
             best_categories = categories.copy()
         else:
-            # إعطاء فرصة صغيرة (1%) للقبول العشوائي للخروج من الحواجز الرياضية
+            # Donner une petite chance (1 %) d'acceptation aléatoire pour sortir des minima locaux
             if random.random() > 0.01: 
                 categories[idx] = old_val
 
@@ -108,10 +108,10 @@ def optimiser_repartition(N, taux_cible, max_classes):
     return res
 
 # =========================================================
-# واجهة المستخدم (Streamlit UI)
+# Interface utilisateur (Streamlit UI)
 # =========================================================
 
-st.sidebar.header("⚙️ معطيات الإدخال")
+st.sidebar.header("⚙️ Données d'entrée")
 
 input_N = st.sidebar.number_input(
     "Nombre total de produits (N) :", 
@@ -129,24 +129,24 @@ input_taux_voulu = st.sidebar.slider(
     step=0.5
 )
 
-# إضافة متحكم في الشريط الجانبي لتحديد أقصى عدد فئات مسموح
+# Ajout d'un contrôle dans la barre latérale pour fixer le nombre maximal de classes autorisé
 max_classes = st.sidebar.number_input(
-    "Max Classes :",
+    "Nombre maximal de classes (Max Classes) :",
     min_value=2,
     max_value=20,
     value=6
 )
 
 
-# أزرار التوليد في الشريط الجانبي
+# Boutons de génération dans la barre latérale
 bttn_incomp = st.sidebar.button("Generate Matrice Incompatibilité", use_container_width=True)
-bttn_temp = st.sidebar.button("Generate Matrice Temp Sterlisation", use_container_width=True)
+bttn_temp = st.sidebar.button("Générer la matrice des temps de stérilisation (Temp Sterlisation)", use_container_width=True)
 
 # ---------------------------------------------------------
-# الحدث الأول: الضغط على زر توليد مصفوفة عدم التوافق
+# Premier événement : clic sur le bouton de génération de la matrice d'incompatibilité
 # ---------------------------------------------------------
 if bttn_incomp:
-    with st.spinner("جاري تشغيل خوارزمية التحسين..."):
+    with st.spinner("Exécution de l'algorithme d'optimisation..."):
         st.session_state.N = input_N
         st.session_state.taux_voulu = input_taux_voulu
         st.session_state.categories = optimiser_repartition(input_N, input_taux_voulu, max_classes)
@@ -155,12 +155,12 @@ if bttn_incomp:
         st.session_state.total_pairs = input_N * (input_N - 1)
         st.session_state.taux_final = (st.session_state.nb_final / st.session_state.total_pairs) * 100
 
-# عرض نتائج مصفوفة عدم التوافق إذا كانت متوفرة في الذاكرة
+# Affichage des résultats de la matrice d'incompatibilité si elle est disponible en mémoire
 if st.session_state.Incomp is not None:
     st.markdown("---")
-    st.subheader("📊 نتائج مصفوفة عدم التوافق (Matrice d'incompatibilité)")
+    st.subheader("📊 Résultats de la matrice d'incompatibilité (Matrice d'incompatibilité)")
     
-    # ➕ إضافة خيار استيراد مصفوفة عدم التوافق من ملف txt بجانب مصفوفة الاستيراد
+    # ➕ Ajout d'une option d'import de la matrice d'incompatibilité depuis un fichier txt à côté de la matrice d'import
     file_incomp = st.file_uploader("📥 Importer Matrice Incompatibilité (.txt)", type=["txt"], key="upload_incomp")
     if file_incomp is not None:
         try:
@@ -172,7 +172,7 @@ if st.session_state.Incomp is not None:
                 st.session_state.total_pairs = st.session_state.N * (st.session_state.N - 1)
                 st.session_state.taux_final = (st.session_state.nb_final / st.session_state.total_pairs) * 100
                 
-                # ✨ الكود المضاف: تحليل واستنتاج الفئات بناءً على البيانات المستوردة من الملف النصي
+                # ✨ Code ajouté : analyse et déduction des classes à partir des données importées du fichier texte
                 comp_matrix = (loaded_matrix == 0).astype(int)
                 visited = np.zeros(st.session_state.N, dtype=bool)
                 extracted_categories = np.zeros(st.session_state.N, dtype=int)
@@ -180,7 +180,7 @@ if st.session_state.Incomp is not None:
                 
                 for i in range(st.session_state.N):
                     if not visited[i]:
-                        # البحث عن جميع العناصر المتوافقة (0 في المصفوفة الأصلية) لتشكل فئة واحدة
+                        # Recherche de tous les éléments compatibles (0 dans la matrice d'origine) pour former une seule classe
                         queue = [i]
                         visited[i] = True
                         while queue:
@@ -194,19 +194,19 @@ if st.session_state.Incomp is not None:
                 
                 st.session_state.categories = extracted_categories
             else:
-                st.error("⚠️ الملف النصي لا يحتوي على مصفوفة مربعة صحيحة.")
+                st.error("⚠️ Le fichier texte ne contient pas de matrice carrée valide.")
         except Exception as e:
-            st.error(f"❌ خطأ أثناء قراءة الملف: {e}")
+            st.error(f"❌ Erreur lors de la lecture du fichier : {e}")
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric(label="التناسب المطلوب", value=f"{st.session_state.taux_voulu:.2f} %")
+        st.metric(label="Taux souhaité", value=f"{st.session_state.taux_voulu:.2f} %")
     with col2:
-        st.metric(label="التناسب المحقق", value=f"{st.session_state.taux_final:.2f} %", delta=f"{st.session_state.taux_final - st.session_state.taux_voulu:.2f} %")
+        st.metric(label="Taux atteint", value=f"{st.session_state.taux_final:.2f} %", delta=f"{st.session_state.taux_final - st.session_state.taux_voulu:.2f} %")
     with col3:
-        st.metric(label="عدد حالات عدم التوافق", value=f"{int(st.session_state.nb_final)} / {st.session_state.total_pairs}")
+        st.metric(label="Nombre de cas d'incompatibilité", value=f"{int(st.session_state.nb_final)} / {st.session_state.total_pairs}")
 
-    # عرض جدول مصفوفة عدم التوافق
+    # Affichage du tableau de la matrice d'incompatibilité
     df_incomp = pd.DataFrame(
         st.session_state.Incomp, 
         index=[f"P{i+1}" for i in range(st.session_state.N)], 
@@ -214,8 +214,8 @@ if st.session_state.Incomp is not None:
     )
     st.dataframe(df_incomp, use_container_width=True)
 
-    # تفاصيل الفئات
-    st.subheader("🗂️ توزيع المنتجات على الفئات (Répartition)")
+    # Détails des classes
+    st.subheader("🗂️ Répartition des produits par classe (Répartition)")
     classes, counts = np.unique(st.session_state.categories, return_counts=True)
     col_left, col_right = st.columns([1, 2])
     with col_left:
@@ -229,24 +229,24 @@ if st.session_state.Incomp is not None:
         st.dataframe(df_cat.T, use_container_width=True)
 
 # ---------------------------------------------------------
-# الحدث الثاني: الضغط على زر توليد مصفوفة أزمنة التعقيم
+# Deuxième événement : clic sur le bouton de génération de la matrice des temps de stérilisation
 # ---------------------------------------------------------
 if bttn_temp:
     if st.session_state.Incomp is None:
-        st.error("⚠️ يرجى توليد مصفوفة عدم التوافق أولاً بالضغط على الزر الأول!")
+        st.error("⚠️ Veuillez d'abord générer la matrice d'incompatibilité en cliquant sur le premier bouton !")
     else:
         st.session_state.markdown_visible = True
-        with st.spinner("جاري بناء مصفوفة أزمنة التعقيم المتناظرة..."):
+        with st.spinner("Construction de la matrice symétrique des temps de stérilisation..."):
             st.session_state.Ts_matrix = generer_matrice_sterilisation(st.session_state.Incomp)
 
-# التحقق من وجود مصفوفة أزمنة التعقيم لعرضها وإضافة خيار الاستيراد بجانبها
+# Vérification de l'existence de la matrice des temps de stérilisation pour l'afficher et ajouter l'option d'import à côté
 if st.session_state.Ts_matrix is not None or bttn_temp:
     if st.session_state.Incomp is not None:
         st.markdown("---")
-        st.subheader("⏱️ مصفوفة أزمنة التعقيم المحسوبة (Temp_Sterlisation - Ts)")
-        st.info("💡 تم حساب هذه مصفوفة كمرآة متناظرة: قيمة 10 عند التوافق (0)، وقيمة عشوائية [1-99] عند عدم التوافق (1)، والقطر صفري.")
+        st.subheader("⏱️ Matrice des temps de stérilisation calculée (Temp_Sterlisation - Ts)")
+        st.info("💡 Cette matrice est calculée comme un miroir symétrique : valeur 10 en cas de compatibilité (0), valeur aléatoire [1-99] en cas d'incompatibilité (1), et diagonale nulle.")
         
-        # ➕ إضافة خيار استيراد مصفوفة أزمنة التعقيم من ملف txt بجانب الجدول
+        # ➕ Ajout d'une option d'import de la matrice des temps de stérilisation depuis un fichier txt à côté du tableau
         file_ts = st.file_uploader("📥 Importer Matrice Temp Stérilisation (.txt)", type=["txt"], key="upload_ts")
         if file_ts is not None:
             try:
@@ -254,12 +254,12 @@ if st.session_state.Ts_matrix is not None or bttn_temp:
                 if loaded_ts.ndim == 2 and loaded_ts.shape[0] == st.session_state.N:
                     st.session_state.Ts_matrix = loaded_ts
                 else:
-                    st.error(f"⚠️ يجب أن تكون أبعاد المصفوفة المستوردة مطابقة لعدد المنتجات الحالي ({st.session_state.N}x{st.session_state.N}).")
+                    st.error(f"⚠️ Les dimensions de la matrice importée doivent correspondre au nombre de produits actuel ({st.session_state.N}x{st.session_state.N}).")
             except Exception as e:
-                st.error(f"❌ خطأ أثناء قراءة الملف: {e}")
+                st.error(f"❌ Erreur lors de la lecture du fichier : {e}")
 
         if st.session_state.Ts_matrix is not None:
-            # تحويلها إلى DataFrame للعرض التفاعلي المنظم
+            # Conversion en DataFrame pour un affichage interactif structuré
             df_ts = pd.DataFrame(
                 st.session_state.Ts_matrix,
                 index=[f"P{i+1}" for i in range(st.session_state.N)],

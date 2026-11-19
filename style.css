@@ -1,476 +1,438 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
-if is_danger and can_send_alert(machine, key):
-            send_telegram_msg(CONTACTS.get(label, CONTACTS["عام/احتياطي"]), f"🚨 {machine}\n{label}: {val}")
-            
-            # السطر الجديد المسؤول عن تغيير الحالة تلقائياً:
-            if st.session_state.machine_status[machine] == "Running":
-                toggle_machine(machine, source="آلي 🤖", fault_type=label)
-
-            st.session_state.alerts_sent[machine][key] = True
-			
-			
-/* تحسين الخطوط والخلفية العامة */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-
-html, body, [data-testid="stAppViewContainer"] {
-    font-family: 'Cairo', sans-serif;
-    background-color: #f4f7f6;
+/* =========================================================================
+   0. VARIABLES DE THÈME
+   ========================================================================= */
+:root {
+    --c-primary: #2563eb;
+    --c-primary-dark: #1e3a8a;
+    --c-primary-soft: #dbeafe;
+    --c-accent: #7c3aed;
+    --c-success: #10b981;
+    --c-warning: #f59e0b;
+    --c-danger: #e63946;
+    --c-bg: #f4f7fb;
+    --c-card: #ffffff;
+    --c-text: #1e293b;
+    --c-muted: #64748b;
+    --c-border: #e2e8f0;
+    --radius: 16px;
+    --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.10);
+    --shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.16);
 }
 
-/* تصميم البطاقات المخصصة للآلات */
+/* =========================================================================
+   1. FOND GÉNÉRAL ET TYPOGRAPHIE
+   ========================================================================= */
+html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    color: var(--c-text);
+}
+
+[data-testid="stAppViewContainer"] {
+    background:
+        radial-gradient(circle at 8% 0%, rgba(37, 99, 235, 0.10) 0, transparent 38%),
+        radial-gradient(circle at 95% 8%, rgba(124, 58, 237, 0.09) 0, transparent 34%),
+        var(--c-bg);
+}
+
+[data-testid="stHeader"] {
+    background: transparent;
+}
+
+.block-container {
+    padding-top: 2.2rem;
+    max-width: 1280px;
+}
+
+/* Titres */
+h1 {
+    font-weight: 800 !important;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, var(--c-primary-dark), var(--c-primary) 55%, var(--c-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+h2, h3 {
+    color: var(--c-primary-dark);
+    font-weight: 700 !important;
+}
+
+h2 {
+    position: relative;
+    padding-bottom: 6px;
+}
+
+h2::after {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 4px;
+    margin-top: 6px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--c-primary), var(--c-accent));
+}
+
+hr {
+    border: none !important;
+    height: 2px !important;
+    background: linear-gradient(90deg, transparent, var(--c-primary-soft), transparent) !important;
+}
+
+/* =========================================================================
+   2. CARTES MACHINES, JAUGES ET INDICATEURS
+   ========================================================================= */
 .machine-card {
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: none !important;
     margin-bottom: 20px;
 }
 
-
-
 .machine-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-    border-color: #3498db;
-
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
 }
 
-/* تنسيق العناوين والـ Bold */
-h1, h2, h3 {
-    color: #2c3e50;
-    font-weight: 700 !important;
+/* Bandeau de titre d'une machine */
+.machine-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #f8fafc, #ffffff);
 }
 
-/* تحسين شكل الـ Metrics */
-[data-testid="stMetricValue"] {
-    font-size: 1.8rem !important;
-    font-weight: 700 !important;
-    color: #1e88e5 !important;
+.machine-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--c-primary-dark);
 }
 
-/* تنسيق أزرار Streamlit */
-.stButton>button {
-    width: 200%;
-    font-size: 30px;
-    border-radius: 8px;
-    border: none !important;
-    background-color: #3498db;
-    color: white;
-    font-weight: bold;
-    padding: 10px 0;
-    transition: all 0.3s ease;
+/* Pastilles d'état */
+.status-pill {
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
 }
 
-.stButton>button:hover {
-    background-color: #²;
-    color: red;
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
-
+.status-ok {
+    background: #d1fae5;
+    color: #065f46;
 }
 
-/* شريط الحالة المخصص */
+.status-down {
+    background: #fee2e2;
+    color: #991b1b;
+    animation: pulse-down 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse-down {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.35); }
+    50% { box-shadow: 0 0 0 8px rgba(230, 57, 70, 0); }
+}
+
+/* Barre de santé */
 .health-bar-container {
     width: 100%;
-    background-color: #e0e0e0;
+    background-color: #e2e8f0;
     border-radius: 50px;
     height: 12px;
-    margin: 15px 0;
+    margin: 12px 0 18px 0;
     overflow: hidden;
 }
 
 .health-bar-fill {
     height: 100%;
     border-radius: 50px;
-    transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: width 0.6s ease;
 }
 
-/* تنسيق الأزرار وحقول الإدخال داخل الـ Sidebar */
-[data-testid="stSidebar"] button {
-    background-color: #ff0037 !important; /* لون خلفية الزر الأساسي */
-    color: #FFF !important; /* لون النص */
-    border: none !important;
-    border-radius: 8px !important; /* انحناء الحواف */
-    padding: 10px 20px !important; /* المسافات الداخلية */
-    font-size: 15px !important;
-    font-weight: bold !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    transition: all 0.3s ease-in-out !important; /* حركة سلسة عند الـ Hover */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important; /* الظل الأساسي */
-    cursor: pointer;
-    width: 100%;
+/* Indicateurs (metrics) */
+[data-testid="stMetric"] {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 14px;
+    padding: 12px 16px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-/* تأثير الـ Hover (عند تمرير الماوس فوق الزر) */
-[data-testid="stSidebar"] button:hover {
-	background-color: #4F46E5 !important;
-	border-color: #6366F1 !important;
-	box-shadow: 0 8px 15px rgba(99, 102, 241, 0.4) !important; /* ظل مضيء ملون */
-	transform: translateY(-2px) !important; /* تحريك الزر لأعلى قليلاً */
+[data-testid="stMetric"]:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
 }
 
-/* تأثير الـ Active (عند الضغط على الزر) */
-[data-testid="stSidebar"] button:active {
-    transform: translateY(1px) !important; /* تأثير ارتدادي لأسفل عند الضغط */
-	color: #FFFFFF !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* تحسين شكل الـ Expander وحقول الإدخال لتتناسق مع الأزرار */
-[data-testid="stSidebar"] .stMarkdown h2, [data-testid="stSidebar"] .stMarkdown h1 {
-    color: #4F46E5 !important;
-    border-bottom: 2px solid #E2E8F0;
-    padding-bottom: 5px;
-}
-
-/* ======================================================== */
-/* 1. التنسيق الأساسي للـ Expander (وهو في الحالة العادية) */
-/* ======================================================== */
-[data-testid="stSidebar"] .stExpander {
-    background-color: #26a5ff !important; /* لون الخلفية الأساسي */
-    margin-bottom: 12px !important; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important; 
-    transition: all 0.3s ease-in-out !important;
-	border-radius: 8px !important; /* انحناء الحواف */
-	border: none;
-}
-
-/* 🎯 السحر هنا: تأثير الـ Hover الفعال والآمن */
-/* نطبقه فقط عندما يكون الـ Expander مغلقاً :not([open]) لمنع المشاكل */
-[data-testid="stSidebar"] .stExpander:not([open]):hover {
-    background-color: #0782d9 !important; /* تحويل الخلفية للأبيض */
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35) !important; /* الظل المضيء */
-    transform: translateY(-2px) !important; /* الحركة للأعلى */
-}
-
-/* ======================================================== */
-/* 2. حماية الـ Expander عندما يتم فتحه (حتى لا تلتصق الأزرار) */
-/* ======================================================== */
-[data-testid="stSidebar"] .stExpander[open] {
-    background-color: #0782d9 !important; /* الحفاظ على الخلفية الأصلية عند الفتح */
-	color: #000000 !important;
-    transform: none !important; /* إلغاء الحركة للأعلى لكي لا تهتز الأزرار بالداخل */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
-
-}
-
-/* تحسين شكل عنوان الموظف والنص داخل الـ Expander (الحالة العادية) */
-[data-testid="stSidebar"] .stExpander summary {
-    padding: 10px 15px !important;
-    color: #000;
-}
-
-/* استهداف النص (اسم الموظف) مباشرة في الحالة العادية */
-[data-testid="stSidebar"] .stExpander summary span, 
-[data-testid="stSidebar"] .stExpander summary p {
-    color: Black !important; /* اختياري: تغيير لون النص أيضاً إلى الأزرق المضيء ليزيد جمالاً */
-    font-size: 15px !important;
-    font-weight: bold !important; /* خط عادي في البداية */
-    transition: font-weight 0.2s ease-in-out, color 0.2s ease-in-out !important; /* جعل تحول الخط ناعماً */
-}
-
-
-
-
-/* 🎯 الحل الصحيح: الـ Hover يتم على الـ summary نفسه للعنصر المحدد فقط */
-[data-testid="stSidebar"] .stExpander summary:hover span,
-[data-testid="stSidebar"] .stExpander summary:hover p {
-    color: white !important;
-    font-weight: bold !important; /* لجعل النص Bold عند الـ Hover عليه تحديداً */
-}
-
-
-
-
-
-/* ======================================================== */
-/* 2. تزيين حقول إدخال البيانات (st.text_input) داخل القائمة */
-/* ======================================================== */
-[data-testid="stSidebar"] .stTextInput input {
-    background-color: #2D2D44 !important; /* خلفية الحقل */
-    color: #E2E8F0 !important; /* لون النص داخل الحقل */
-    border: none !important;
-    border-radius: 6px !important;
-    padding: 8px 12px !important;
-    transition: all 0.2s ease-in-out !important;
-}
-
-/* تأثير التركيز (Focus) عند الضغط والكتابة داخل الحقل */
-[data-testid="stSidebar"] .stTextInput input:focus {
-    border-color: #4F46E5 !important;
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5) !important; /* توهج حول الحقل */
-    background-color: #252538 !important;
-}
-
-/* تلوين عناوين الحقول (رقم الهاتف، البريد، إلخ) */
-[data-testid="stSidebar"] .stTextInput label {
-    color: #A0AEC0 !important;
-    font-size: 13px !important;
-    margin-bottom: 4px !important;
-}
-
-/* تنسيق العناوين المخصصة */
-.main-title {
-    font-size: 2rem !important;
+[data-testid="stMetricValue"] {
+    font-size: 1.7rem !important;
     font-weight: 700 !important;
-    color: #1E293B;
+    color: var(--c-primary) !important;
+}
+
+[data-testid="stMetricLabel"] {
+    color: var(--c-muted);
+    font-weight: 600;
+}
+
+/* Alertes */
+[data-testid="stAlert"] {
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* =========================================================================
+   3. BOUTONS
+   ========================================================================= */
+.stButton > button,
+div.stFormSubmitButton > button,
+button[kind="primary"],
+button[kind="secondary"] {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 0.55rem 1.2rem;
+    transition: all 0.25s ease;
+}
+
+button[kind="primary"],
+div.stFormSubmitButton > button {
+    background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.30);
+}
+
+button[kind="primary"]:hover,
+div.stFormSubmitButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.42);
+    filter: brightness(1.06);
+}
+
+button[kind="primary"]:active,
+div.stFormSubmitButton > button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.30);
+}
+
+button[kind="secondary"] {
+    background: #ffffff;
+    color: var(--c-primary-dark);
+    border: 1.5px solid var(--c-primary-soft) !important;
+    box-shadow: var(--shadow-sm);
+}
+
+button[kind="secondary"]:hover {
+    border-color: var(--c-primary) !important;
+    color: var(--c-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+button[kind="secondary"]:active {
+    transform: translateY(0);
+}
+
+/* =========================================================================
+   4. CHAMPS DE SAISIE ET CONTENEURS
+   ========================================================================= */
+.stTextInput input,
+.stTextArea textarea,
+div[data-testid="stTextInput"] input,
+div[data-testid="stNumberInput"] input {
+    border-radius: 10px !important;
+    border: 1.5px solid var(--c-border) !important;
+    padding: 12px !important;
+    transition: all 0.25s ease;
+    background: #ffffff;
+}
+
+.stTextInput input:focus,
+.stTextArea textarea:focus,
+div[data-testid="stTextInput"] input:focus {
+    border-color: var(--c-primary) !important;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Conteneurs avec bordure : cartes avec ombre */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    border-radius: var(--radius);
+    background: var(--c-card);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Titres personnalisés */
+.main-title {
+    color: var(--c-primary-dark);
     text-align: center;
-    margin-bottom: 5px !important;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.sub-title {
+    color: var(--c-muted);
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 30px;
 }
 
 .form-label {
-    font-size: 1.1rem !important;
-    color: #64748B;
-    text-align: center;
-    margin-bottom: 20px !important;
-}
-
-/* 1. إضافة ظلال وتأثيرات حركية على الحاوية (Card) */
-div[data-testid="stVerticalBlockBorderWrapper"] {
-    background-color: #ffffff !important;
-    border-radius: 16px !important;
-    border: none !important;
-    padding: 30px !important;
-    /* الظل الافتراضي الخفيف للبطاقة */
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
-    transition: all 0.4s ease-in-out !important;
-}
-
-/* تأثير تحويم الفأرة فوق البطاقة لتأثير الارتفاع */
-div[data-testid="stVerticalBlockBorderWrapper"]:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-    border-color: #CBD5E1 !important;
-}
-
-/* 2. تحسين حقول الإدخال (Inputs) عند التركيز عليها */
-div[data-testid="stTextInput"] input {
-    border-radius: 10px !important;
-    border: none !important;
-    padding: 12px !important;
-    transition: all 0.3s ease !important;
-}
-
-div[data-testid="stTextInput"] input:focus {
-    border-color: #4F46E5 !important; /* لون أزرق/بنفسجي عند الضغط */
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
-}
-
-/* 3. زر التشغيل الأساسي (secondary Button) مع تأثير الـ Hover والـ Shadows */
-button[kind="secondary"] {
-    background-color: #ff0037 !important;
-    color: white !important;
-    border-radius: 10px !important;
-    border: none !important;
+    color: var(--c-primary) !important;
     font-weight: 600 !important;
-    font-size: 1rem !important;
-    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
-    transition: all 0.3s ease !important;
-    cursor: pointer;
-}
-
-/* تأثير الـ Hover على الزر */
-button[kind="secondary"]:hover {
-    background-color: #c2002a !important; /* لون أغمق قليلاً عند التحويم */
-    color: white !important;
-	box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
-    transform: scale(1.01); /* تكبير طفيف جداً للزر */
-}
-
-/* تأثير عند الضغط الفعلي على الزر Active/Click */
-button[kind="secondary"]:active {
-    transform: scale(0.98);
-}
-
-
-/* 3. زر التشغيل الأساسي وزر الـ Form مع تأثير الـ Hover والـ Shadows */
-button[kind="secondary"], div.stFormSubmitButton > button {
-    background-color: #ff0037 !important;
-    color: white !important;
-    border-radius: 10px !important;
-    border: none !important;
-    font-weight: 600 !important;
-    font-size: 1rem !important;
-    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
-    transition: all 0.3s ease !important;
-    cursor: pointer;
-}
-
-/* تأثير الـ Hover على الأزرار */
-button[kind="secondary"]:hover, div.stFormSubmitButton > button:hover {
-    background-color: #c2002a !important; /* لون أغمق قليلاً عند التحويم */
-    color: white !important;
-    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
-    transform: scale(1.01) !important; /* تكبير طفيف جداً للزر */
-}
-
-/* تأثير عند الضغط الفعلي على الزر Active/Click */
-button[kind="secondary"]:active, div.stFormSubmitButton > button:active {
-    transform: scale(0.98) !important;
-}
-
-
-
-/* 3. زر التشغيل الأساسي وزر الـ Form مع تأثير الـ Hover والـ Shadows */
-button[kind="primary"], div.stFormSubmitButton > button {
-    background-color: #0980e8 !important;
-    color: white !important;
-    border-radius: 10px !important;
-    border: none !important;
-    font-weight: 600 !important;
-    font-size: 1rem !important;
-    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
-    transition: all 0.3s ease !important;
-    cursor: pointer;
-	padding: 0.75rem 1.5rem !important;   /* تعريض الزر وزيادة ارتفاعه (إضافة مساحة داخلية) */
-	/* 👇 الخصائص الجديدة للمحاذاة في الوسط */
-    display: block !important;       /* تحويل الزر لعنصر بلوك ليقبل التوسيط */
-    margin: 0 auto !important;       /* جعل الهوامش الجانبية تلقائية لتوسيطه */
-}
-
-/* تأثير الـ Hover على الأزرار */
-button[kind="primary"]:hover, div.stFormSubmitButton > button:hover {
-    background-color: #0961ad !important; /* لون أغمق قليلاً عند التحويم */
-    color: white !important;
-    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
-    transform: scale(1.01) !important; /* تكبير طفيف جداً للزر */
-}
-
-/* تأثير عند الضغط الفعلي على الزر Active/Click */
-button[kind="primary"]:active, div.stFormSubmitButton > button:active {
-    transform: scale(0.98) !important;
-}
-
-
-
-
-/* 3. زر التشغيل الأساسي (primary Button) مع تأثير الـ Hover والـ Shadows */
-button[kind="primary"] {
-    background-color: #26a5ff !important;
-    color: white !important;
-    border-radius: 10px !important;
-    border: none !important;
-    font-weight: 600 !important;
-    font-size: 1rem !important;
-    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2) !important;
-    transition: all 0.3s ease !important;
-    cursor: pointer;
-}
-
-/* تأثير الـ Hover على الزر */
-button[kind="primary"]:hover {
-    background-color: #0782d9 !important; /* لون أغمق قليلاً عند التحويم */
-    color: white !important;
-    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3) !important;
-    transform: scale(1.01); /* تكبير طفيف جداً للزر */
-}
-
-/* 1. إعداد التنسيق الافتراضي لعناصر القائمة الجانبية وإضافة النعومة الحركية (Transition) */
-[data-testid="stSidebarNav"] ul li a {
-    display: flex !important;
-    align-items: center !important;
-    padding: 10px 16px !important;
-    border-radius: 8px !important; /* حواف دائرية أنيقة عند تحديد الصفحة */
-    text-decoration: none !important;
-    
-    /*  إضافة الترانزيشن لجعل التأثير ناعماً ومريحاً للعين وليس مفاجئاً */
-    transition: all 0.3s ease-in-out !important; 
-}
-
-
-/* 5. تأثير لحظة النقر الفعلي بالماوس (Active / On Click) */
-[data-testid="stSidebarNav"] ul li a:active {
-    background-color: #cbd5e1 !important; /* تحويل الخلفية إلى لون رمادي أعمق لحظة الضغط */
-    transform: scale(0.97) !important;     /* تصغير حجم الزر بنسبة 3% ليعطي إيحاءً بصرياً بأنه "انضغط" للداخل */
-    transition: transform 0.05s ease !important; /* سرعة فائقة جداً للاستجابة اللحظية عند النقر */
-    display: flex !important;
-    align-items: center !important;
-    padding: 10px 16px !important;
-    border-radius: 8px !important; /* حواف دائرية أنيقة عند تحديد الصفحة */
-    text-decoration: none !important;
-	border-color: #000 !important; /* لون أزرق/بنفسجي عند الضغط */
-
-}
-
-/* 2. تحسين خطوط العناوين وتجهيزها للحركة */
-[data-testid="stSidebarNav"] ul li a span {
-    font-size: 17px !important;
-    font-weight: 600 !important;
-    color: #4a5568 !important; /* لون رمادي احترافي هادئ */
-    transition: color 0.2s ease !important;
-}
-
-/* 3. زيادة التباعد الرأسي بين أزرار الصفحات لتبدو مريحة وليست متكدسة */
-[data-testid="stSidebarNav"] ul li {
-    padding-top: 6px !important;
-    padding-bottom: 6px !important;
-    border-radius: 8px !important; /* جعل حواف التحديد دائرية واحترافية */
-}
-
-
-/* 3. تأثير الـ Hover عند تمرير مؤشر الماوس فوق اسم الصفحة */
-[data-testid="stSidebarNav"] ul li a:hover {
-    background-color: #cc0014 !important; /* تغيير خلفية الزر إلى لون أزرق فاتح خفيف جداً */
-    padding-right: 24px !important;     /* حيلة ذكية: دفع النص قليلاً لليسار عند التمرير كحركة تفاعلية */
-    box-shadow: inset 4px 0px 0px 0px #4A90E2 !important; /* إظهار خط عمودي أزرق أنيق على جانب الزر */
-}
-
-
-/* تغيير لون النص والأيقونة تلقائياً إلى اللون الأزرق الاحترافي عند عمل Hover */
-[data-testid="stSidebarNav"] ul li a:hover span {
-    color: #fff !important; /* تحويل لون الخط للأزرق */
-}
-
-
-/* 4. إضفاء تأثير مميز على الصفحة النشطة حالياً (Active Page) لتتميز عن بقية الصفحات */
-[data-testid="stSidebarNav"] ul li a[aria-current="page"] {
-    background-color: #e1e9f5 !important; /* خلفية مميزة للصفحة المفتوحة حالياً */
-    box-shadow: inset 4px 0px 0px 0px #4A90E2 !important; /* خط جانبي ثابت */
-}
-
-[data-testid="stSidebarNav"] ul li a[aria-current="page"] span {
-    color: #4A90E2 !important; /* خط سميك ملون للصفحة النشطة */
-    font-weight: bold !important;
-}
-
-/* 4. تكبير عنوان القسم الرئيسي (المشروع الأساسي) */
-[data-testid="stSidebarNavBoldText"] {
-    font-size: 20px !important;
-    color: #4A90E2 !important; /* لون مميز للعنوان الرئيسي */
-    font-weight: bold !important;
     margin-bottom: 12px !important;
 }
 
-/* تنسيق حاوية بطاقات الاتصال داخل النافذة */
+/* =========================================================================
+   5. BARRE LATÉRALE
+   ========================================================================= */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #ffffff 0%, #eef3ff 100%);
+    border-right: 1px solid var(--c-border);
+    box-shadow: 4px 0 24px rgba(15, 23, 42, 0.05);
+}
+
+[data-testid="stSidebar"] .stMarkdown h2,
+[data-testid="stSidebar"] .stMarkdown h1,
+[data-testid="stSidebar"] .stMarkdown h3 {
+    color: var(--c-primary-dark);
+    -webkit-text-fill-color: var(--c-primary-dark);
+    background: none;
+}
+
+/* Boutons de la barre latérale */
+[data-testid="stSidebar"] button {
+    border-radius: 12px;
+    transition: all 0.25s ease;
+}
+
+[data-testid="stSidebar"] button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Menus déroulants (expanders) */
+[data-testid="stSidebar"] .stExpander {
+    border: 1px solid var(--c-border);
+    border-radius: 12px;
+    background: #ffffff;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+[data-testid="stSidebar"] .stExpander:hover {
+    border-color: var(--c-primary);
+    box-shadow: var(--shadow-md);
+}
+
+[data-testid="stSidebar"] .stExpander summary p {
+    font-weight: 600;
+    color: var(--c-primary-dark);
+}
+
+[data-testid="stSidebar"] .stExpander summary:hover p {
+    color: var(--c-primary);
+}
+
+[data-testid="stSidebar"] .stTextInput input {
+    font-size: 0.9rem;
+}
+
+[data-testid="stSidebar"] .stTextInput label {
+    font-weight: 600;
+    color: var(--c-muted);
+}
+
+/* Navigation entre les pages */
+[data-testid="stSidebarNav"] ul li {
+    margin: 4px 8px;
+}
+
+[data-testid="stSidebarNav"] ul li a {
+    border-radius: 12px;
+    padding: 8px 12px;
+    transition: all 0.25s ease;
+}
+
+[data-testid="stSidebarNav"] ul li a span {
+    font-weight: 500;
+    transition: color 0.25s ease;
+}
+
+[data-testid="stSidebarNav"] ul li a:hover {
+    background: var(--c-primary-soft);
+    transform: translateX(4px);
+}
+
+[data-testid="stSidebarNav"] ul li a:hover span {
+    color: var(--c-primary) !important;
+}
+
+[data-testid="stSidebarNav"] ul li a:active {
+    transform: scale(0.98);
+}
+
+/* Page active */
+[data-testid="stSidebarNav"] ul li a[aria-current="page"] {
+    background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.30);
+}
+
+[data-testid="stSidebarNav"] ul li a[aria-current="page"] span {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+/* Titre de la section de navigation */
+[data-testid="stSidebarNavBoldText"] {
+    color: var(--c-primary-dark) !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px;
+}
+
+/* =========================================================================
+   6. CARTES DE CONTACT (fenêtre « Support & Achat de Clé »)
+   ========================================================================= */
 .contact-card-container {
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-top: 10px;
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* التنسيق الأساسي للبطاقة */
 .contact-card {
     display: flex;
     align-items: center;
     padding: 14px 18px;
-    border-radius: 12px;
+    border-radius: 14px;
     text-decoration: none !important;
-    color: #31333F !important; /* لون الخط الافتراضي لستريمليت */
+    color: #31333F !important;
     background-color: #f8f9fa;
     border: none !important;
     transition: all 0.3s ease;
 }
 
-/* تأثير تحريك البطاقة عند تمرير الماوس */
 .contact-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* صندوق الأيقونة الجانبية */
 .icon-box {
     font-size: 28px !important;
     margin-right: 15px;
@@ -479,7 +441,6 @@ button[kind="primary"]:hover {
     justify-content: center;
 }
 
-/* نصوص البطاقة الداخلية */
 .contact-text {
     display: flex;
     flex-direction: column;
@@ -500,7 +461,6 @@ button[kind="primary"]:hover {
     margin-top: 2px;
 }
 
-/* أيقونة السهم أقصى اليمين */
 .arrow-box {
     font-size: 18px !important;
     color: #bfbfbf;
@@ -511,10 +471,7 @@ button[kind="primary"]:hover {
     color: #4f46e5;
 }
 
-/* تخصيص تأثيرات بلمسة ألوان @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-
-
-/* تخصيص تأثيرات بلمسة ألوان هادئة لكل منصة عند الـ Hover */
+/* Couleurs douces propres à chaque plateforme au survol */
 .email-card:hover {
     border-left: 5px solid #ea4335;
     background-color: #fdf2f2;
@@ -533,12 +490,8 @@ button[kind="primary"]:hover {
 }
 .whatsapp-card:hover .icon-box { color: #25d366; }
 
-
-
-
-
 /* =========================================================================
-   PRICING SECTION STYLES
+   7. SECTION TARIFS (PRICING)
    ========================================================================= */
 .pricing-header {
     text-align: center;
@@ -557,14 +510,14 @@ button[kind="primary"]:hover {
 
 .pricing-card {
     background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
     padding: 35px 25px;
     width: 280px;
     text-align: center;
     position: relative;
     transition: all 0.3s ease;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #eef0f4;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -572,13 +525,13 @@ button[kind="primary"]:hover {
 
 .pricing-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.14);
 }
 
-/* تمييز الخطة الأكثر مبيعاً */
+/* Mise en avant du forfait le plus populaire */
 .pricing-card.popular {
-    border: 2px solid #1e3a8a;
-    background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+    border: 2px solid var(--c-primary-dark);
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5ff 100%);
 }
 
 .popular-badge {
@@ -664,73 +617,41 @@ button[kind="primary"]:hover {
     margin-bottom: 15px;
 }
 
-
-
-/* ------------------------------------- */
-
-
-/* حاوية نموذج الاتصال */
+/* =========================================================================
+   8. FORMULAIRES (CONTACT ET RENOUVELLEMENT)
+   ========================================================================= */
 .contact-container {
     background-color: #ffffff;
     padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
     max-width: 600px;
     margin: auto;
 }
 
-/* العناوين */
-.main-title {
-    color: #2c3e50;
-    text-align: center;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.sub-title {
-    color: #7f8c8d;
-    text-align: center;
-    font-size: 16px;
-    margin-bottom: 30px;
-}
-
-/* تحسين حقول الإدخال */
-.stTextInput input, .stTextArea textarea {
-    border-radius: 8px !important;
-    border: 1px solid #dcdde1 !important;
-    padding: 12px !important;
-    transition: all 0.3s ease;
-}
-
-.stTextInput input:focus, .stTextArea textarea:focus {
-    border-color: #3498db !important;
-    box-shadow: 0 0 8px rgba(52, 152, 219, 0.3) !important;
-}
-
-/* حاوية نموذج التجديد */
 .renew-container {
     background-color: #ffffff;
     padding: 35px;
-    border-radius: 16px;
-    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     max-width: 650px;
     margin: 20px auto;
 }
 
-/* بطاقة عرض السعر والتفاصيل */
+/* Carte du prix */
 .price-tag {
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     color: white;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 14px;
     text-align: center;
     font-size: 24px;
     font-weight: bold;
     margin: 20px 0;
-    box-shadow: 0px 5px 15px rgba(56, 239, 125, 0.3);
+    box-shadow: 0 5px 15px rgba(56, 239, 125, 0.3);
 }
 
-/* تنبيهات معلومات الدفع لـ BaridiMob */
+/* Encadré d'information de paiement (BaridiMob) */
 .payment-info-box {
     background-color: #fff9db;
     border-right: 6px solid #fab005;
@@ -741,10 +662,7 @@ button[kind="primary"]:hover {
     margin-bottom: 20px;
 }
 
-
-
-
-/* تحسين مظهر حاوية الأزرار الأفقية لتبدو كبطاقات تفاعلية */
+/* Boutons radio horizontaux présentés comme des cartes interactives */
 div[data-testid="stRadio"] > div[role="radiogroup"] {
     display: flex;
     gap: 12px;
@@ -752,7 +670,6 @@ div[data-testid="stRadio"] > div[role="radiogroup"] {
     width: 100%;
 }
 
-/* تصميم الأزرار كبطاقات مستقلة */
 div[data-testid="stRadio"] label[data-testid="stWidgetLabel"] {
     font-size: 1rem;
     font-weight: 600;
@@ -764,7 +681,7 @@ div[data-testid="stRadio"] > div[role="radiogroup"] > label {
     background-color: #f8f9fa;
     border: 2px solid #e9ecef;
     padding: 12px 20px;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     flex: 1;
@@ -773,46 +690,46 @@ div[data-testid="stRadio"] > div[role="radiogroup"] > label {
     font-weight: 500;
 }
 
-/* إخفاء دائرة الراديو الافتراضية المزعجة */
 div[data-testid="stRadio"] div[data-testid="stMarkdownContainer"] p {
     font-size: 0.95rem;
 }
+
+/* Masquer le rond du bouton radio par défaut */
 div[data-testid="stRadio"] input[type="radio"] {
     display: none;
 }
 
-/* تأثير عند تمرير الماوس فوق البطاقة غير المحددة */
 div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
     border-color: #74c0fc;
     background-color: #e8f7ff;
     transform: translateY(-2px);
 }
 
-/* تصميم البطاقة النشطة (التي تم اختيارها) */
+/* Carte active (sélectionnée) */
 div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"] {
-    background-color: #1c7ed6 !important;
-    border-color: #1c7ed6 !important;
+    background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
+    border-color: var(--c-primary) !important;
     color: white !important;
-    box-shadow: 0 4px 12px rgba(28, 126, 214, 0.25);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
 }
 
-/* تعديل لون النص للبطاقة النشطة حتى يظهر بوضوح */
 div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"] div[data-testid="stMarkdownContainer"] p {
     color: white !important;
     font-weight: bold;
 }
 
-
-
-/* 1. تنسيق جدول حالة الآلات (st.table) */
+/* =========================================================================
+   9. TABLEAUX
+   ========================================================================= */
+/* Tableau st.table */
 div[data-testid="stTable"] table {
     width: 100%;
     border-collapse: separate !important;
     border-spacing: 0 !important;
-    border-radius: 12px !important;
+    border-radius: 14px !important;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
-    border: 1px solid #e2e8f0 !important;
+    box-shadow: var(--shadow-md) !important;
+    border: 1px solid var(--c-border) !important;
 }
 
 div[data-testid="stTable"] th {
@@ -835,42 +752,44 @@ div[data-testid="stTable"] tr:hover {
     background-color: #f8fafc !important;
 }
 
-/* 2. حاوية الجداول التفاعلية المخصصة (st.dataframe) */
+/* Tableaux interactifs (st.dataframe) */
+div[data-testid="stDataFrame"] {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--c-border);
+}
+
 .custom-styled-table {
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--c-border);
     margin-bottom: 10px;
 }
 
-/* تخصيص جدول المنتجات المكتملة داخل الحاوية */
 .completed-jobs-table div[data-testid="stDataFrame"] {
-    border-radius: 12px;
+    border-radius: 14px;
 }
 
 .completed-jobs-table [data-testid="stHeader"] {
     background: linear-gradient(135deg, #059669, #10b981) !important;
 }
 
-/* تخصيص جدول Total TS / Machine داخل الحاوية */
 .ts-machine-table [data-testid="stHeader"] {
     background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
 }
 
-/* =========================================================
-   🎨 جداول احترافية ملونة للمنتجات المكتملة و Total TS
-   ========================================================= */
-
-/* الجدول الأول: المنتجات المكتملة (أخضر احترافي) */
-.styled-table-success {
+/* Tableaux professionnels colorés : produits terminés et Total TS */
+.styled-table-success,
+.styled-table-primary {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--c-border);
     margin-bottom: 1rem;
     font-family: inherit;
 }
@@ -882,39 +801,6 @@ div[data-testid="stTable"] tr:hover {
     font-weight: bold;
 }
 
-.styled-table-success th, 
-.styled-table-success td {
-    padding: 12px 15px;
-    text-align: center;
-}
-
-.styled-table-success tbody tr {
-    border-bottom: 1px solid #dddddd;
-    background-color: #ffffff;
-    transition: background-color 0.2s ease;
-}
-
-.styled-table-success tbody tr:nth-of-type(even) {
-    background-color: #f8fafc;
-}
-
-.styled-table-success tbody tr:hover {
-    background-color: #ecfdf5;
-}
-
-/* الجدول الثاني: Total TS / Machine (بنفسجي/أزرق احترافي) */
-.styled-table-primary {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e2e8f0;
-    margin-bottom: 1rem;
-    font-family: inherit;
-}
-
 .styled-table-primary thead tr {
     background: linear-gradient(135deg, #4f46e5, #6366f1);
     color: #ffffff;
@@ -922,27 +808,28 @@ div[data-testid="stTable"] tr:hover {
     font-weight: bold;
 }
 
-.styled-table-primary th, 
-.styled-table-primary td {
+.styled-table-success th, .styled-table-success td,
+.styled-table-primary th, .styled-table-primary td {
     padding: 12px 15px;
     text-align: center;
 }
 
+.styled-table-success tbody tr,
 .styled-table-primary tbody tr {
     border-bottom: 1px solid #dddddd;
     background-color: #ffffff;
     transition: background-color 0.2s ease;
 }
 
+.styled-table-success tbody tr:nth-of-type(even),
 .styled-table-primary tbody tr:nth-of-type(even) {
     background-color: #f8fafc;
 }
 
-.styled-table-primary tbody tr:hover {
-    background-color: #eef2ff;
-}
+.styled-table-success tbody tr:hover { background-color: #ecfdf5; }
+.styled-table-primary tbody tr:hover { background-color: #eef2ff; }
 
-/* شارات الحالة داخل الجدول */
+/* Pastilles d'état dans les tableaux */
 .badge-success {
     background-color: #d1fae5;
     color: #065f46;
@@ -951,3 +838,20 @@ div[data-testid="stTable"] tr:hover {
     font-size: 0.85rem;
     font-weight: 600;
 }
+
+/* =========================================================================
+   10. ONGLETS ET BARRE DE PROGRESSION
+   ========================================================================= */
+button[data-baseweb="tab"] {
+    font-weight: 600;
+}
+
+[data-testid="stProgress"] > div > div > div {
+    background: linear-gradient(90deg, var(--c-primary), var(--c-accent));
+    border-radius: 10px;
+}
+
+/* Barre de défilement discrète */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }

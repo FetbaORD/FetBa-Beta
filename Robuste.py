@@ -50,7 +50,7 @@ def fun_compute_flowshop_with_breakdown(seq, P, Ts, n, m, breakdown_map):
     return comp_times[n-1, m-1]
 
 def robust_ga_worker(P, Ts, n, m, pop_size, generations, crossover_rate, mutation_rate, tournament_size, lambda_val, num_scenarios, state_holder):
-    """الدالة التي تعمل في الخلفية لحساب الخوارزمية بدون انقطاع"""
+    """Fonction exécutée en arrière-plan pour calculer l'algorithme sans interruption"""
     try:
         total_solutions = pop_size * generations
         All_seq = np.zeros((total_solutions, n), dtype=int)
@@ -131,7 +131,7 @@ def robust_ga_worker(P, Ts, n, m, pop_size, generations, crossover_rate, mutatio
                     
             population = np.vstack([parents, children])
             
-            # تحديث نسبة التقدم في مخزن آمن خارجي وثابت
+            # Mise à jour du taux de progression dans un stockage externe sûr et stable
             state_holder["progress"] = (g + 1) / generations
 
         _, unique_indices = np.unique(All_seq[:counter], axis=0, return_index=True)
@@ -149,7 +149,7 @@ def robust_ga_worker(P, Ts, n, m, pop_size, generations, crossover_rate, mutatio
         state_holder["status"] = f"ERROR: {str(e)}"
 
 def run_robust_ga_interface(P_df, Ts_df, Incompat_df):
-    st.markdown("#### ⚙️ إعدادات الخوارزمية الجينية المتينة (Robust GA)")
+    st.markdown("#### ⚙️ Paramètres de l'algorithme génétique robuste (Robust GA)")
     
     if "rob_pop_size" not in st.session_state: st.session_state.rob_pop_size = 20
     if "rob_generations" not in st.session_state: st.session_state.rob_generations = 10
@@ -159,29 +159,29 @@ def run_robust_ga_interface(P_df, Ts_df, Incompat_df):
     if "rob_lambda" not in st.session_state: st.session_state.rob_lambda = 0.5
     if "rob_scenarios" not in st.session_state: st.session_state.rob_scenarios = 4
     
-    # تهيئة قاموس تتبع الخيط الخلفي في جلسة Streamlit
+    # Initialisation du dictionnaire de suivi du thread d'arrière-plan dans la session Streamlit
     if "robust_worker_state" not in st.session_state:
         st.session_state.robust_worker_state = {"status": "IDLE", "progress": 0.0, "result_seq": None, "result_fr": None}
 
-    pop_size = st.number_input("حجم المجتمع (Population Size)", 4, 200, key="rob_pop_size", step=2)
-    generations = st.number_input("عدد الأجيال (Generations)", 1, 500, key="rob_generations", step=5)
-    crossover_rate = st.slider("معدل العبور (Crossover Rate)", 0.0, 1.0, key="rob_crossover", step=0.05)
-    mutation_rate = st.slider("معدل الطفرة (Mutation Rate)", 0.0, 1.0, key="rob_mutation", step=0.01)
-    tournament_size = st.slider("حجم البطولة (Tournament Size)", 2, 10, key="rob_tournament")
-    lambda_val = st.slider("معامل الأهمية (Lambda)", 0.0, 1.0, key="rob_lambda", step=0.1)
-    num_scenarios = st.slider("عدد السيناريوهات المضطربة للمحاكاة", 2, 30, key="rob_scenarios")
+    pop_size = st.number_input("Taille de la population (Population Size)", 4, 200, key="rob_pop_size", step=2)
+    generations = st.number_input("Nombre de générations (Generations)", 1, 500, key="rob_generations", step=5)
+    crossover_rate = st.slider("Taux de croisement (Crossover Rate)", 0.0, 1.0, key="rob_crossover", step=0.05)
+    mutation_rate = st.slider("Taux de mutation (Mutation Rate)", 0.0, 1.0, key="rob_mutation", step=0.01)
+    tournament_size = st.slider("Taille du tournoi (Tournament Size)", 2, 10, key="rob_tournament")
+    lambda_val = st.slider("Coefficient d'importance (Lambda)", 0.0, 1.0, key="rob_lambda", step=0.1)
+    num_scenarios = st.slider("Nombre de scénarios perturbés pour la simulation", 2, 30, key="rob_scenarios")
 
     current_status = st.session_state.robust_worker_state["status"]
 
     if current_status == "IDLE":
-        if st.button("🚀 تشغيل الحساب المتين في الخلفية", type="secondary", key="execute_robust_ga_btn"):
+        if st.button("🚀 Lancer le calcul robuste en arrière-plan", type="secondary", key="execute_robust_ga_btn"):
             st.session_state.robust_worker_state = {"status": "RUNNING", "progress": 0.0, "result_seq": None, "result_fr": None}
             
             P = P_df.values.astype(float)
             Ts = Ts_df.values.astype(float)
             n, m = P.shape
             
-            # إطلاق خيط المعالجة الخلفي المستقل عن الـ Autorefresh
+            # Lancement du thread de traitement d'arrière-plan indépendant de l'Autorefresh
             t = threading.Thread(
                 target=robust_ga_worker,
                 args=(P, Ts, n, m, pop_size, generations, crossover_rate, mutation_rate, tournament_size, lambda_val, num_scenarios, st.session_state.robust_worker_state)
@@ -190,20 +190,20 @@ def run_robust_ga_interface(P_df, Ts_df, Incompat_df):
             st.rerun()
 
     elif current_status == "RUNNING":
-        st.info("⏳ الخوارزمية تعمل الآن في الخلفية... المخططات والعدادات بالصفحة تتحدث طبيعياً.")
-        # عرض شريط تقدم حقيقي يقرأ من الخلفية كل ثانيتين مع الـ refresh
+        st.info("⏳ L'algorithme s'exécute en arrière-plan... Les graphiques et compteurs de la page continuent de se mettre à jour normalement.")
+        # Affichage d'une vraie barre de progression lue depuis l'arrière-plan toutes les deux secondes avec le refresh
         prog_val = st.session_state.robust_worker_state["progress"]
         st.progress(prog_val)
-        st.caption(f"نسبة اكتمال البحث المتين: {prog_val * 100:.1f}%")
+        st.caption(f"Taux d'avancement de la recherche robuste : {prog_val * 100:.1f}%")
 
     elif current_status == "FINISHED":
-        # عند اكتمال الحساب بنجاح، يتم تمرير النتيجة للـ session_state الأساسي
+        # Une fois le calcul terminé avec succès, le résultat est transmis au session_state principal
         st.session_state.optimized_robust_seq = st.session_state.robust_worker_state["result_seq"]
-        st.session_state.robust_worker_state["status"] = "IDLE" # إعادة تصفير الحالة للمرة القادمة
+        st.session_state.robust_worker_state["status"] = "IDLE" # Réinitialisation de l'état pour la prochaine fois
         st.rerun()
 
     elif "ERROR" in current_status:
-        st.error(f"❌ حدث خطأ أثناء الحساب: {current_status}")
-        if st.button("إعادة محاولة"):
+        st.error(f"❌ Une erreur est survenue pendant le calcul : {current_status}")
+        if st.button("Réessayer"):
             st.session_state.robust_worker_state["status"] = "IDLE"
             st.rerun()

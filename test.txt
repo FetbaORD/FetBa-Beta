@@ -2,63 +2,63 @@ import streamlit as st
 from datetime import datetime
 from streamlit_autorefresh import st_autorefresh
 
-# 1. قاعدة بيانات المفاتيح (في الواقع يفضل استخدام قاعدة بيانات حقيقية أو ملف خارجي)
-# المفتاح : عدد الأجهزة الحالية التي استخدمته
+# 1. Base de données des clés (en pratique, il vaut mieux utiliser une vraie base de données ou un fichier externe)
+# Clé : nombre d'appareils actuels qui l'ont utilisée
 if "activation_db" not in st.session_state:
     st.session_state.activation_db = {
         f"KEY-{i:03d}": 0 for i in range(1, 11)
     }
 
 
-# 2. التحقق من حالة التفعيل للجلسة الحالية
+# 2. Vérification de l'état d'activation de la session courante
 if "is_activated" not in st.session_state:
     st.session_state.is_activated = False
 
-# دالة التحقق من المفتاح
+# Fonction de vérification de la clé
 def verify_key(key):
     db = st.session_state.activation_db
     if key in db:
-        if db[key] < 2:  # شرط عدم تجاوز جهازين
+        if db[key] < 2:  # Condition : ne pas dépasser deux appareils
             db[key] += 1
             st.session_state.is_activated = True
-            st.success("✅ تم التفعيل بنجاح!")
+            st.success("✅ Activation réussie !")
             st.rerun()
         else:
-            st.error("❌ هذا المفتاح تم استخدامه على جهازين بالفعل!")
+            st.error("❌ Cette clé a déjà été utilisée sur deux appareils !")
     else:
-        st.error("❌ مفتاح التفعيل غير صحيح!")
+        st.error("❌ Clé d'activation incorrecte !")
 
-# 3. واجهة القفل (تظهر إذا لم يتم التفعيل)
+# 3. Interface de verrouillage (affichée si non activé)
 if not st.session_state.is_activated:
-    st.title("🔒 نظام محمي")
-    st.warning("يرجى إدخال مفتاح التفعيل للوصول إلى النظام.")
+    st.title("🔒 Système protégé")
+    st.warning("Veuillez saisir la clé d'activation pour accéder au système.")
     
-    # استخدام st.form لجعل الإدخال يبدو كنافذة مركزة
+    # Utilisation de st.form pour que la saisie ressemble à une fenêtre centrée
     with st.container():
-        input_key = st.text_input("مفتاح التفعيل (Activation Key):", type="password")
-        submit_btn = st.button("تفعيل الآن")
+        input_key = st.text_input("Clé d'activation (Activation Key) :", type="password")
+        submit_btn = st.button("Activer maintenant")
         
         if submit_btn:
             verify_key(input_key)
     
-    # أهم سطر: يمنع ظهور أي محتوى آخر في الصفحة أو التنقل
+    # Ligne essentielle : empêche l'affichage de tout autre contenu de la page ou la navigation
     st.stop() 
 
 # =========================
-# المحتوى الأصلي للصفحة (لا يظهر إلا بعد التفعيل)
+# Contenu d'origine de la page (affiché uniquement après activation)
 # =========================
-st.success("🔐 النظام مفعل وجاهز للاستخدام")
-if st.button("ابدأ المحاكاة"):
+st.success("🔐 Système activé et prêt à l'emploi")
+if st.button("Démarrer la simulation"):
     from datetime import datetime
     st.session_state.sim_start_time = datetime.now()
-    st.info("تم بدء توقيت المحاكاة!")
+    st.info("Chronomètre de la simulation démarré !")
 
 
 
 st_autorefresh(interval=1000, key="refresh_clock")
 
 st.set_page_config(
-    page_title="Industrial AI Control Center",
+    page_title="Centre de contrôle industriel IA",
     layout="wide",
     page_icon="🏭"
 )
@@ -66,8 +66,8 @@ st.set_page_config(
 # =========================
 # HEADER
 # =========================
-st.title("🏭 Industrial AI Control Center")
-st.markdown("### Smart Factory Monitoring & Scheduling System")
+st.title("🏭 Centre de contrôle industriel IA")
+st.markdown("### Système intelligent de supervision et d'ordonnancement d'usine")
 
 st.markdown("---")
 
@@ -83,7 +83,7 @@ sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds(
 minutes = int(sim_duration // 60)
 seconds = int(sim_duration % 60)
 
-st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
+st.info(f"⏱️ Durée d'exécution : {minutes} min {seconds} s")
 
 # =========================
 # LIVE SYSTEM STATUS
@@ -91,10 +91,10 @@ st.info(f"⏱️ Runtime: {minutes} min {seconds} sec")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.metric("🟢 System Status", "Online")
+    st.metric("🟢 État du système", "En ligne")
 
 with col2:
-    st.metric("⏱️ Server Time", datetime.now().strftime("%H:%M:%S"))
+    st.metric("⏱️ Heure du serveur", datetime.now().strftime("%H:%M:%S"))
 
 with col3:
     st.metric("⚙️ Modules", "Monitoring | Scheduling | Analytics")
@@ -104,24 +104,24 @@ st.markdown("---")
 # =========================
 # QUICK OVERVIEW DASHBOARD
 # =========================
-st.subheader("📊 Quick Overview")
+st.subheader("📊 Aperçu rapide")
 
 col1, col2 = st.columns(2)
 
 with col1:
     st.info("""
-    🔹 Monitoring System  
-    - Real-time machine tracking  
-    - Sensor alerts (temperature, vibration...)  
-    - Maintenance logs  
+    🔹 Système de monitoring  
+    - Suivi des machines en temps réel  
+    - Alertes capteurs (température, vibration...)  
+    - Journaux de maintenance  
     """)
 
 with col2:
     st.info("""
-    🔹 Production Scheduling  
-    - Flow Shop Optimization  
-    - Genetic Algorithm (GA)  
-    - Re-scheduling after breakdowns  
+    🔹 Ordonnancement de la production  
+    - Optimisation Flow Shop  
+    - Algorithme génétique (GA)  
+    - Réordonnancement après pannes  
     """)
 
 st.markdown("---")
@@ -129,7 +129,7 @@ st.markdown("---")
 # =========================
 # SYSTEM ARCHITECTURE VIEW
 # =========================
-st.subheader("🏗️ System Architecture")
+st.subheader("🏗️ Architecture du système")
 
 st.code("""
 User Interface (Streamlit)
@@ -146,4 +146,4 @@ st.markdown("---")
 # =========================
 # FOOTER
 # =========================
-st.caption("Industrial AI System v1.0 | Designed for Smart Manufacturing Optimization")
+st.caption("Système industriel IA v1.0 | Conçu pour l'optimisation de la fabrication intelligente")

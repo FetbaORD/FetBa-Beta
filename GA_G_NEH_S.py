@@ -2,36 +2,36 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-# استيراد دالة run_g_neh_s_interface للحصول على السلسلة المهيأة (المولدة بـ G-NEH-S)
+# Import de la fonction run_g_neh_s_interface pour obtenir la séquence initialisée (générée par G-NEH-S)
 from G_NEH_S import run_g_neh_s_interface
 
 
 def run_ga_g_neh_s_interface(P_df, Ts_df, Incompat_df, popSize=100, nGen=200, pc=0.85, pm=0.06):
-    """تنفيذ الخوارزمية الهجينة (GA + G-NEH-S) حيث يتم استخدام G-NEH-S لتهيئة الجيل الأول"""
+    """Exécution de l'algorithme hybride (GA + G-NEH-S) où G-NEH-S sert à initialiser la première génération"""
 
-    # 1. استخراج المصفوفات كـ Numpy Arrays
+    # 1. Extraction des matrices en tableaux Numpy
     P = P_df.values
     Ts = Ts_df.values
     Incompat = Incompat_df.values
 
     nJobs, nMachines = P.shape
 
-    # 2. إعدادات الخوارزمية الجينية (Parameters)
-    popSize = 40  # تم تكييفها لتناسب سرعة الاستجابة في الويب
+    # 2. Paramètres de l'algorithme génétique (Parameters)
+    popSize = 40  # Adapté pour garantir une bonne réactivité sur le web
     nGen = 100
     pc = 0.85
     pm = 0.06
 
-    # 3. خطوة التهيئة المهجنة (G-NEH-S Initialization)
-    # الحصول على السلسلة المحسنة من G-NEH-S
+    # 3. Étape d'initialisation hybride (G-NEH-S Initialization)
+    # Obtention de la séquence améliorée par G-NEH-S
     optimized_neh_seq, _ = run_g_neh_s_interface(P_df, Ts_df, Incompat_df)
 
     population = np.zeros((popSize, nJobs), dtype=int)
 
-    # وضع السلسلة الناتجة من G-NEH-S كأول فرد في المجتمع (Index 0)
+    # Placement de la séquence issue de G-NEH-S comme premier individu de la population (Index 0)
     population[0, :] = np.array(optimized_neh_seq)
 
-    # توليد بقية الأفراد (من 1 إلى popSize) عبر طفرات عشوائية من سلسلة G-NEH-S أو عشوائياً بالكامل لضمان التنوع
+    # Génération des autres individus (de 1 à popSize) par mutations aléatoires de la séquence G-NEH-S ou entièrement au hasard pour garantir la diversité
     for i in range(1, popSize):
         population[i, :] = np.array(optimized_neh_seq).copy()
         if nJobs > 1:
@@ -44,22 +44,22 @@ def run_ga_g_neh_s_interface(P_df, Ts_df, Incompat_df, popSize=100, nGen=200, pc
     bestOverallCmax = float("inf")
     bestOverallSeq = []
 
-    # 4. حلقة الأجيال (Genetic Algorithm Loop)
+    # 4. Boucle des générations (Genetic Algorithm Loop)
     for gen in range(nGen):
         fitness = np.zeros(popSize)
 
         for i in range(popSize):
             fitness[i] = computeCmax_local(population[i, :], P, Incompat, Ts)
 
-        # البحث عن أفضل حل في الجيل الحالي
+        # Recherche de la meilleure solution de la génération courante
         minIdx = np.argmin(fitness)
         if fitness[minIdx] < bestOverallCmax:
             bestOverallCmax = fitness[minIdx]
             bestOverallSeq = population[minIdx, :].copy()
 
-        # بناء الجيل الجديد
+        # Construction de la nouvelle génération
         newPop = np.zeros_like(population)
-        newPop[0, :] = bestOverallSeq  # الاحتفاظ بالنخبة (Elitist)
+        newPop[0, :] = bestOverallSeq  # Conservation de l'élite (Elitist)
 
         for i in range(1, popSize, 2):
             parent1 = tournamentSelection_local(population, fitness, 3)

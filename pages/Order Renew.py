@@ -33,7 +33,7 @@ FORM_SUBMIT_URL = "https://formsubmit.co/markandreas03@gmail.com"
 # Conteneur principal visuel
 st.markdown('<div class="renew-container">', unsafe_allow_html=True)
 
-# --- الحقول التي تحتاج إلى تحديث ديناميكي نضعها خارج الـ st.form لمنع مشاكل الـ Streamlit ---
+# --- Les champs nécessitant une mise à jour dynamique sont placés hors de st.form pour éviter les problèmes de Streamlit ---
 
 # 1. Numéro de série
 serial_number = st.text_input(
@@ -41,19 +41,19 @@ serial_number = st.text_input(
     placeholder="Exemple : XXXX-XXXX-XXXX-XXXX"
 )
 
-# ضعه أسفل حقل Numéro de série مباشرة:
+# À placer juste sous le champ Numéro de série :
 email = st.text_input(
     "Votre adresse e-mail *",
     placeholder="Exemple : client@gmail.com"
 )
 
 
-# 2. Durée du renouvellement (تعديل: إضافة التوزيع الأفقي)
+# 2. Durée du renouvellement (modification : ajout de la disposition horizontale)
 duration = st.radio(
     "Choisissez la durée du renouvellement *",
     ["1 mois (1 Month)", "6 mois (6 Months)", "1 an (1 Year)"],
     index=0,
-    horizontal=True  # هذا السطر يجعل الأزرار بجانب بعضها
+    horizontal=True  # Cette ligne place les boutons côte à côte
 )
 
 # Calcul du prix
@@ -70,13 +70,13 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# 3. Sélection de la Méthode de paiement (تحديث ديناميكي فوري)
+# 3. Sélection de la Méthode de paiement (mise à jour dynamique instantanée)
 payment_method = st.selectbox(
     "Choisissez votre méthode de paiement préférée *",
     ["BaridiMob", "RedotPay", "PayPal"]
 )
 
-# عرض معلومات الدفع الخاصة بك بناءً على اختيار الزبون
+# Affichage de vos informations de paiement selon le choix du client
 if payment_method == "BaridiMob":
     st.markdown("""
     <div class="payment-info-box" style="background-color: #fff4e6; border-left: 5px solid #ff922b; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
@@ -107,23 +107,23 @@ elif payment_method == "PayPal":
     """, unsafe_allow_html=True)
 
 
-# حقل رفع الإثبات (ظهر الآن بشكل صحيح لجميع طرق الدفع)
+# Champ de téléversement de la preuve (s'affiche désormais correctement pour tous les modes de paiement)
 screenshots = st.file_uploader(
     "Téléverser une capture d'écran comme preuve de paiement (PNG/JPG) *",
     type=["jpg", "png", "jpeg"],
-    accept_multiple_files=True  # تفعيل الرفع المتعدد
+    accept_multiple_files=True  # Activation du téléversement multiple
 )
 
 st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
 
-# زر إرسال نهائي مستقل لإرسال البيانات بالكامل إلى بريدك
+# Bouton d'envoi final indépendant pour envoyer toutes les données à votre e-mail
 submit_button = st.button(label="Confirmer et envoyer la demande de renouvellement")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
 
-# --- معالجة البيانات وإرسالها عند الضغط على الزر ---
-# --- معالجة البيانات وإرسالها عبر SMTP ---
+# --- Traitement des données et envoi au clic sur le bouton ---
+# --- Traitement des données et envoi via SMTP ---
 if submit_button:
     if not serial_number:
         st.error("Veuillez d'abord saisir votre numéro de série !")
@@ -134,19 +134,19 @@ if submit_button:
     else:
         with st.spinner("Envoi de votre demande en cours..."):
             try:
-                # 1. إعدادات السيرفر والإيميل (ضع بياناتك هنا)
+                # 1. Paramètres du serveur et de l'e-mail (mettez vos informations ici)
                 SENDER_EMAIL = "markandreas03@gmail.com"
-                # ضع هنا الـ 16 حرفاً التي حصلت عليها من جوجل (بدون مسافات)
+                # Mettez ici les 16 caractères obtenus auprès de Google (sans espaces)
                 SENDER_PASSWORD = "lwks dykm swqe sexf" 
                 RECEIVER_EMAIL = "markandreas03@gmail.com"
 
-                # 2. إنشاء هيكل الرسالة الإلكترونية
+                # 2. Création de la structure du message électronique
                 msg = MIMEMultipart()
                 msg['From'] = SENDER_EMAIL
                 msg['To'] = RECEIVER_EMAIL
                 msg['Subject'] = f"🚀 Nouvelle demande de renouvellement : {serial_number}"
 
-                # نص الرسالة (HTML لتبدو منظمة)
+                # Corps du message (HTML pour un rendu structuré)
                 body = f"""
                 <h3>Nouvelle Demande de Renouvellement</h3>
                 <p><b>Numéro de série :</b> {serial_number}</p>
@@ -157,7 +157,7 @@ if submit_button:
                 """
                 msg.attach(MIMEText(body, 'html', 'utf-8'))
 
-                # 3. إرفاق الصور المرفوعة (الملفات المتعددة)
+                # 3. Joindre les images téléversées (fichiers multiples)
                 for file in screenshots:
                     part = MIMEBase('application', "octet-stream")
                     part.set_payload(file.getvalue())
@@ -165,9 +165,9 @@ if submit_button:
                     part.add_header('Content-Disposition', f'attachment; filename="{file.name}"')
                     msg.attach(part)
 
-                # 4. الاتصال بسيرفر Gmail والإرسال الآمن
+                # 4. Connexion au serveur Gmail et envoi sécurisé
                 server = smtplib.SMTP('smtp.gmail.com', 587)
-                server.starttls()  # تشفير الاتصال
+                server.starttls()  # Chiffrement de la connexion
                 server.login(SENDER_EMAIL, SENDER_PASSWORD)
                 server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, msg.as_string())
                 server.quit()

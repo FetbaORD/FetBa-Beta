@@ -29,40 +29,40 @@ def get_db_connection():
 def create_usertable():
     conn = get_db_connection()
     c = conn.cursor()
-    # تم تعديل الجدول ليدعم إضافة الأعمدة الجديدة تلقائياً إذا لم تكن موجودة
+    # La table prend en charge l'ajout automatique des nouvelles colonnes si elles n'existent pas
     c.execute('CREATE TABLE IF NOT EXISTS userstable(username TEXT UNIQUE, password TEXT)')
     try:
         c.execute('ALTER TABLE userstable ADD COLUMN email TEXT')
         c.execute('ALTER TABLE userstable ADD COLUMN phone TEXT')
     except sqlite3.OperationalError:
-        pass # الأعمدة موجودة مسبقاً فلا داعي لفعل شيء
+        pass  # Les colonnes existent déjà : rien à faire
     conn.commit()
     conn.close()
 
 def hash_password(password):
-    # ✨ التعديل السحري هنا: تحويل الهاش إلى نص (str) لتجنب مشاكل بايثون و sqlite3
+    # Conversion du hash en texte (str) pour éviter les problèmes avec Python et sqlite3
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def check_password(password, hashed_password):
-    # إذا كان الهاش قادماً كنص (str) من Google Sheets، نقوم بتحويله إلى بايتات (bytes)
+    # Si le hash vient de Google Sheets sous forme de texte (str), on le convertit en octets (bytes)
     if isinstance(hashed_password, str):
         hashed_password = hashed_password.encode('utf-8')
     
-    # التأكد أيضاً من تحويل كلمة المرور المدخلة إلى بايتات
+    # Conversion également du mot de passe saisi en octets
     if isinstance(password, str):
         password = password.encode('utf-8')
         
     try:
         return bcrypt.checkpw(password, hashed_password)
     except Exception:
-        # حماية التطبيق من الانهيار إذا كان الهاش المخزن في الجدول تالفاً أو فارغاً
+        # Protège l'application si le hash stocké est corrompu ou vide
         return False
 
 
 
-# إنشاء اتصال بجدول بيانات جوجل (يقرأ الإعدادات تلقائياً من Secrets)
+# Connexion à Google Sheets (les paramètres sont lus automatiquement depuis les Secrets)
 def get_sheets_connection():
-    # تمرير الفئة المستوردة صراحة كما تطلب مكتبة streamlit_gsheets
+    # Passage explicite de la classe importée, comme l'exige streamlit_gsheets
     return st.connection("gsheets", type=GSheetsConnection)
 
 
@@ -71,25 +71,25 @@ def get_sheets_connection():
 def add_user(username, password, email="", phone=""):
     conn = get_sheets_connection()
     
-    # 1. قراءة البيانات الحالية مع تحديد ورقة العمل بدقة
+    # 1. Lecture des données actuelles en précisant la feuille de calcul
     try:
         df = conn.read(worksheet="Sheet1", ttl=0) 
     except Exception:
         import pandas as pd
         df = pd.DataFrame(columns=["username", "password", "email", "phone"])
     
-    # تنظيف الأسماء الحالية قبل الفحص لمنع التكرار بسبب المسافات
+    # Nettoyage des noms existants avant la vérification pour éviter les doublons dus aux espaces
     if not df.empty and "username" in df.columns:
-        df['username'] = df['username'].astype(str).str.strip().str.lower() # 👈 أضفنا .str.lower()
+        df['username'] = df['username'].astype(str).str.strip().str.lower() # 👈 .str.lower() ajouté
     
-    # التحقق من أن اسم المستخدم غير موجود مسبقاً بعد تنظيفه
-    if username.strip().lower() in df["username"].values: # 👈 أضفنا .lower()
+    # Vérifier que le nom d'utilisateur n'existe pas déjà après nettoyage
+    if username.strip().lower() in df["username"].values: # 👈 .lower() ajouté
         return False
         
-    # 2. تشفير كلمة المرور وتجهيز البيانات الجديدة
+    # 2. Chiffrement du mot de passe et préparation des nouvelles données
     hashed_pass = hash_password(password)
     new_data = {
-        "username": [username.strip().lower()], # 👈 أضفنا .lower() هنا أيضاً
+        "username": [username.strip().lower()], # 👈 .lower() ajouté ici aussi
         "password": [hashed_pass.strip()],
         "email": [email.strip()],
         "phone": [phone.strip()]
@@ -97,18 +97,18 @@ def add_user(username, password, email="", phone=""):
     import pandas as pd
     new_df = pd.DataFrame(new_data)
     
-    # دمج السطر الجديد مع البيانات السابقة
+    # Fusion de la nouvelle ligne avec les données précédentes
     updated_df = pd.concat([df, new_df], ignore_index=True)
     
-    # 3. تحديث الجدول على ورقة العمل المحددة
+    # 3. Mise à jour de la feuille de calcul indiquée
     conn.update(worksheet="Sheet1", data=updated_df)
     return True
 
 def login_user(username, password):
     conn = get_sheets_connection()
     try:
-        # استخدام st.spinner لإخفاء النص الافتراضي واستبداله بنص مخصص
-        with st.spinner("Checking information entered..."):
+        # st.spinner remplace le texte par défaut par un texte personnalisé
+        with st.spinner("Vérification des informations saisies..."):
             st.cache_data.clear()
             df = conn.read(worksheet="Sheet1", ttl=0, show_spinner=False)
     except Exception as e:
@@ -118,23 +118,23 @@ def login_user(username, password):
     if df.empty or "username" not in df.columns or "password" not in df.columns:
         return False
 
-    # 🧼 تنظيف الأعمدة تماماً من أي مسافات فارغة (مهم جداً لجداول جوجل)
-    df['username'] = df['username'].astype(str).str.strip().str.lower() # 👈 أضفنا .str.lower()
+    # Nettoyage complet des colonnes des espaces superflus (important pour Google Sheets)
+    df['username'] = df['username'].astype(str).str.strip().str.lower() # 👈 .str.lower() ajouté
     df['password'] = df['password'].astype(str).str.strip()
     
-    clean_username = str(username).strip().lower() # 👈 أضفنا .lower()
+    clean_username = str(username).strip().lower() # 👈 .lower() ajouté
 
 
 
     
-    # البحث عن السطر الخاص بالمستخدم
+    # Recherche de la ligne de l'utilisateur
     user_row = df[df["username"] == clean_username]
     
     if not user_row.empty:
-        # جلب الهاش المخزن
+        # Récupération du hash stocké
         hashed_password = user_row.iloc[0]["password"]
         
-        # استدعاء دالة التحقق
+        # Appel de la fonction de vérification
         return check_password(password, hashed_password)
         
     return False
@@ -165,7 +165,7 @@ def sign_in_page():
         with col_center:
             login_button = st.button("Se connecter", type="primary")
         
-        clean_user_input = username.strip().lower() # هذا السطر موجود لديك بالفعل، تأكد أنه يسبق الشرط
+        clean_user_input = username.strip().lower() # Cette ligne doit précéder la condition
         if login_button or (clean_user_input and password and st.session_state.login_pass):
             clean_user_input = username.strip().lower()
             if login_user(clean_user_input, password):
@@ -192,20 +192,20 @@ def sign_up_page():
     with st.container(border=True):
         st.markdown('<p class="form-label">Créez votre nouveau compte dès maintenant</p>', unsafe_allow_html=True)
         
-        # 1. حقل اسم المستخدم
+        # 1. Champ nom d'utilisateur
         new_username = st.text_input("Choisissez un nom d'utilisateur *", key="reg_user", placeholder="Ex: admin123")
-        clean_new_username = new_username.strip().lower() # 👈 السطر الجديد
-        # 2. حقل البريد الإلكتروني مع التحقق الملون
+        clean_new_username = new_username.strip().lower() # 👈 Nouvelle ligne
+        # 2. Champ e-mail avec validation en couleur
         email = st.text_input("Adresse e-mail *", key="reg_email", placeholder="Ex: exemple@mail.com")
         is_email_valid = False
-        if email: # يبدأ الفحص فقط إذا كتب المستخدم شيئاً
+        if email: # La vérification ne démarre que si l'utilisateur a saisi quelque chose
             if re.match(r"[^@]+@[^@]+\.[^@]+", email):
                 st.markdown('<p style="color: #28a745; font-size: 13px; margin-top: -10px;">Format de l\'e-mail valide</p>', unsafe_allow_html=True)
                 is_email_valid = True
             else:
                 st.markdown('<p style="color: #dc3545; font-size: 13px; margin-top: -10px;">Format invalide (ex: nom@domaine.com)</p>', unsafe_allow_html=True)
         
-        # 3. حقل رقم الهاتف مع التحقق الملون
+        # 3. Champ téléphone avec validation en couleur
         phone = st.text_input("Numéro de téléphone *", key="reg_phone", placeholder="Ex: +33612345678")
         is_phone_valid = False
         if phone:
@@ -215,11 +215,11 @@ def sign_up_page():
             else:
                 st.markdown('<p style="color: #dc3545; font-size: 13px; margin-top: -10px;">Uniquement des chiffres (7 à 15 caractères)</p>', unsafe_allow_html=True)
         
-        # 4. حقول كلمة المرور
+        # 4. Champs de mot de passe
         new_password = st.text_input("Choisissez un mot de passe *", type="password", key="reg_pass", placeholder="••••••••")
         confirm_password = st.text_input("Confirmez le mot de passe *", type="password", key="reg_pass_conf", placeholder="••••••••")
         
-        # التحقق من تطابق كلمة المرور فورياً
+        # Vérification immédiate de la correspondance des mots de passe
         is_password_matching = False
         if new_password and confirm_password:
             if new_password == confirm_password:
@@ -234,14 +234,14 @@ def sign_up_page():
         with col2:
             signup_button = st.button("Créer le compte", type="primary")
         
-        # 🌟 تفعيل زر Enter أو الضغط على الزر مع التحقق الشامل
+        # Validation par la touche Entrée ou le bouton, avec vérification complète
         if signup_button or (clean_new_username and email and phone and new_password and st.session_state.reg_pass_conf):
             
-            # التأكد أولاً من ملء كافة الحقول الأساسية
+            # Vérifier d'abord que tous les champs obligatoires sont remplis
             if not clean_new_username or not email or not phone or not new_password or not confirm_password:
                 st.warning("Veuillez remplir tous les champs obligatoires.")
             
-            # التأكد من أن جميع المدخلات تجاوزت الفحص بنجاح (باللون الأخضر)
+            # Vérifier que toutes les saisies ont réussi la validation (vert)
             elif not is_email_valid:
                 st.error("Veuillez corriger l'adresse e-mail avant validation.")
                 
@@ -252,7 +252,7 @@ def sign_up_page():
                 st.error("Les mots de passe doivent être identiques.")
             
             else:
-                # إذا كان كل شيء ممتلئاً وصحيحاً يتم التسجيل
+                # Si tout est rempli et valide, l'inscription est effectuée
                 if add_user(clean_new_username, new_password, email, phone):
                     st.success("Compte créé avec succès ! Vous pouvez maintenant passer à la page de connexion.")
                 else:

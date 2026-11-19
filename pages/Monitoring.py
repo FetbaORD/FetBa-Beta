@@ -13,74 +13,90 @@ from streamlit_autorefresh import st_autorefresh
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from twilio.rest import Client
-# =========================
-# 1. إعداد الصفحة
-# =========================
-
-
-
-st.set_page_config(page_title="Systeme de Supervision et surveillance (SCADA)", layout="wide")
-
-st.title("Systeme de Supervision et Surveillance (SCADA)")
-
-
-
-
-
-
 
 # =========================
-# 2. إعداد Telegram
+# 1. Configuration de la page
+# =========================
+st.set_page_config(page_title="Système de Supervision et de Surveillance (SCADA)", layout="wide")
+
+st.title(":material/monitoring: Système de Supervision et de Surveillance (SCADA)")
+
+# =========================
+# 2. Configuration Telegram
 # =========================
 TELEGRAM_TOKEN = "8800481127:AAEibU7DQCV4NgPVw7EBbt1jz_QYAXC3KIc"
 
+# Catégories de pannes (clés utilisées partout dans l'application)
+CAT_TEMP = "Température"
+CAT_HUM = "Humidité"
+CAT_PRESS = "Pression"
+CAT_VIBE = "Vibration"
+CAT_CURR = "Courant"
+CAT_GENERAL = "Général/Secours"
+
 CONTACTS = {
-    "حرارة": "@CCryptomic",
-    "رطوبة": "CHAT_ID_HUMID",
-    "ضغط": "CHAT_ID_PRESSURE",
-    "اهتزاز": "CHAT_ID_VIBRATION",
-    "تيار": "CHAT_ID_ELECTRIC",
-    "عام/احتياطي": "CHAT_ID_GENERAL"
+    CAT_TEMP: "@CCryptomic",
+    CAT_HUM: "CHAT_ID_HUMID",
+    CAT_PRESS: "CHAT_ID_PRESSURE",
+    CAT_VIBE: "CHAT_ID_VIBRATION",
+    CAT_CURR: "CHAT_ID_ELECTRIC",
+    CAT_GENERAL: "CHAT_ID_GENERAL"
 }
-# 💡 ضع إيميلك المُرْسِل وبيانات حسابك هنا:
+
+# 💡 Renseignez ici l'e-mail expéditeur et les identifiants de votre compte :
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 SENDER_EMAIL = "mohamedbachirhabchi@gmail.com"
-SENDER_PASSWORD = "wrmi lpuz geyj ssyp"  # كلمة مرور التطبيقات من جوجل وليس كلمة مرور الحساب العادية
+SENDER_PASSWORD = "wrmi lpuz geyj ssyp"  # Mot de passe d'application Google (et non le mot de passe habituel du compte)
 
 # =========================
-# إعدادات Twilio (لرسائل SMS)
+# Configuration Twilio (messages WhatsApp / SMS)
 # =========================
 TWILIO_ACCOUNT_SID = "AC63ca0d3643cccca495c8409993ad6e34"
 TWILIO_AUTH_TOKEN = "68510f98171cd751af475b790f0aeef5"
 
-
 TWILIO_WHATSAPP_NUMBER = "whatsapp:+14155238886"
 
-# رقم هاتفك الشخصي الذي ربطته بالـ Sandbox (يجب إضافة whatsapp: قبل الرقم)
-YOUR_PERSONAL_NUMBER = "whatsapp:+15055510744" # ضع رقمك هنا بالصيغة الدولية
+# Votre numéro personnel lié au Sandbox (préfixe « whatsapp: » obligatoire)
+YOUR_PERSONAL_NUMBER = "whatsapp:+15055510744"
+
 # =========================
-# 2. إدارة بيانات العمال (حفظ دائم في ملف JSON)
+# 3. Gestion des données des employés (sauvegarde permanente en JSON)
 # =========================
 CONFIG_FILE = "workers_Information.json"
 
-# البيانات الافتراضية في حال عدم وجود الملف
+# Données par défaut si le fichier n'existe pas
 default_contacts = {
-        "حرارة": {"name": "Technicien de Temperature", "telegram_id": "@CCryptxwcdomic", "email": "bachirhabchi3@gmail.com", "phone": "+213541445824"},
-        "رطوبة": {"name": "Technicien de Humidite", "telegram_id": "@CCryptrhrttomic", "email": "MohamedAmineAbdellatif@gmail.com", "phone": "+213541445825"},
-        "ضغط": {"name": "Technicien de Pression", "telegram_id": "@CCryptoytrhmic", "email": "YassineSebaa@gmail.com", "phone": "+213541445826"},
-        "اهتزاز": {"name": "Technicien de Vibration", "telegram_id": "@CCrypfghtomic", "email": "HamidSoukeur@gmail.com", "phone": "+213541445827"},
-        "تيار": {"name": "Technicien de Electricite", "telegram_id": "@CCryptomic", "email": "bachirhabchi3@gmail.com", "phone": "+213541445828"},
-        "عام/احتياطي": {"name": "Technicien Generale", "telegram_id": "@CCryptofdgfdic", "email": "BoulilaMohamedTaher@gmail.com", "phone": "+213541445829"}
+    CAT_TEMP: {"name": "Technicien de Température", "telegram_id": "@CCryptxwcdomic", "email": "bachirhabchi3@gmail.com", "phone": "+213541445824"},
+    CAT_HUM: {"name": "Technicien d'Humidité", "telegram_id": "@CCryptrhrttomic", "email": "MohamedAmineAbdellatif@gmail.com", "phone": "+213541445825"},
+    CAT_PRESS: {"name": "Technicien de Pression", "telegram_id": "@CCryptoytrhmic", "email": "YassineSebaa@gmail.com", "phone": "+213541445826"},
+    CAT_VIBE: {"name": "Technicien de Vibration", "telegram_id": "@CCrypfghtomic", "email": "HamidSoukeur@gmail.com", "phone": "+213541445827"},
+    CAT_CURR: {"name": "Technicien d'Électricité", "telegram_id": "@CCryptomic", "email": "bachirhabchi3@gmail.com", "phone": "+213541445828"},
+    CAT_GENERAL: {"name": "Technicien Général", "telegram_id": "@CCryptofdgfdic", "email": "BoulilaMohamedTaher@gmail.com", "phone": "+213541445829"}
+}
+
+# Anciennes clés (arabes) -> nouvelles clés françaises, pour les fichiers déjà enregistrés
+LEGACY_KEYS = {
+    "حرارة": CAT_TEMP,
+    "رطوبة": CAT_HUM,
+    "ضغط": CAT_PRESS,
+    "اهتزاز": CAT_VIBE,
+    "تيار": CAT_CURR,
+    "عام/احتياطي": CAT_GENERAL,
 }
 
 
+def migrate_contacts(data):
+    """Convertit les anciennes clés du fichier JSON vers les clés françaises."""
+    return {LEGACY_KEYS.get(k, k): v for k, v in data.items()}
+
+
 # =========================
-# إدارة حدود الخطر (حفظ دائم في ملف JSON)
+# Gestion des limites de danger (sauvegarde permanente en JSON)
 # =========================
 LIMITS_FILE = "limits_configuration.json"
 
-# القيم الافتراضية للحدود في حال عدم وجود الملف
+# Valeurs par défaut des limites si le fichier n'existe pas
 default_limits = {
     "t_limit": 100,
     "h_limit": 100,
@@ -89,12 +105,13 @@ default_limits = {
     "c_limit": 50
 }
 
-# إنشاء الملف بالقيم الافتراضية إذا لم يكن موجوداً
+# Création du fichier avec les valeurs par défaut s'il n'existe pas
 if not os.path.exists(LIMITS_FILE):
     with open(LIMITS_FILE, "w", encoding="utf-8") as f:
         json.dump(default_limits, f, ensure_ascii=False, indent=4)
 
-# دالة مخصصة لحفظ الحدود فوراً عند تغيير السلايدر
+
+# Sauvegarde immédiate des limites dès qu'un curseur change
 def save_limits_to_json():
     current_limits = {
         "t_limit": st.session_state.t_limit,
@@ -106,109 +123,170 @@ def save_limits_to_json():
     with open(LIMITS_FILE, "w", encoding="utf-8") as f:
         json.dump(current_limits, f, ensure_ascii=False, indent=4)
 
-# تحميل البيانات من الملف إذا كان موجوداً، أو إنشائه بالبيانات الافتراضية
+
+# Chargement des données depuis le fichier, ou création avec les valeurs par défaut
 if not os.path.exists(CONFIG_FILE):
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(default_contacts, f, ensure_ascii=False, indent=4)
 
 if "workers_contacts" not in st.session_state:
     with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        st.session_state.workers_contacts = json.load(f)
+        st.session_state.workers_contacts = migrate_contacts(json.load(f))
 
-# دالة لحفظ التعديلات فوراً في الملف عند أي تغيير
+
+# Sauvegarde immédiate des modifications dans le fichier
 def save_workers_Information():
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(st.session_state.workers_contacts, f, ensure_ascii=False, indent=4)
 
 
+# =========================
+# 4. Outils : durées et notifications
+# =========================
+def format_duration(total_seconds):
+    """Formate une durée en secondes sous la forme « 1 h 05 min 12 s »."""
+    total_seconds = max(0, int(total_seconds))
+    h, rest = divmod(total_seconds, 3600)
+    m, s = divmod(rest, 60)
+    if h:
+        return f"{h} h {m:02d} min {s:02d} s"
+    if m:
+        return f"{m} min {s:02d} s"
+    return f"{s} s"
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def send_real_notifications(machine_name, fault_label, worker_info, value_str):
+def send_real_notifications(machine_name, fault_label, worker_info, value_str, start_clock):
     """
-    إرسال رسائل حقيقية عبر تلغرام، الإيميل، و الرسائل النصية للفني المسؤول.
+    Envoi de vraies notifications (Telegram, e-mail et WhatsApp) au technicien responsable.
     """
-    message_text = f"🚨 تنبيه عطل في {machine_name}\nنوع العطل: {fault_label}\nالقيمة الحالية: {value_str}\nالمسؤول: {worker_info['name']}\nالتاريخ: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    
-    # [1] إرسال Telegram (حقيقي باستخدام المعرف المخزن للفني)
+    message_text = (
+        f"🚨 Alerte de panne sur {machine_name}\n"
+        f"Type de panne : {fault_label}\n"
+        f"Valeur actuelle : {value_str}\n"
+        f"Heure de début : {start_clock}\n"
+        f"Responsable : {worker_info['name']}\n"
+        f"Date : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+
+    # [1] Envoi Telegram
     try:
-        # ملاحظة: التلغرام يحتاج Chat ID رقمي لإرسال API، أو يمكنك استخدام الـ username إذا كان البوت مشتركاً في مجموعة مع الفني
+        # Remarque : l'API Telegram exige un Chat ID numérique (ou un @username si le bot partage un groupe avec le technicien)
         tg_id = worker_info["telegram_id"]
         url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
         requests.post(url, json={"chat_id": tg_id, "text": message_text})
     except Exception as e:
-        st.sidebar.error(f"خطأ في إرسال تلغرام: {e}")
+        st.sidebar.error(f"Erreur d'envoi Telegram : {e}")
 
-    # [2] إرسال البريد الإلكتروني (Email حقيقي عبر SMTP)
+    # [2] Envoi de l'e-mail (SMTP)
     try:
         msg = MIMEMultipart()
         msg['From'] = SENDER_EMAIL
         msg['To'] = worker_info["email"]
-        msg['Subject'] = f"🚨 ALERT: {machine_name} - {fault_label}"
+        msg['Subject'] = f"🚨 ALERTE : {machine_name} - {fault_label}"
         msg.attach(MIMEText(message_text, 'plain', 'utf-8'))
-        
+
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
             server.login(SENDER_EMAIL, SENDER_PASSWORD)
             server.sendmail(SENDER_EMAIL, worker_info["email"], msg.as_string())
     except Exception as e:
-        st.sidebar.error(f"error for send To email :  {e}")
+        st.sidebar.error(f"Erreur d'envoi de l'e-mail : {e}")
 
-    # [3] إرسال رسالة نصية (SMS حقيقي عبر Twilio)
+    # [3] Envoi WhatsApp (Twilio)
     try:
         client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
         client.messages.create(
             body=message_text,
-            from_=TWILIO_WHATSAPP_NUMBER,  # استخدام رقم الواتساب الممنوح من تويليو
-            to=f"whatsapp:{worker_info['phone']}"  # 👈 التعديل هنا: دمج السابقة البرمجية مع رقم العامل ديناميكياً
+            from_=TWILIO_WHATSAPP_NUMBER,  # Numéro WhatsApp fourni par Twilio
+            to=f"whatsapp:{worker_info['phone']}"  # Numéro du technicien, ajouté dynamiquement
         )
     except Exception as e:
-        st.sidebar.error(f"خطأ في إرسال WhatsApp: {e}")
-
-
-
-
-
-
-
-
-
+        st.sidebar.error(f"Erreur d'envoi WhatsApp : {e}")
 
 
 def get_health_color(health):
     if health > 80:
-        return "#2eba00"  # أخضر خفيف جداً
+        return "#2eba00"  # vert
     elif health > 40:
-        return "#fffb00"  # أصفر خفيف جداً
+        return "#f5b700"  # jaune
     else:
-        return "#ff0000"  # أحمر خفيف جداً
-        
+        return "#e63946"  # rouge
+
 
 def local_css(file_name):
-    with open(file_name) as f:
+    with open(file_name, encoding="utf-8") as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
+
 local_css("style.css")
+
+STATUS_RUNNING = "En marche"
+STATUS_REPAIR = "En panne 🛠️"
+
+
+def start_fault(machine, fault_type, source, worker_name="—"):
+    """Enregistre le début d'une panne : machine, heure de début, type, source et intervenant."""
+    sim_seconds = (datetime.now() - st.session_state.sim_start_time).total_seconds()
+    st.session_state.machine_faults[machine].append({
+        "start": sim_seconds,          # secondes depuis le début de la simulation (utilisé par le Gantt)
+        "end": None,                   # None tant que la panne n'est pas résolue
+        "start_clock": datetime.now(), # heure réelle de début de la panne
+        "type": fault_type,
+        "source": source,
+        "worker": worker_name,
+    })
+
+
+def end_fault(machine):
+    """Clôture la dernière panne ouverte de la machine."""
+    sim_seconds = (datetime.now() - st.session_state.sim_start_time).total_seconds()
+    faults = st.session_state.machine_faults.get(machine, [])
+    if faults and faults[-1]["end"] is None:
+        faults[-1]["end"] = sim_seconds
+        faults[-1]["end_clock"] = datetime.now()
+
+
+def toggle_machine(machine, source="Manuel 👤", fault_type="Panne manuelle"):
+    if "machine_faults" not in st.session_state:
+        st.session_state.machine_faults = {f"Machine {i+1}": [] for i in range(5)}
+
+    if st.session_state.machine_status[machine] == STATUS_RUNNING:
+        st.session_state.machine_status[machine] = STATUS_REPAIR
+        start_fault(machine, fault_type, source)
+    else:
+        st.session_state.machine_status[machine] = STATUS_RUNNING
+        end_fault(machine)
+
+
+def build_fault_journal(current_sim_seconds):
+    """Construit le journal des pannes : une ligne par panne, avec heure de début et durée."""
+    rows = []
+    for machine, faults in st.session_state.machine_faults.items():
+        for f in faults:
+            ongoing = f["end"] is None
+            end_s = current_sim_seconds if ongoing else f["end"]
+            start_clock = f.get("start_clock")
+            end_clock = f.get("end_clock")
+            rows.append({
+                "Machine": machine,
+                "Type de panne": f.get("type", "Panne"),
+                "Date": start_clock.strftime("%Y-%m-%d") if start_clock else "—",
+                "Heure de début": start_clock.strftime("%H:%M:%S") if start_clock else "—",
+                "Heure de fin": ("En cours…" if ongoing else (end_clock.strftime("%H:%M:%S") if end_clock else "—")),
+                "Durée de la panne": format_duration(end_s - f["start"]),
+                "Source": f.get("source", "—"),
+                "Intervenant": f.get("worker", "—"),
+                "État": "🔴 En cours" if ongoing else "🟢 Résolue",
+                "_sort": start_clock or datetime.min,
+            })
+    if not rows:
+        return pd.DataFrame(columns=[
+            "Machine", "Type de panne", "Date", "Heure de début", "Heure de fin",
+            "Durée de la panne", "Source", "Intervenant", "État"
+        ])
+    df = pd.DataFrame(rows).sort_values("_sort", ascending=False).drop(columns="_sort")
+    return df.reset_index(drop=True)
+
 
 def send_telegram_msg(chat_id, message):
     try:
@@ -216,40 +294,8 @@ def send_telegram_msg(chat_id, message):
         requests.post(url, json={"chat_id": chat_id, "text": message})
     except:
         pass
-        
 
-def toggle_machine(machine, source="يدوي 👤", fault_type="عطل"):
-    current_sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
-    time_stamp = f"{int(current_sim_duration // 60):02d}:{int(current_sim_duration % 60):02d}"
 
-    # تهيئة قاموس الأعطال في الجلسة إذا لم يكن موجوداً
-    if "machine_faults" not in st.session_state:
-        st.session_state.machine_faults = {f"Machine {i+1}": [] for i in range(5)}
-
-    if st.session_state.machine_status[machine] == "Running":
-        st.session_state.machine_status[machine] = "Under Repair 🛠️"
-        status_text = "قيد الإصلاح"
-        
-        # تسجيل بداية العطل بالثواني
-        st.session_state.machine_faults[machine].append({
-            "start": current_sim_duration,
-            "end": None  # لم تنتهِ بعد
-        })
-    else:
-        st.session_state.machine_status[machine] = "Running"
-        status_text = "تم الإصلاح"
-        fault_type = "عودة للعمل"
-        
-        # تحديث وقت نهاية آخر عطل تم تسجيله لهذه الآلة
-        if machine in st.session_state.machine_faults and len(st.session_state.machine_faults[machine]) > 0:
-            if st.session_state.machine_faults[machine][-1]["end"] is None:
-                st.session_state.machine_faults[machine][-1]["end"] = current_sim_duration
-
-    new_entry = pd.DataFrame([{"Runtime": time_stamp, "الآلة": machine, "النوع": fault_type, "المصدر": source, "الحالة": status_text}])
-    st.session_state.maintenance_log = pd.concat([new_entry, st.session_state.maintenance_log], ignore_index=True)
-
-        
-        
 def can_send_alert(machine, key, cooldown=180):
     now = time.time()
 
@@ -262,10 +308,12 @@ def can_send_alert(machine, key, cooldown=180):
         return True
 
     return False
+
+
 # =========================
-# 3. Session State
+# 5. État de session (Session State)
 # =========================
-# قراءة الحدود من ملف الـ JSON لضمان عدم ضياعها عند الـ Refresh
+# Lecture des limites depuis le fichier JSON pour qu'elles survivent au rafraîchissement
 if "t_limit" not in st.session_state:
     with open(LIMITS_FILE, "r", encoding="utf-8") as f:
         saved_limits = json.load(f)
@@ -275,22 +323,15 @@ if "t_limit" not in st.session_state:
     st.session_state.v_limit = saved_limits.get("v_limit", 10.0)
     st.session_state.c_limit = saved_limits.get("c_limit", 50)
 
-
 if "machine_faults" not in st.session_state:
     st.session_state.machine_faults = {f"Machine {i+1}": [] for i in range(5)}
 
-
-if "maintenance_log" not in st.session_state:
-    st.session_state.maintenance_log = pd.DataFrame(
-        columns=["Runtime", "الآلة", "النوع", "المصدر", "الحالة"]
-    )
-    
 if "sim_start_time" not in st.session_state:
     st.session_state.sim_start_time = datetime.now()
 
 if "machine_status" not in st.session_state:
     st.session_state.machine_status = {
-        f"Machine {i+1}": "Running" for i in range(5)
+        f"Machine {i+1}": STATUS_RUNNING for i in range(5)
     }
 machines = [f"Machine {i+1}" for i in range(5)]
 
@@ -302,60 +343,57 @@ if "alerts_sent" not in st.session_state:
 
 if "last_alert_time" not in st.session_state:
     st.session_state.last_alert_time = {}
-    
-    
+
 if "performance_data" not in st.session_state:
     st.session_state.performance_data = pd.DataFrame(
         columns=["time", "Efficacité", "Stabilité"]
     )
-    
+
 # =========================
-# 4. Title
+# 6. Rafraîchissement automatique
 # =========================
 st_autorefresh(interval=2000, key="refresh")
+
 # =========================
-# 5. Sidebar Settings
+# 7. Barre latérale : paramètres
 # =========================
 with st.sidebar:
     st.markdown(
-    "<h3 style='text-align: center;'>Les Parametres</h3>",
-    unsafe_allow_html=True)
+        "<h3 style='text-align: center;'>Paramètres</h3>",
+        unsafe_allow_html=True)
     with st.expander("Données des employés"):
-        # 2. حلقة التكرار الآن أصبحت بالداخل (لاحظ المسافات البادئة Indentation)
         for fault_label, info in st.session_state.workers_contacts.items():
-            
-            # 3. إنشاء القائمة الابن لكل موظف داخل القائمة الرئيسية
+
+            # Un sous-menu par employé à l'intérieur du menu principal
             with st.expander(f"{info['name']}"):
-                
-                # ربط الـ key بالـ session_state مباشرة ليعمل التحديث الفوري
+
+                # La clé est liée directement au session_state pour une mise à jour immédiate
                 st.text_input(
-                    "رقم الهاتف", key=f"phone_{fault_label}", 
+                    "Numéro de téléphone", key=f"phone_{fault_label}",
                     value=st.session_state.workers_contacts[fault_label]["phone"],
                     on_change=lambda fl=fault_label: (st.session_state.workers_contacts[fl].update({"phone": st.session_state[f"phone_{fl}"]}), save_workers_Information())
                 )
                 st.text_input(
-                    "Telegram ID", key=f"tg_{fault_label}", 
+                    "Telegram ID", key=f"tg_{fault_label}",
                     value=st.session_state.workers_contacts[fault_label]["telegram_id"],
                     on_change=lambda fl=fault_label: (st.session_state.workers_contacts[fl].update({"telegram_id": st.session_state[f"tg_{fl}"]}), save_workers_Information())
                 )
                 st.text_input(
-                    "البريد الإلكتروني", key=f"email_{fault_label}", 
+                    "Adresse e-mail", key=f"email_{fault_label}",
                     value=st.session_state.workers_contacts[fault_label]["email"],
                     on_change=lambda fl=fault_label: (st.session_state.workers_contacts[fl].update({"email": st.session_state[f"email_{fl}"]}), save_workers_Information())
                 )
 
-
     with st.expander("Limites de danger"):
-        # أضفنا on_change=save_limits_to_json لتقوم بالحفظ فوراً في الملف عند أي تغيير
-        t_limit = st.slider("حرارة", 1, 120, value=st.session_state.t_limit, key="t_limit", on_change=save_limits_to_json)
-        h_limit = st.slider("رطوبة", 5, 100, value=st.session_state.h_limit, key="h_limit", on_change=save_limits_to_json)
-        p_limit = st.slider("ضغط", 1.0, 15.0, value=st.session_state.p_limit, key="p_limit", on_change=save_limits_to_json)
-        v_limit = st.slider("اهتزاز", 1.0, 10.0, value=st.session_state.v_limit, key="v_limit", on_change=save_limits_to_json)
-        c_limit = st.slider("تيار", 1, 50, value=st.session_state.c_limit, key="c_limit", on_change=save_limits_to_json)
-
+        # on_change=save_limits_to_json : sauvegarde immédiate dans le fichier à chaque modification
+        t_limit = st.slider("Température", 1, 120, value=st.session_state.t_limit, key="t_limit", on_change=save_limits_to_json)
+        h_limit = st.slider("Humidité", 5, 100, value=st.session_state.h_limit, key="h_limit", on_change=save_limits_to_json)
+        p_limit = st.slider("Pression", 1.0, 15.0, value=st.session_state.p_limit, key="p_limit", on_change=save_limits_to_json)
+        v_limit = st.slider("Vibration", 1.0, 10.0, value=st.session_state.v_limit, key="v_limit", on_change=save_limits_to_json)
+        c_limit = st.slider("Courant", 1, 50, value=st.session_state.c_limit, key="c_limit", on_change=save_limits_to_json)
 
 # =========================
-# 7. بيانات التشغيل (تحديث البيانات أولاً ثم الإرسال)
+# 8. Données de fonctionnement (mise à jour des données puis envoi)
 # =========================
 sim_now = datetime.now()
 sim_duration = (sim_now - st.session_state.sim_start_time).total_seconds()
@@ -363,12 +401,11 @@ fault_time = sim_duration
 minutes = int(fault_time // 60)
 seconds = int(fault_time % 60)
 all_data = {}
-now_time = datetime.now().strftime("%H:%M:%S")
 
 for machine in machines:
 
     # -------------------------
-    # 1. توليد البيانات العشوائية لكل آلة
+    # 1. Génération des données aléatoires de chaque machine
     # -------------------------
     np.random.seed(hash(machine) % 10000)
     temp = np.random.uniform(65, 5)
@@ -378,30 +415,30 @@ for machine in machines:
     current = np.random.uniform(20, 5)
 
     checks = [
-        (temp > t_limit, "temp", "حرارة", f"{temp:.1f}°C"),
-        (humidity > h_limit, "humid", "رطوبة", f"{humidity:.1f}%"),
-        (pressure > p_limit, "press", "ضغط", f"{pressure:.1f} Bar"),
-        (vibe > v_limit, "vibe", "اهتزاز", f"{vibe:.2f} mm/s"),
-        (current > c_limit, "curr", "تيار", f"{current:.1f} A")
+        (temp > t_limit, "temp", CAT_TEMP, f"{temp:.1f}°C"),
+        (humidity > h_limit, "humid", CAT_HUM, f"{humidity:.1f}%"),
+        (pressure > p_limit, "press", CAT_PRESS, f"{pressure:.1f} Bar"),
+        (vibe > v_limit, "vibe", CAT_VIBE, f"{vibe:.2f} mm/s"),
+        (current > c_limit, "curr", CAT_CURR, f"{current:.1f} A")
     ]
 
     # -------------------------
-    # 2. التحديث الفوري لبيانات الصحة ورصد الأعطال (هذا ما سيظهر على الشاشة فوراً)
+    # 2. Mise à jour immédiate de la santé et détection des pannes
     # -------------------------
     health = 100
-    active_faults = []  
-    
+    active_faults = []
+
     for is_danger, key, label, val in checks:
         if is_danger:
             health -= 20
             active_faults.append((key, label, val))
-            st.session_state.alerts_sent[machine][key] = True  
+            st.session_state.alerts_sent[machine][key] = True
         else:
-            st.session_state.alerts_sent[machine][key] = False 
+            st.session_state.alerts_sent[machine][key] = False
 
     health = max(0, health)
 
-    # حفظ بيانات الصحة والقراءات فوراً ليراها المتصفح دون انتظار
+    # Enregistrement immédiat de la santé et des mesures
     all_data[machine] = {
         "temp": temp,
         "humidity": humidity,
@@ -412,61 +449,42 @@ for machine in machines:
     }
 
     # -------------------------
-    # 3. اتخاذ القرار وتحديث حالة الآلة وسجل الأعطال على الشاشة
+    # 3. Décision : état de la machine et journal des pannes
     # -------------------------
     if health <= 80 and active_faults:
         primary_fault_key, primary_fault_label, primary_fault_val = active_faults[0]
-        
-        if can_send_alert(machine, primary_fault_key, cooldown=180):
-            
-            # أ) تحديث جدول الـ SCADA على الشاشة فوراً
-            time_stamp = datetime.now().strftime("%H:%M:%S")
-            date_stamp = datetime.now().strftime("%Y-%m-%d")
-            
-            # جلب بيانات الموظف لمعرفة اسمه فقط وعرضه في الجدول فوراً
-            worker_info = st.session_state.workers_contacts.get(
-                primary_fault_label, 
-                st.session_state.workers_contacts["عام/احتياطي"]
-            )
-            
-            new_entry = pd.DataFrame([{
-                "Runtime": f"{minutes:02d}:{seconds:02d}", 
-                "الآلة": machine, 
-                "النوع": primary_fault_label, 
-                "المصدر": f"آلي 🤖 ({date_stamp})", 
-                "الحالة": f"صحة الآلة {health}% - جاري إخطار {worker_info['name']}"
-            }])
-            st.session_state.maintenance_log = pd.concat([new_entry, st.session_state.maintenance_log], ignore_index=True)
-            
-            # ب) تحويل حالة الآلة إلى "قيد الإصلاح" وتغيير لون الكارد فوراً
-            if st.session_state.machine_status[machine] == "Running":
-                st.session_state.machine_status[machine] = "Under Repair 🛠️"
-                st.session_state.machine_faults[machine].append({
-                    "start": sim_duration,
-                    "end": None
-                })
-            
-            # -------------------------
-            # 4. إرسال الإشعارات الحقيقية في الخلفية (بشكل منفصل دون تعطيل الشاشة)
-            # -------------------------
-            # استخدام Threading يجعل بايثون يطلق الإرسال ويستكمل تحديث الصفحة في نفس الأجزاء من الثانية
-            import threading
-            threading.Thread(
-                target=send_real_notifications, 
-                args=(machine, primary_fault_label, worker_info, primary_fault_val)
-            ).start()
-# ========================================================
-# 🛑 الكود الجديد: إضافة صوت الإنذار عند نزول الصحة تحت 80%
-# ========================================================
 
-# مصفوفة لتخزين الآلات التي تعاني من مشاكل في هذا التحديث
+        if can_send_alert(machine, primary_fault_key, cooldown=180):
+
+            # Technicien responsable (affiché dans le journal)
+            worker_info = st.session_state.workers_contacts.get(
+                primary_fault_label,
+                st.session_state.workers_contacts[CAT_GENERAL]
+            )
+
+            # a) Passage de la machine « en panne » et enregistrement du début de la panne
+            fault_start_clock = datetime.now().strftime("%H:%M:%S")
+            if st.session_state.machine_status[machine] == STATUS_RUNNING:
+                st.session_state.machine_status[machine] = STATUS_REPAIR
+                start_fault(machine, primary_fault_label, "Auto 🤖", worker_info["name"])
+
+            # -------------------------
+            # 4. Envoi des notifications réelles en arrière-plan
+            # -------------------------
+            threading.Thread(
+                target=send_real_notifications,
+                args=(machine, primary_fault_label, worker_info, primary_fault_val, fault_start_clock)
+            ).start()
+
+# ========================================================
+# Alarme sonore lorsque la santé passe sous 80 %
+# ========================================================
 low_health_machines = [m for m, data in all_data.items() if data["health"] < 81]
 
 if low_health_machines:
-    # رابط لصوت إنذار خارجي (يمكنك استبداله بأي رابط صوتي مباشر MP3 تفضله)
     alarm_url = "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"
-    
-    # كود HTML مخفي لتشغيل الصوت تلقائياً بمجرد نزول الصحة
+
+    # HTML masqué pour lancer le son automatiquement
     st.components.v1.html(
         f'''
         <audio autoplay style="display:none;">
@@ -475,126 +493,132 @@ if low_health_machines:
         ''',
         height=0,
     )
-    
-    # تنبيه مرئي يظهر أعلى الشاشة بجانب الصوت
-    st.error(f"🚨 تحذير: انخفاض مؤشر الصحة في الآلات التالية: {', '.join(low_health_machines)}")
+
+    # Alerte visuelle en haut de l'écran
+    st.error(f"🚨 Attention : baisse de l'indicateur de santé sur les machines suivantes : {', '.join(low_health_machines)}")
 
 # ========================================================
 
-
-
-
-
 # =========================
-# 8. العرض (Dashboard) المطور
+# 9. Tableau de bord
 # =========================
 
+# Indicateurs globaux sur les pannes
+all_faults = [f for fl in st.session_state.machine_faults.values() for f in fl]
+nb_faults = len(all_faults)
+nb_ongoing = sum(1 for f in all_faults if f["end"] is None)
+total_downtime = sum(((sim_duration if f["end"] is None else f["end"]) - f["start"]) for f in all_faults)
 
-st.info(f"⏱️ Runtime: {minutes} minutes {seconds} seconds")
+k1, k2, k3, k4 = st.columns(4)
+k1.metric(":material/timer: Temps de simulation", f"{minutes} min {seconds:02d} s")
+k2.metric(":material/report_problem: Nombre de pannes", nb_faults)
+k3.metric(":material/build: Pannes en cours", nb_ongoing)
+k4.metric(":material/hourglass_bottom: Durée totale d'arrêt", format_duration(total_downtime))
 
+st.write("")
 
-# --- حساب الكفاءة والاستقرار بناءً على حالة الآلات الفعلية ---
+# --- Calcul de l'efficacité et de la stabilité selon l'état réel des machines ---
 
-# 1. جلب قائمة بالآلات التي تعمل فقط (ليست تحت الإصلاح)
-working_machines = [m for m, status in st.session_state.machine_status.items() if status == "Running"]
+# 1. Liste des machines qui fonctionnent (hors panne)
+working_machines = [m for m, status in st.session_state.machine_status.items() if status == STATUS_RUNNING]
 num_working = len(working_machines)
 
-# 2. حساب متوسط الصحة للآلات التي تعمل
+# 2. Moyenne de la santé des machines en marche
 if num_working > 0:
     avg_health = sum([all_data[m]["health"] for m in working_machines]) / num_working
 else:
     avg_health = 0
 
-# 3. حساب الكفاءة: تتأثر بعدد الآلات الشغالة (كل آلة تمثل 20% من طاقة المصنع)
-# مع إضافة لمسة عشوائية بسيطة للمحاكاة
+# 3. Efficacité : dépend du nombre de machines en marche (chaque machine = 20 % de la capacité de l'usine)
 factory_efficiency = (num_working / 5) * avg_health + np.random.uniform(-2, 2)
 
-# 4. حساب الاستقرار: يتأثر بمتوسط الصحة العام
+# 4. Stabilité : dépend de la santé moyenne globale
 factory_stability = avg_health + np.random.uniform(-5, 5)
 
-# تسجيل البيانات الجديدة
+# Enregistrement des nouvelles données
 new_row = pd.DataFrame([{
-    "time": int(sim_duration), 
+    "time": int(sim_duration),
     "Efficacité": max(0, min(100, factory_efficiency)),
     "Stabilité": max(0, min(100, factory_stability))
 }])
 
-# إضافة النقطة الجديدة ثم الاحتفاظ بآخر 20 نقطة فقط لتسريع الأداء
+# Ajout du nouveau point puis conservation des 20 derniers seulement (performances)
 st.session_state.performance_data = pd.concat(
     [st.session_state.performance_data, new_row],
     ignore_index=True
-).tail(20) # ✅ هذا السطر يضمن بقاء الذاكرة خفيفة دائماً
-
+).tail(20)
 
 for machine, data in all_data.items():
     status = st.session_state.machine_status[machine]
     health_val = data["health"]
-    bg_color = get_health_color(health_val)
+    accent = get_health_color(health_val)
+    in_repair = status == STATUS_REPAIR
 
-    # بداية كارد الآلة
-    
-    if "Under Repair" in status:
-        bg_color = "#fff" # رمادي
+    if in_repair:
+        accent = "#e63946"
 
-    st.markdown(f'''
-        <div class="machine-card" style="background-color: {bg_color}; border-right: 5px solid {bg_color.replace('0.1', '1')};">
-    ''', unsafe_allow_html=True)
-    
-    
-    
-    col_header, col_btn = st.columns([3, 1])
-    with col_header:
-        # تلوين الحالة بناءً على نوعها
-        status_color = "#28a745" if "Running" in status else "#dc3545"
-        st.markdown(f'<h3>🔧 {machine} | <span style="color:{status_color}">{status}</span></h3>', unsafe_allow_html=True)
-    
-    with col_btn:
-        if st.button(f"Modifier le statut", key=f"btn_{machine}"):
-            toggle_machine(machine)
-            st.rerun()
+    with st.container(border=True):
+        col_header, col_btn = st.columns([3, 1])
+        with col_header:
+            status_class = "status-pill status-down" if in_repair else "status-pill status-ok"
+            st.markdown(
+                f'<div class="machine-title" style="border-left: 6px solid {accent};">'
+                f'<span class="machine-name">🔧 {machine}</span>'
+                f'<span class="{status_class}">{status}</span></div>',
+                unsafe_allow_html=True)
 
-    if "Under Repair" in status:
-        st.warning("⚠️ هذه الآلة قيد الإصلاح حالياً")
-    else:
-        
-        # عرض شريط الصحة المخصص
-        st.markdown(f'''
-            <medium><b>Indicateur de santé de la machine: {health_val}%</b></medium>
-            <div class="health-bar-container">
-                <div class="health-bar-fill" style="width: {health_val}%; background-color: {bg_color};"></div>
-        ''', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        with col_btn:
+            if st.button("Modifier le statut", key=f"btn_{machine}", use_container_width=True):
+                toggle_machine(machine)
+                st.rerun()
 
-        # عرض المقاييس
-        c1, c2, c3, c4, c5 = st.columns(5)
-        c1.metric("🌡️ حرارة", f"{data['temp']:.1f}°C")
-        c2.metric("💧 رطوبة", f"{data['humidity']:.1f}%")
-        c3.metric("⚙️ ضغط", f"{data['pressure']:.1f} Bar")
-        c4.metric("📳 اهتزاز", f"{data['vibe']:.2f}")
-        c5.metric("⚡ تيار", f"{data['current']:.1f}A")
-    
-    st.markdown('</div>', unsafe_allow_html=True) # نهاية كارد الآلة
-    st.write("") # مسافة بسيطة
-    st.markdown('</div>', unsafe_allow_html=True)
+        if in_repair:
+            # Détails de la panne en cours : début + durée
+            open_faults = [f for f in st.session_state.machine_faults[machine] if f["end"] is None]
+            if open_faults:
+                f = open_faults[-1]
+                started = f["start_clock"].strftime("%H:%M:%S") if f.get("start_clock") else "—"
+                st.warning(
+                    f"⚠️ Cette machine est en panne ({f.get('type', 'Panne')}) — "
+                    f"début à **{started}** — durée : **{format_duration(sim_duration - f['start'])}**"
+                )
+            else:
+                st.warning("⚠️ Cette machine est en panne.")
+        else:
+            # Barre de santé personnalisée
+            st.markdown(f'''
+                <b>Indicateur de santé de la machine : {health_val}%</b>
+                <div class="health-bar-container">
+                    <div class="health-bar-fill" style="width: {health_val}%; background-color: {accent};"></div>
+                </div>
+            ''', unsafe_allow_html=True)
+
+            # Affichage des mesures
+            c1, c2, c3, c4, c5 = st.columns(5)
+            c1.metric("🌡️ Température", f"{data['temp']:.1f}°C")
+            c2.metric("💧 Humidité", f"{data['humidity']:.1f}%")
+            c3.metric("⚙️ Pression", f"{data['pressure']:.1f} Bar")
+            c4.metric("📳 Vibration", f"{data['vibe']:.2f}")
+            c5.metric("⚡ Courant", f"{data['current']:.1f}A")
+
 # =========================
-# 9. Charts + Logs
+# 10. Graphiques + journal
 # =========================
-col1, col2 = st.columns([1.5, 1])
+st.subheader("Performance globale (série temporelle en direct)")
 
-with col1:
-    st.subheader("Performance globale(Live Time Series)")
+df = st.session_state.performance_data
 
-    df = st.session_state.performance_data
+if not df.empty:
+    # Tri par seconde et utilisation du temps comme axe principal
+    df_plot = df.sort_values("time").set_index("time")
+    st.line_chart(df_plot)
+else:
+    st.write("En attente du démarrage de la simulation...")
 
-    if not df.empty:
-        # ترتيب البيانات حسب الثواني وضبطها كمحور أساسي
-        df_plot = df.sort_values("time").set_index("time")
-        
-        # رسم المخطط لجميع البيانات من ثانية 0 حتى الآن
-        st.line_chart(df_plot)
-    else:
-        st.write("بانتظار بدء المحاكاة...")
+st.subheader(":material/history: Journal des pannes")
+journal = build_fault_journal(sim_duration)
 
-with col2:
-    st.subheader("Journal des pannes")
-    st.dataframe(st.session_state.maintenance_log, use_container_width=True, hide_index=True)
+if journal.empty:
+    st.info("Aucune panne enregistrée pour le moment.")
+else:
+    st.dataframe(journal, use_container_width=True, hide_index=True)

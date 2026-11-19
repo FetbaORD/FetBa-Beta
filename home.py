@@ -5,18 +5,18 @@ from streamlit_autorefresh import st_autorefresh
 
 
     
-# 1. إعدادات الصفحة
+# 1. Paramètres de la page
 st.set_page_config(
-    page_title="Industrial AI Control Center",
+    page_title="Centre de Contrôle Industriel par IA",
     layout="wide",
     page_icon=":material/factory:"
 )
 
-# تأكد من وجود هذا السطر في أعلى ملف التطبيق لقراءة الـ CSS
+# Chargement de la feuille de style CSS
 with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# 2. إخفاء القائمة الجانبية برمجياً إذا لم يتم التفعيل
+# 2. Masquer le menu latéral tant que le produit n'est pas activé
 if "is_activated" not in st.session_state or not st.session_state.is_activated:
     st.markdown("""
         <style>
@@ -26,9 +26,9 @@ if "is_activated" not in st.session_state or not st.session_state.is_activated:
     """, unsafe_allow_html=True)
 
 # ----------------------------------------------------------------
-# 3. جلب قاعدة بيانات المفاتيح والتواريخ من Google Sheets أونلاين
+# 3. Récupération de la base des clés et des dates depuis Google Sheets (en ligne)
 # ----------------------------------------------------------------
-@st.cache_data(ttl=600) # 👈 تخزين مؤقت للبيانات لمدة 10 دقائق (600 ثانية) لتوفير الإنترنت وسرعة الأداء
+@st.cache_data(ttl=600) # 👈 Mise en cache des données pendant 10 minutes (600 s) pour économiser la connexion et accélérer l'application
 def load_licenses_from_sheets():
     try:
         sheet_url = st.secrets["public_gsheet_url"]
@@ -54,14 +54,14 @@ def load_licenses_from_sheets():
         return db
     except Exception as e:
         print(f"Error connecting to Google Sheets: {e}")
-        st.error("خطأ في الاتصال بخادم التفعيل أونلاين. يرجى التحقق من جودة الإنترنت لديك والمحاولة لاحقاً.")
+        st.error("Erreur de connexion au serveur d'activation en ligne. Veuillez vérifier votre connexion Internet et réessayer plus tard.")
         st.stop()
 
 
 if "is_activated" not in st.session_state:
     st.session_state.is_activated = False
 
-# دالة التحقق الذكية من المفتاح والوقت
+# Fonction de vérification de la clé et de sa date d'expiration
 def verify_key(key):
     db = load_licenses_from_sheets()
     
@@ -71,22 +71,22 @@ def verify_key(key):
         current_date = datetime.now()
         
         if current_date > expire_date:
-            st.error(f" هذا المفتاح انتهت صلاحيته بتاريخ: {key_info['expire_date']}")
+            st.error(f"Cette clé a expiré le : {key_info['expire_date']}")
             return
             
         if key_info["used_devices"] >= key_info["max_devices"]:
-            st.error(" هذا المفتاح مستخدم على أقصى عدد مسموح به من الأجهزة!")
+            st.error("Cette clé est déjà utilisée sur le nombre maximal d'appareils autorisés !")
             return
             
         st.session_state.is_activated = True
         st.session_state.license_expiry = key_info["expire_date"]
-        st.success(" تم التفعيل بنجاح!")
+        st.success("Activation réussie !")
         st.rerun()
     else:
         st.error(" Clé d'activation invalide !")
 
 
-# 1. تعريف النافذة المنبثقة خارج الشروط (لتكون متاحة للاستدعاء)
+# 1. Définition de la fenêtre contextuelle hors des conditions (pour qu'elle soit appelable)
 @st.dialog("📱 Support & Achat de Clé", width="medium")
 def show_contact_dialog():
     st.html("""
@@ -128,7 +128,7 @@ def show_contact_dialog():
 
 
 # ----------------------------------------------------------------
-# 4. واجهة قفل التطبيق (تم إدخال col_right بالكامل داخل الـ if)
+# 4. Écran de verrouillage de l'application (col_right est entièrement dans le if)
 # ----------------------------------------------------------------
 if not st.session_state.is_activated:
     st.markdown("<br><br>", unsafe_allow_html=True)
@@ -141,14 +141,14 @@ if not st.session_state.is_activated:
     with col_left:
         st.subheader(":material/vpn_key: Activation du Produit")
         with st.container(border=True):
-# إنشاء النموذج (Form) لحل مشكلة زر الـ Enter
+# Création du formulaire (Form) pour gérer la touche Entrée
             with st.form(key="activation_form", clear_on_submit=False):
                 
-                # حقل الإدخال الرئيسي محمي وبكلمة مرور داخل الـ Form
-                input_key = st.text_input("Clé de Produit (Product Key)", type="password", placeholder="XXXX-XXXX-XXXX")
+                # Champ de saisie principal masqué (mot de passe) dans le formulaire
+                input_key = st.text_input("Clé de produit", type="password", placeholder="XXXX-XXXX-XXXX")
                 st.write("") 
                 
-                # تقسيم الأعمدة الداخلية لتوسط الزر
+                # Colonnes internes pour centrer le bouton
                 sub_col1, sub_col2, sub_col3 = st.columns([1, 1.5, 1])
                 with sub_col2:
                     submit_button = st.form_submit_button("Activer le Système", type="primary", use_container_width=False)
@@ -163,7 +163,7 @@ if not st.session_state.is_activated:
             st.caption("Note: La clé est valide pour une utilisation sur deux appareils maximum.")
 
 	
-	# تعديل: تم نقل الـ col_right إلى هنا (داخل نطاق الـ if الشرطية)
+	# col_right est placé ici (dans la portée du if)
     with col_right:
         st.subheader(":material/shopping_cart: Achat d'une Clé d'Activation")
         with st.container(border=True):
@@ -183,7 +183,7 @@ if not st.session_state.is_activated:
 
 
 # =========================================================
-    # إشهار صفحة خطط الأسعار (Pricing) أسفل نافذة التفعيل والطلب
+    # Page des tarifs (Pricing) sous la fenêtre d'activation et de commande
     # =========================================================
     st.markdown("---")
     st.markdown("""
@@ -198,7 +198,7 @@ if not st.session_state.is_activated:
     </div>
     """, unsafe_allow_html=True)
     
-# جلب أيقونات الـ Material للتحقق من المميزات داخل البطاقات
+# Icônes Material pour les cases de fonctionnalités dans les cartes
     st.markdown('<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">', unsafe_allow_html=True)
     st.markdown("""
     <div class="pricing-container">
@@ -247,26 +247,26 @@ if not st.session_state.is_activated:
     <br><br>
     """, unsafe_allow_html=True)
     
-    # زر إضافي أسفل البطاقات لتوجيههم مباشرة للتواصل
+    # Bouton supplémentaire sous les cartes pour contacter directement le support
     c1, c2, c3 = st.columns([1, 1.5, 1])
     with c2:
         if st.button("Demander un abonnement maintenant", icon=":material/shopping_bag:", key="pricing_btn", use_container_width=False):
             show_contact_dialog()
 
-    st.stop() # إيقاف الكود هنا لحماية بقية التطبيق الداخلي
+    st.stop()  # Arrête l'exécution ici pour protéger le reste de l'application
 # =========================================================
-# المحتوى الأصلي (يظهر فقط بعد التفعيل الناجح)
+# Contenu principal (visible uniquement après une activation réussie)
 # =========================================================
 
 
-# تحديث تلقائي كل ثانية
+# Rafraîchissement automatique
 st_autorefresh(interval=2000, key="refresh_clock")
 
-st.title(":material/factory: Industrial AI Control Center")
+st.title(":material/factory: Centre de Contrôle Industriel par IA")
 
 
 # =========================================================================
-# شعار المنصة في أعلى الـ Sidebar الجانبي
+# Logo de la plateforme en haut de la barre latérale
 # =========================================================================
 st.sidebar.markdown(
     """
@@ -288,21 +288,21 @@ st.sidebar.markdown(
 
 
 # =========================================================================
-# حساب الوقت المتبقي لانتهاء الترخيص
+# Calcul du temps restant avant l'expiration de la licence
 # =========================================================================
 try:
-    # تحويل التاريخ (تأكد أن الصيغة في السيرفر تطابق YYYY-MM-DD)
+    # Conversion de la date (le format doit être YYYY-MM-DD)
     expiry_date = datetime.strptime(st.session_state.license_expiry, "%Y-%m-%d")
     now = datetime.now()
     
-    # حساب الفارق الزمني
+    # Calcul de l'écart de temps
     time_remaining = expiry_date - now
     days_remaining = time_remaining.days
     
-    # تحضير النص والأيقونة بناءً على حالة الترخيص
+    # Préparation du texte et de l'icône selon l'état de la licence
     if days_remaining > 0:
         license_status_text = f":material/hourglass_top: Temps restant : {days_remaining} jours"
-        # إذا كان متبقي أقل من 7 أيام يظهر تنبيه أصفر، وإلا يظهر أخضر نجاح
+        # Moins de 7 jours : avertissement jaune, sinon succès vert
         sidebar_status = st.sidebar.warning if days_remaining <= 7 else st.sidebar.success
     else:
         license_status_text = ":material/gpp_bad: Licence expirée !"
@@ -313,59 +313,60 @@ except Exception:
     sidebar_status = st.sidebar.info
 
 # =========================================================================
-# عرض البيانات في القائمة الجانبية (Sidebar) بأيقونات Material الرسمية
+# Affichage des données dans la barre latérale avec les icônes Material
 # =========================================================================
 
-# الخانة الأولى: تاريخ انتهاء الترخيص مع أيقونة القفل الذكي (verified_user)
+# Case 1 : date d'expiration de la licence
 sidebar_status(f":material/verified_user: Version sous licence jusqu'au : {st.session_state.license_expiry}")
 
-# الخانة الثانية: الوقت المتبقي بالأيام (تأخذ لون الحالة وتأتي بأيقونة الساعة تلقائياً من الشرط)
+# Case 2 : temps restant en jours (couleur selon l'état)
 st.sidebar.info(license_status_text)
 
 
-st.markdown("### Smart Factory Monitoring & Scheduling System")
+st.markdown("### Système intelligent de surveillance et d'ordonnancement d'usine")
 st.markdown("---")
 
-# لوحة تحكم علوية
+# Panneau de contrôle supérieur
 col_status, col_timer, col_action = st.columns([1, 1, 1])
 
 with col_status:
-    st.metric(":material/gpp_good: System Status", "Online & Protected")
+    st.metric(":material/gpp_good: État du système", "En ligne et protégé")
 
 with col_timer:
     if "sim_start_time" in st.session_state:
         sim_duration = (datetime.now() - st.session_state.sim_start_time).total_seconds()
         mins, secs = divmod(int(sim_duration), 60)
-        st.metric(":material/hourglass_top: Runtime", f"{mins:02d}:{secs:02d}")
+        st.metric(":material/hourglass_top: Temps de simulation", f"{mins:02d}:{secs:02d}")
     else:
-        st.metric(":material/hourglass_empty: Runtime", "00:00")
+        st.metric(":material/hourglass_empty: Temps de simulation", "00:00")
 
 with col_action:
     st.markdown('<div style="text-align: right; direction: rtl;">', unsafe_allow_html=True)
-    if st.button(":material/rocket_launch: Start Production Simulation"):
+    if st.button(":material/rocket_launch: Démarrer la simulation de production"):
         st.session_state.sim_start_time = datetime.now()
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("---")
 
-# باقي محتوى الصفحة (Architecture, Overview...)
+# Reste de la page (architecture, aperçu...)
 col1, col2 = st.columns(2)
 with col1:
-    st.subheader(":material/analytics: Quick Overview")
+    st.subheader(":material/analytics: Aperçu rapide")
     st.info("""
-    🔹 **Monitoring System** - Real-time machine tracking  
-    - Sensor alerts (temperature, vibration...)  
+    🔹 **Système de surveillance** - Suivi des machines en temps réel  
+    - Alertes capteurs (température, vibration...)  
+    - Journal des pannes (machine, heure de début, durée)  
     """)
 
 with col2:
-    st.subheader(":material/schema: System Architecture")
+    st.subheader(":material/schema: Architecture du système")
     st.code("""
-User Interface (Streamlit)
+Interface utilisateur (Streamlit)
         ↓
-Monitoring ←→ Scheduling (GA)
+Surveillance ←→ Ordonnancement (GA)
         ↓
-     Alerts ←→ Logs
+    Alertes ←→ Journaux
     """)
 
-st.caption("Industrial AI System v1.0 | Authorized Access Only")
+st.caption("Système industriel IA v1.0 | Accès réservé aux utilisateurs autorisés")

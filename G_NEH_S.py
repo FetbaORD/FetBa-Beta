@@ -4,8 +4,8 @@ import pandas as pd
 
 def calculate_cmax_gneh(seq, P, Ts):
     """
-    دالة حساب الـ Cmax الدقيقة المخصصة لخوارزمية G-NEH-S.
-    تتعامل مع المصفوفات بـ (0-indexed) المتوافقة مع بايثون.
+    Fonction de calcul exact du Cmax dédiée à l'algorithme G-NEH-S.
+    Elle manipule les matrices en indexation à partir de 0 (0-indexed), compatible avec Python.
     """
     if len(seq) == 0:
         return 0
@@ -18,9 +18,9 @@ def calculate_cmax_gneh(seq, P, Ts):
         job_idx = seq[k]
         for j in range(m):
             setup = 0
-            # إذا لم تكن هذه المهمة الأولى في الترتيب
+            # Si cette tâche n'est pas la première de la séquence
             if k > 0:
-                # أخذ قيمة Ts بين المهمة السابقة والحالية
+                # Récupération de la valeur Ts entre la tâche précédente et la tâche courante
                 setup = Ts[seq[k-1], job_idx]
             
             if k == 0 and j == 0:
@@ -37,17 +37,17 @@ def calculate_cmax_gneh(seq, P, Ts):
 
 def run_internal_neh_insertion(jobs, P, Ts):
     """
-    تطبيق منطق الإقحام (NEH Insertion) القياسي داخل المجموعة الواحدة.
+    Application de la logique d'insertion NEH (NEH Insertion) standard au sein d'un même groupe.
     """
     if len(jobs) <= 1:
         return jobs
     
-    # ترتيب تنازلي أولي لمهام المجموعة بناءً على مجموع أزمنة المعالجة
+    # Tri décroissant initial des tâches du groupe selon la somme des temps de traitement
     job_sums = np.sum(P[jobs, :], axis=1)
     sorted_indices = np.argsort(job_sums)[::-1]
     sorted_jobs = [jobs[i] for i in sorted_indices]
     
-    # بدء عملية الإقحام
+    # Début du processus d'insertion
     best_seq = [sorted_jobs[0]]
     
     for i in range(1, len(sorted_jobs)):
@@ -70,17 +70,17 @@ def run_internal_neh_insertion(jobs, P, Ts):
 
 def run_g_neh_s_interface(P_df, Ts_df, Incompat_df):
     """
-    الدالة التنفيذية الكبرى التي يتم استدعاؤها من زر الجلسة في Streamlit.
-    تستقبل كائنات الـ DataFrame، تحولها إلى مصفوفات رقمية، وتنفذ الـ G-NEH-S الكامل.
+    Fonction principale d'exécution appelée depuis le bouton de la session dans Streamlit.
+    Elle reçoit les objets DataFrame, les convertit en matrices numériques et exécute le G-NEH-S complet.
     """
-    # تحويل البيانات إلى مصفوفات numpy
+    # Conversion des données en matrices numpy
     P = P_df.values
     Ts = Ts_df.values
     Y = Incompat_df.values
     
     num_jobs = P.shape[0]
     
-    # --- 1. تكوين المجموعات (بناءً على التوافق Y) ---
+    # --- 1. Constitution des groupes (selon la compatibilité Y) ---
     groups = []
     visited = np.zeros(num_jobs, dtype=bool)
     
@@ -96,7 +96,7 @@ def run_g_neh_s_interface(P_df, Ts_df, Incompat_df):
             
     num_groups = len(groups)
     
-    # --- 2. ترتيب المهام داخل كل مجموعة (NEH Insertion) ---
+    # --- 2. Ordonnancement des tâches dans chaque groupe (NEH Insertion) ---
     ordered_groups = []
     group_total_p = []
     
@@ -105,18 +105,18 @@ def run_g_neh_s_interface(P_df, Ts_df, Incompat_df):
         ordered_seq = run_internal_neh_insertion(current_jobs, P, Ts)
         ordered_groups.append(ordered_seq)
         
-        # حساب مجموع Pij للمجموعة لاستخدامه في الترتيب الخطي
+        # Calcul de la somme des Pij du groupe pour l'utiliser dans le tri linéaire
         total_p = np.sum(P[current_jobs, :])
         group_total_p.append(total_p)
         
-    # --- 3. الدمج الخطي للمجموعات (حسب مجموع Pij تنازلياً) ---
+    # --- 3. Fusion linéaire des groupes (par somme des Pij décroissante) ---
     group_priority = np.argsort(group_total_p)[::-1]
     
     final_seq_0_based = []
     for g_idx in group_priority:
         final_seq_0_based.extend(ordered_groups[g_idx])
         
-    # --- 4. التحويل إلى 1-based index ليتوافق مع أرقام المنتجات في واجهتك (Job 1, Job 2...) ---
+    # --- 4. Conversion en indexation à partir de 1 pour correspondre aux numéros de produits de l'interface (Job 1, Job 2...) ---
     final_seq_1_based = [job + 1 for job in final_seq_0_based]
     
     return final_seq_1_based, num_groups

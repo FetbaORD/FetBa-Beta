@@ -83,7 +83,7 @@ st.set_page_config(page_title="Ordonancement de la production", layout="wide")
 
 st.title("Ordonancement de la production")
 
-# 🎨 استدعاء ملف الـ CSS الخارجي لتطبيق الظلال والمؤثرات الجمالية
+# 🎨 Appel du fichier CSS externe pour appliquer les ombres et effets esthétiques
 with open("style.css", "r", encoding="utf-8") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
@@ -92,38 +92,38 @@ st.markdown("""
 <style>
 
 /* ================================
-   🎨 ألوان أزرار الخوارزميات
+   🎨 Couleurs des boutons d'algorithmes
    ================================ */
 
-/* الزر 1 - G-NEH-S */
+/* Bouton 1 - G-NEH-S */
 div[data-testid="stPopover"] button:nth-of-type(1) {
     background-color: #2563EB !important;
     color: white !important;
     border: none !important;
 }
 
-/* الزر 2 - GA + G-NEH-S */
+/* Bouton 2 - GA + G-NEH-S */
 div[data-testid="stPopover"] button:nth-of-type(2) {
     background-color: #7C3AED !important;
     color: white !important;
     border: none !important;
 }
 
-/* الزر 3 - Génetique Robuste */
+/* Bouton 3 - Génetique Robuste */
 div[data-testid="stPopover"] button:nth-of-type(3) {
     background-color: #0891B2 !important;
     color: white !important;
     border: none !important;
 }
 
-/* الزر 4 - GA */
+/* Bouton 4 - GA */
 div[data-testid="stPopover"] button:nth-of-type(4) {
     background-color: #059669 !important;
     color: white !important;
     border: none !important;
 }
 
-/* الزر 5 - MILP / Algorithme 5 */
+/* Bouton 5 - MILP / Algorithme 5 */
 div[data-testid="stPopover"] button:nth-of-type(5) {
     background-color: #D97706 !important;
     color: white !important;
@@ -131,7 +131,7 @@ div[data-testid="stPopover"] button:nth-of-type(5) {
 }
 
 
-/* تأثير Hover */
+/* Effet Hover */
 div[data-testid="stPopover"] button:hover {
     filter: brightness(1.12);
     transform: translateY(-2px);
@@ -139,7 +139,7 @@ div[data-testid="stPopover"] button:hover {
 }
 
 
-/* شكل احترافي موحد */
+/* Style professionnel unifié */
 div[data-testid="stPopover"] button {
     border-radius: 9px !important;
     font-weight: 600 !important;
@@ -151,7 +151,7 @@ div[data-testid="stPopover"] button {
 
 
 # =========================
-# 1. إدخال الحجم
+# 1. Saisie de la taille
 # =========================
 st.sidebar.header("⚙️ Paramètres")
 # =========================
@@ -167,19 +167,19 @@ simulation_speed = st.sidebar.slider(
 )
 
 if "sim_start_time" in st.session_state:
-	# الوقت الحقيقي المنقضي
+	# Temps réel écoulé
 	real_elapsed_time = (
 		datetime.now() - st.session_state.sim_start_time
 	).total_seconds()
-	# الوقت المحاكى بعد تطبيق السرعة
+	# Temps simulé après application de la vitesse
 	sim_duration = real_elapsed_time * simulation_speed
 	
 	minutes = int(sim_duration // 60)
 	seconds = int(sim_duration % 60)
 	
 	st.info(
-		f"⏱️ Simulation Time: {minutes:02d} min {seconds:02d} sec "
-		f" | Speed: {simulation_speed}x"
+		f"⏱️ Temps de simulation : {minutes:02d} min {seconds:02d} sec "
+		f" | Vitesse : {simulation_speed}x"
 	)
 else:
     st.warning("La simulation n'a pas été lancée depuis la page d'accueil.")
@@ -194,10 +194,10 @@ else:
 
 
 # ==========================================================
-# تحديث المحاكاة حسب سرعة المحاكاة
-# 1x  = تحديث كل 1 ثانية
-# 2x  = تحديث كل 0.5 ثانية
-# 10x = تحديث كل 0.1 ثانية
+# Mise à jour de la simulation selon la vitesse de simulation
+# 1x  = mise à jour toutes les 1 seconde
+# 2x  = mise à jour toutes les 0,5 seconde
+# 10x = mise à jour toutes les 0,1 seconde
 # ==========================================================
 refresh_interval = max(100, int(5000 / simulation_speed))
 
@@ -207,16 +207,16 @@ st_autorefresh(
 )
 
 # =========================
-# 2. زر إنشاء الجداول
+# 2. Bouton de création des tables
 # =========================
 if st.button("Crée des tables"):
 
-    # حفظ الحجم
+    # Sauvegarde de la taille
     st.session_state.n_jobs = n_jobs
     st.session_state.n_machines = n_machines
 
     # =========================
-    # 3. إنشاء Pij
+    # 3. Création de Pij
     # =========================
     Pij = pd.DataFrame(
         np.random.randint(1, 99, size=(n_jobs, n_machines)),
@@ -228,7 +228,7 @@ if st.button("Crée des tables"):
 
 
     # =========================
-    # 4. إنشاء Ts (setup matrix)
+    # 4. Création de Ts (matrice de setup)
     # =========================
     Ts = pd.DataFrame(
         np.random.randint(1, 99, size=(n_jobs, n_jobs)),
@@ -236,8 +236,8 @@ if st.button("Crée des tables"):
         index=[f"Job {i+1}" for i in range(n_jobs)]
     )
     
-   # أضف هذا الكود مباشرة بعد إنشاء مصفوفة Ts
-   # np.where(شرط, القيمة إذا تحقق, القيمة إذا لم يتحقق)
+   # Ajouter ce code juste après la création de la matrice Ts
+   # np.where(condition, valeur si vraie, valeur si fausse)
     incomp_values = np.where(Ts.values > 0, 1, 0)
     Incompatibilite = pd.DataFrame(
         incomp_values,
@@ -271,19 +271,19 @@ if st.button("Crée des tables"):
 
 
 
-    # تخزين في session_state
+    # Stockage dans session_state
     st.session_state.Pij = Pij
     st.session_state.Ts = Ts
-    st.session_state.Incompatibilite = Incompatibilite  # أضف هذا السطر للتخزين
+    st.session_state.Incompatibilite = Incompatibilite  # Ajouter cette ligne pour le stockage
     
-    st.success("تم إنشاء الجداول بنجاح")
+    st.success("Tables créées avec succès")
 
 # =========================
-# 6. عرض الجداول
+# 6. Affichage des tables
 # =========================
 
 # ==========================================================
-# 📂 استيراد المصفوفات من ملفات TXT منفصلة
+# 📂 Import des matrices depuis des fichiers TXT séparés
 # ==========================================================
 
 def read_matrix_txt(uploaded_file):
@@ -303,7 +303,7 @@ def read_matrix_txt(uploaded_file):
     if not rows:
         raise ValueError("Le fichier est vide.")
 
-    # التأكد من أن جميع الصفوف لها نفس الطول
+    # Vérifier que toutes les lignes ont la même longueur
     n_cols = len(rows[0])
 
     if any(len(row) != n_cols for row in rows):
@@ -316,7 +316,7 @@ if "Pij" in st.session_state:
     col_title, col_upload = st.columns([2, 1])
 
 with col_title:
-    st.subheader("📊 Pij (Processing Time)")
+    st.subheader("📊 Pij (Temps de traitement)")
 
 with col_upload:
     pij_file = st.file_uploader(
@@ -356,7 +356,7 @@ if "Ts" in st.session_state:
     col_title, col_upload = st.columns([5, 1])
 
 with col_title:
-    st.subheader("Ts (Setup / Sterilization Time)")
+    st.subheader("Ts (Temps de préparation / stérilisation)")
 
 with col_upload:
     ts_file = st.file_uploader(
@@ -376,7 +376,7 @@ if ts_file is not None:
 
         st.session_state.Ts = Ts
 
-        # تحديث Incompatibilité automatiquement
+        # Mise à jour automatique de Incompatibilité
         st.session_state.Incompatibilite = pd.DataFrame(
             np.where(matrix > 0, 1, 0),
             columns=Ts.columns,
@@ -394,7 +394,7 @@ if ts_file is not None:
 )
     st.session_state.Ts = edited_ts
 
-# تحديث مصفوفة عدم التوافق فورياً بناءً على التعديل الجديد للمستخدم
+# Mise à jour immédiate de la matrice d'incompatibilité selon la dernière modification de l'utilisateur
     st.session_state.Incompatibilite = pd.DataFrame(
         np.where(edited_ts.values > 0, 1, 0),
         columns=edited_ts.columns,
@@ -403,16 +403,16 @@ if ts_file is not None:
 
 
 # ==========================================
-# أضف هذا الكود مباشرة تحت نهاية شرط عرض مصفوفة Ts
+# Ajouter ce code juste sous la fin de la condition d'affichage de la matrice Ts
 # ==========================================
 if "Incompatibilite" in st.session_state:
 
-    st.subheader("❌ Incompatibilité Matrix (0: Compatible, 1: Incompatible)")
+    st.subheader("❌ Matrice d'incompatibilité (0 : compatible, 1 : incompatible)")
     edited_incomp = st.data_editor(
         st.session_state.Incompatibilite,
         key="Incompatibilite_editor",
         use_container_width=True,
-        disabled=True # مصفوفة مرآة للعرض فقط، إذا أردت السماح للمستخدم بتعديلها احذف هذا السطر
+        disabled=True # matrice miroir en lecture seule ; supprimer cette ligne pour autoriser la modification par l'utilisateur
     )
     st.session_state.Incompatibilite = edited_incomp
     
@@ -428,7 +428,7 @@ if "Incompatibilite" in st.session_state:
 
 
 # ==========================================
-# 5 & 6. Sequence (توليد وتعديل التسلسل)
+# 5 & 6. Sequence (génération et modification de la séquence)
 # ==========================================
 
 if "sequence_df" in st.session_state:
@@ -440,27 +440,27 @@ if "sequence_df" in st.session_state:
         st.subheader("Modifier la Séquence")
     
     with col_btn:
-        # استخدام popover لإنشاء قائمة منسدلة تحتوي على الخوارزميات
+        # Utilisation d'un popover pour créer une liste déroulante contenant les algorithmes
         with st.popover("Choisir Algorithme", icon=":material/alt_route:", type="primary"):
             st.write("Sélectionnez un Algorithme :")
             
-            # إنشاء الأزرار الخمسة
+            # Création des cinq boutons
             algo_choice = None
             
             
 
-            # 2. زر تشغيل الخوارزمية
+            # 2. Bouton d'exécution de l'algorithme
             if st.button("G-NEH-S", type="primary"): 
                 if "Pij" in st.session_state and "Ts" in st.session_state:
                     
-                    # تنفيذ الحسابات مستخدمين مصفوفات الـ session_state الحالية
+                    # Exécution des calculs à partir des matrices actuelles de session_state
                     optimized_seq, detected_groups = run_g_neh_s_interface(
                         st.session_state.Pij, 
                         st.session_state.Ts, 
                         st.session_state.Incompatibilite
                     )
                     
-                    # تحديث الـ session state بالتسلسل الجديد (1-based)
+                    # Mise à jour de session_state avec la nouvelle séquence (base 1)
                     current_n_jobs = len(optimized_seq)
                     st.session_state.sequence = optimized_seq
                     st.session_state.sequence_df = pd.DataFrame(
@@ -468,51 +468,51 @@ if "sequence_df" in st.session_state:
                         columns=[f"J{i+1}" for i in range(current_n_jobs)]
                     )
                     
-                    # عرض رسالة نجاح مخصصة تحتوي على عدد المجموعات المكتشفة
-                    st.success(f"✨ تم حساب G-NEH-S بنجاح! المجموعات المكتشفة: {detected_groups}")
+                    # Affichage d'un message de succès personnalisé contenant le nombre de groupes détectés
+                    st.success(f"✨ G-NEH-S calculé avec succès ! Groupes détectés: {detected_groups}")
                     st.rerun()
                 else:
-                    st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")            
+                    st.error("⚠️ Veuillez d'abord créer les tables avant de lancer l'algorithme.")            
             
             
             
             # =================================================================
-            # خيار خوارزمية (GA + G-NEH-S) التفاعلي (يتوسع وينكمش عند الضغط)
+            # Option algorithme (GA + G-NEH-S) interactive (se déplie et se replie au clic)
             # =================================================================            
-            # 1. تهيئة متغير حالة فتح وإغلاق قائمة الإعدادات في الـ session_state
+            # 1. Initialisation de la variable d'état d'ouverture/fermeture du menu de réglages dans session_state
             if "show_ga_settings" not in st.session_state:
                 st.session_state.show_ga_settings = False
 
-            # 2. الزر الرئيسي المتحكم في التوسع والانكماش
-            # عند الضغط عليه، يعكس حالته (من True إلى False والعكس) ثم يعيد تشغيل السكريبت لتحديث الواجهة
+            # 2. Bouton principal contrôlant le dépliage et le repliage
+            # Au clic, il inverse son état (de True à False et inversement) puis relance le script pour mettre à jour l'interface
             if st.button("GA + G-NEH-S", type="primary"):
                 st.session_state.show_ga_settings = not st.session_state.show_ga_settings
                 st.rerun()
 
-            # 3. البلوك الذي يظهر فقط عندما تكون الحالة True (التوسع)
+            # 3. Bloc affiché uniquement lorsque l'état est True (déplié)
             if st.session_state.show_ga_settings:
-                # نضع الإعدادات داخل حاوية متميزة بصرياً (container)
+                # On place les réglages dans un conteneur visuellement distinct (container)
                 with st.container(border=True):
                     st.markdown("#### ⚙️ Réglage des Paramètres")
                     
-                    # تهيئة قيم المعاملات الافتراضية في الـ session_state لضمان حصانتها ضد الـ Autorefresh
+                    # Initialisation des valeurs par défaut des paramètres dans session_state pour les protéger contre l'Autorefresh
                     if "ga_pop_size" not in st.session_state: st.session_state.ga_pop_size = 100
                     if "ga_n_gen" not in st.session_state: st.session_state.ga_n_gen = 200
                     if "ga_pc" not in st.session_state: st.session_state.ga_pc = 0.85
                     if "ga_pm" not in st.session_state: st.session_state.ga_pm = 0.06
 
-                    # حقول المدخلات المربوطة بمفاتيح
-                    pop_size = st.number_input("حجم المجتمع (Population Size)", min_value=4, max_value=500, step=10, key="ga_pop_size")
-                    n_gen = st.number_input("عدد الأجيال (Generations)", min_value=1, max_value=1000, step=10, key="ga_n_gen")
-                    pc = st.slider("معدل العبور (pc)", min_value=0.0, max_value=1.0, step=0.05, key="ga_pc")
-                    pm = st.slider("معدل الطفرة (pm)", min_value=0.0, max_value=1.0, step=0.01, key="ga_pm")
+                    # Champs de saisie liés à des clés
+                    pop_size = st.number_input("Taille de la population", min_value=4, max_value=500, step=10, key="ga_pop_size")
+                    n_gen = st.number_input("Nombre de générations", min_value=1, max_value=1000, step=10, key="ga_n_gen")
+                    pc = st.slider("Taux de croisement (pc)", min_value=0.0, max_value=1.0, step=0.05, key="ga_pc")
+                    pm = st.slider("Taux de mutation (pm)", min_value=0.0, max_value=1.0, step=0.01, key="ga_pm")
 
-                    st.write("") # مسافة تجميلية
+                    st.write("") # espacement esthétique
 
-                    # زر التشغيل الفعلي للخوارزمية داخل الحاوية المتوسعة
-                    if st.button("Run Algorithm", type="secondary", key="run_hybrid_ga_btn"):
+                    # Bouton d'exécution effective de l'algorithme dans le conteneur déplié
+                    if st.button("Lancer l'algorithme", type="secondary", key="run_hybrid_ga_btn"):
                         if "Pij" in st.session_state and "Ts" in st.session_state:
-                            with st.spinner("جاري تشغيل الخوارزمية الهجينة..."):
+                            with st.spinner("Exécution de l'algorithme hybride en cours..."):
                                 
                                 from GA_G_NEH_S import run_ga_g_neh_s_interface
                                 optimized_seq, best_cmax = run_ga_g_neh_s_interface(
@@ -532,14 +532,14 @@ if "sequence_df" in st.session_state:
                                     columns=[f"J{i+1}" for i in range(current_n_jobs)]
                                 )
                                 
-                                st.success(f"✨ تم الحساب بنجاح! قيمة Cmax المحققة: {best_cmax} ثانية")
+                                st.success(f"✨ Calcul réussi ! Valeur de Cmax obtenue : {best_cmax} secondes")
                                 st.rerun()
                         else:
-                            st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
+                            st.error("⚠️ Veuillez d'abord créer les tables avant de lancer l'algorithme.")
 
 
 # =================================================================
-            # خيار خوارزمية (Génetique Robuste) المطور والمنعزل والمقاوم للـ Autorefresh
+            # Option algorithme (Génetique Robuste) amélioré, isolé et résistant à l'Autorefresh
             # ================================================================= 
             if "show_robust_settings" not in st.session_state:
                 st.session_state.show_robust_settings = False
@@ -558,7 +558,7 @@ if "sequence_df" in st.session_state:
                             st.session_state.Incompatibilite
                         )
                         
-                        # استقبال النتيجة المكتملة القادمة من الخلفية وتطبيقها على الجداول فوراً
+                        # Réception du résultat complet venant de l'arrière-plan et application immédiate aux tables
                         if "optimized_robust_seq" in st.session_state:
                             robust_seq = st.session_state.pop("optimized_robust_seq")
                             current_n_jobs = len(robust_seq)
@@ -567,10 +567,10 @@ if "sequence_df" in st.session_state:
                                 [robust_seq], 
                                 columns=[f"J{i+1}" for i in range(current_n_jobs)]
                             )
-                            st.success("🏆 تم تطبيق التسلسل المتين الأفضل بنجاح على المخططات!")
+                            st.success("🏆 Meilleure séquence robuste appliquée avec succès aux diagrammes !")
                             st.rerun()
                     else:
-                        st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل الخوارزمية.")
+                        st.error("⚠️ Veuillez d'abord créer les tables avant de lancer l'algorithme.")
             # =================================================================            
 
 
@@ -585,7 +585,7 @@ if "sequence_df" in st.session_state:
             
             if st.button("MILP", type="primary"):
                 if "Pij" not in st.session_state or "Ts" not in st.session_state or "Incompatibilite" not in st.session_state:
-                    st.error("⚠️ الرجاء إنشاء الجداول أولاً قبل تشغيل Algorithme 5.")
+                    st.error("⚠️ Veuillez d'abord créer les tables avant de lancer Algorithme 5.")
                 else:
                     from MILP import solve_algorithm5_cplex
 
@@ -613,7 +613,7 @@ if "sequence_df" in st.session_state:
 
 
 	
-    # عرض الجدول القابل للتعديل
+    # Affichage du tableau modifiable
     edited_seq = st.data_editor(
         st.session_state.sequence_df,
         key="Seq_editor",
@@ -625,12 +625,12 @@ if "sequence_df" in st.session_state:
             st.session_state.sequence_df = edited_seq
             st.session_state.sequence = [int(x) for x in edited_seq.values.flatten().tolist()]
         except ValueError:
-            st.error("الرجاء إدخال أرقام فقط")
+            st.error("Veuillez saisir uniquement des nombres")
 
 
 
 # =========================
-# 7. حساب و عرض Gantt Chart
+# 7. Calcul et affichage du Gantt Chart
 # =========================
 if "machine_faults" not in st.session_state:
     st.session_state.machine_faults = {f"Machine {i+1}": [] for i in range(5)}
@@ -638,41 +638,41 @@ if "machine_faults" not in st.session_state:
 if "Pij" in st.session_state and "sequence" in st.session_state:
     st.subheader("Gantt Chart (Progressif avec gestion des pannes)")
 
-    # استخراج البيانات من session_state
+    # Extraction des données depuis session_state
     pij_data = st.session_state.Pij.values
     ts_data = st.session_state.Ts.values
-    sequence = [int(i) - 1 for i in st.session_state.sequence] # تحويل التسلسل لـ index (0-based)
+    sequence = [int(i) - 1 for i in st.session_state.sequence] # conversion de la séquence en index (base 0)
     
     n_j = len(sequence)
     n_m = st.session_state.n_machines
 
-    # مصفوفات لتخزين أوقات البدء والنهاية المعدلة
+    # Matrices pour stocker les heures de début et de fin ajustées
     start_times = np.zeros((n_j, n_m))
     end_times = np.zeros((n_j, n_m))
 
-    # الحصول على الوقت الحالي للمحاكاة (ثواني)
+    # Obtention du temps de simulation actuel (secondes)
     if "sim_start_time" in st.session_state:
         real_elapsed_time = (
             datetime.now() - st.session_state.sim_start_time
         ).total_seconds()
-        # تطبيق سرعة المحاكاة
+        # Application de la vitesse de simulation
         current_sim_time = real_elapsed_time * simulation_speed
     else:
         current_sim_time = 0
 
-    # حساب الجدولة الديناميكية (Flow Shop مع إزاحة الأعطال)
+    # Calcul de l'ordonnancement dynamique (Flow Shop avec décalage dû aux pannes)
     for j_idx, job_id in enumerate(sequence):
         for m in range(n_m):
-            # وقت المعالجة الأصلي المطلوب
+            # Temps de traitement d'origine requis
             proc_time = pij_data[job_id, m]
             
-            # وقت الإعداد (Setup)
+            # Temps de préparation (Setup)
             setup_time = 0
             if j_idx > 0:
                 prev_job_id = sequence[j_idx - 1]
                 setup_time = ts_data[prev_job_id, job_id]
 
-            # 1. تحديد وقت البدء المبدئي (المنطق الكلاسيكي)
+            # 1. Détermination de l'heure de début initiale (logique classique)
             if j_idx == 0 and m == 0:
                 s_t = 0
             elif j_idx == 0: 
@@ -682,53 +682,53 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
             else: 
                 s_t = max(end_times[j_idx-1, m] + setup_time, end_times[j_idx, m-1])
             
-            # 2. حـسـاب تأثير الأعطال المـتداخلة وإزاحـة الـوقـت (الجديد ومربط الفرس)
+            # 2. Calcul de l'effet des pannes imbriquées et décalage du temps (la nouveauté et le point clé)
             machine_key = f"Machine {m+1}"
             if "machine_faults" in st.session_state and machine_key in st.session_state.machine_faults:
                 faults = st.session_state.machine_faults[machine_key]
                 
-                # سنقوم بمحاكاة مرور الوقت خطوة بخطوة للعملية للتأكد من تأثرها بأي عطل يحدث أثنائها
+                # On simule l'écoulement du temps pas à pas pour vérifier si l'opération est affectée par une panne survenant pendant son exécution
                 current_start = s_t
                 remaining_proc_time = proc_time
                 current_time_pointer = current_start
                 
-                # مصفوفة الأعطال مرتبة حسب وقت البداية
+                # Tableau des pannes trié par heure de début
                 sorted_faults = sorted(faults, key=lambda x: x["start"])
                 
                 for fault in sorted_faults:
                     f_start = fault["start"]
                     f_end = fault["end"] if fault["end"] is not None else current_sim_time
                     
-                    # إذا حدث العطل أثناء تشغيل المهمة (أو تداخل مع وقت بدئها المتوقع)
-                    # نقوم بزيادة وقت النهاية بمقدار مدة العطل
+                    # Si la panne survient pendant l'exécution de la tâche (ou chevauche son heure de début prévue)
+                    # On augmente l'heure de fin de la durée de la panne
                     if f_start < current_time_pointer + remaining_proc_time and f_end > current_time_pointer:
-                        # حساب الجزء من العطل الذي يقع داخل فترة تنفيذ المهمة
+                        # Calcul de la part de la panne située dans la période d'exécution de la tâche
                         overlap_start = max(f_start, current_time_pointer)
                         overlap_end = min(f_end, current_time_pointer + remaining_proc_time)
                         
-                        # مدة العطل الذي تسبب في إيقاف الآلة
+                        # Durée de la panne ayant provoqué l'arrêt de la machine
                         fault_duration = f_end - f_start
                         
-                        # إزاحة الوقت: المهمة ستتأخر بمقدار العطل بالكامل
+                        # Décalage du temps : la tâche sera retardée de la durée totale de la panne
                         current_time_pointer += fault_duration
 
-                # وقت البدء النهائي ووقت النهاية بعد حساب تأخيرات الأعطال
+                # Heure de début finale et heure de fin après prise en compte des retards dus aux pannes
                 start_times[j_idx, m] = current_start
                 end_times[j_idx, m] = current_time_pointer + remaining_proc_time
             else:
-                # إذا لم يكن هناك أعطال للآلة، الحساب طبيعي
+                # S'il n'y a pas de pannes pour la machine, le calcul est normal
                 start_times[j_idx, m] = s_t
                 end_times[j_idx, m] = s_t + proc_time
 
 
-    # تجهيز بيانات الرسم لـ Plotly
+    # Préparation des données du graphique pour Plotly
     gantt_data = []
     for j_idx, job_id in enumerate(sequence):
         for m in range(n_m):
             if start_times[j_idx, m] <= current_sim_time:
                 display_end = min(end_times[j_idx, m], current_sim_time)
                 
-                # إضافة المهمة العادية
+                # Ajout de la tâche normale
                 gantt_data.append(dict(
                     Task=f"Machine {m+1}",
                     Start=start_times[j_idx, m],
@@ -736,7 +736,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                     Resource=f"Job {job_id + 1}"
                 ))
 
-    # إضافة فترات الأعطال كمربعات حمراء واضحة في المخطط لتبين سبب الفجوة الزمنية
+    # Ajout des périodes de panne sous forme de rectangles rouges bien visibles dans le diagramme pour expliquer l'écart temporel
     if "machine_faults" in st.session_state:
         for machine_name, faults in st.session_state.machine_faults.items():
             try:
@@ -751,7 +751,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
                                 Task=f"Machine {m_num}",
                                 Start=f_start,
                                 Finish=min(f_end, current_sim_time),
-                                Resource="⚠️ عطل الآلة (Breakdown)"
+                                Resource="⚠️ Panne de la machine"
                             ))
             except:
                 pass
@@ -759,12 +759,12 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
     if gantt_data:
         df_gantt = pd.DataFrame(gantt_data)
         
-        # تحويل الثواني إلى تواريخ وهمية لـ Plotly
+        # Conversion des secondes en dates fictives pour Plotly
         df_gantt['Start'] = pd.to_datetime(df_gantt['Start'], unit='s')
         df_gantt['Finish'] = pd.to_datetime(df_gantt['Finish'], unit='s')
 
-        # تخصيص الألوان (الوظائف ألوان عشوائية، والعطل أحمر دائماً)
-        color_discrete_map = {" عطل الآلة (Breakdown)": "#ff0000"}
+        # Personnalisation des couleurs (couleurs aléatoires pour les tâches, rouge toujours pour les pannes)
+        color_discrete_map = {"⚠️ Panne de la machine": "#ff0000"}
 
         fig = px.timeline(
             df_gantt, 
@@ -773,16 +773,16 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
             y="Task", 
             color="Resource",
             color_discrete_map=color_discrete_map,
-            title="التنفيذ الديناميكي المباشر (تأثير الأعطال وتأخير المهام)"
+            title="Exécution dynamique en direct (effet des pannes et retards des tâches)"
         )
         
         fig.update_yaxes(autorange="reversed")
-        fig.update_layout(xaxis_title="الزمن (ثواني)", showlegend=True)
+        fig.update_layout(xaxis_title="Temps (secondes)", showlegend=True)
         fig.update_layout(xaxis=dict(tickformat="%M:%S"))
         
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.write("بانتظار بدء المحاكاة أو وصول الوقت للوظيفة الأولى...")
+        st.write("En attente du démarrage de la simulation ou de l'arrivée du temps de la première tâche...")
 
 
 
@@ -792,20 +792,20 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 
 
 # ==========================================
-#  الجزء المصحح والمطور: حساب وعرض الكامل والثابت باستخدام Plotly السريعة والمستقرة
+#  Partie corrigée et améliorée : calcul et affichage complets et fixes avec Plotly, rapide et stable
 # ==========================================
 st.write("")
 
-# 1. تهيئة متغير الحالة في الجلسة إذا لم يكن موجوداً
+# 1. Initialisation de la variable d'état dans la session si elle n'existe pas
 if "show_complete_gantt" not in st.session_state:
     st.session_state.show_complete_gantt = False
 
-# 2. أزرار التحكم بالعرض في سطر أنيق ومتباعد
-# أضفنا gap="large" لضمان وجود مسافة أمان واضحة بين الأعمدة
+# 2. Boutons de contrôle de l'affichage sur une ligne élégante et espacée
+# Ajout de gap="large" pour garantir une distance de sécurité claire entre les colonnes
 col_gantt_btn1, col_gantt_btn2 = st.columns([1, 1], gap="large")
 
 with col_gantt_btn1:
-    if st.button("Afficher Gantt Complete", type="primary"):
+    if st.button("Afficher le Gantt complet", type="primary"):
         st.session_state.show_complete_gantt = True
 
 with col_gantt_btn2:
@@ -814,10 +814,10 @@ with col_gantt_btn2:
             st.session_state.show_complete_gantt = False
             st.rerun()
 
-# 3. إذا كانت الحالة True، يتم رسم المخطط الكامل فوراً
+# 3. Si l'état est True, le diagramme complet est tracé immédiatement
 if st.session_state.show_complete_gantt:
     
-    # دالة حساب الجدولة الكاملة الثابتة (بدون اقتطاع الوقت الحالي)
+    # Fonction de calcul de l'ordonnancement complet fixe (sans troncature au temps actuel)
     def solve_flow_shop_static_plotly(pij, ts, job_sequence):
         n_jobs, m_machines = pij.shape
         st_times = np.zeros((n_jobs, m_machines))
@@ -844,24 +844,24 @@ if st.session_state.show_complete_gantt:
 
         return st_times, en_times, n_jobs, m_machines
 
-    # جلب البيانات الحية وتمريرها للحساب
+    # Récupération des données en direct et transmission au calcul
     static_pij = st.session_state.Pij.values
     static_ts = st.session_state.Ts.values
     static_seq = [int(x) - 1 for x in st.session_state.sequence]
     
     s_times, e_times, nj, nm = solve_flow_shop_static_plotly(static_pij, static_ts, static_seq)
     
-    # بناء مصفوفة البيانات الرسمية لـ Plotly
+    # Construction du tableau de données officiel pour Plotly
     static_gantt_data = []
     
     for i, job_idx in enumerate(static_seq):
         for m in range(nm):
-            # 1. إضافة وقت الإعداد (Setup Time) باللون الرمادي إذا وجد
+            # 1. Ajout du temps de préparation (Setup Time) en gris s'il existe
             if i > 0:
                 prev_job_idx = static_seq[i-1]
                 setup_duration = static_ts[prev_job_idx, job_idx]
                 if setup_duration > 0:
-                    # وقت بداية الإعداد هو وقت فراغ الآلة السابق (والذي يساوي وقت بدء المهمة الحالية ناقص وقت الإعداد)
+                    # L'heure de début du setup est l'heure de libération de la machine précédente (égale à l'heure de début de la tâche actuelle moins le temps de setup)
                     setup_start = s_times[job_idx, m] - setup_duration
                     if setup_start >= 0:
                         static_gantt_data.append(dict(
@@ -871,7 +871,7 @@ if st.session_state.show_complete_gantt:
                             Type="Temps d'opération (Setup)"
                         ))
             
-            # 2. إضافة فترة تشغيل المنتج العادية
+            # 2. Ajout de la période de fonctionnement normale du produit
             static_gantt_data.append(dict(
                 Machine=f"Machine {m+1}",
                 Start=pd.to_datetime(s_times[job_idx, m], unit='s'),
@@ -882,7 +882,7 @@ if st.session_state.show_complete_gantt:
     if static_gantt_data:
         df_static_gantt = pd.DataFrame(static_gantt_data)
         
-        # خريطة ألوان مخصصة: تجعل وقت الإعداد رمادياً داكناً ومميزاً والمنتجات بألوانها المعتادة
+        # Palette personnalisée : le temps de setup en gris foncé distinctif et les produits avec leurs couleurs habituelles
         color_map = {"Temps d'opération (Setup)": "#555555"}
         
         fig_static = px.timeline(
@@ -892,19 +892,19 @@ if st.session_state.show_complete_gantt:
             y="Machine",
             color="Type",
             color_discrete_map=color_map,
-            # استخدمنا وسم span لتلوين القيمة باللون الأحمر كمثال
-            title=f"Diagramme de Gantt Complet Static | Cmax = <span style='color:red; font-weight:bold;'>{int(np.max(e_times))}</span> Seconds"
+            # Utilisation de la balise span pour colorer la valeur en rouge à titre d'exemple
+            title=f"Diagramme de Gantt Complet statique | Cmax = <span style='color:red; font-weight:bold;'>{int(np.max(e_times))}</span> secondes"
         )
         
         fig_static.update_yaxes(autorange="reversed")
         fig_static.update_layout(
-            xaxis_title="الزمن الكلي للجدولة (دقائق:ثواني)",
+            xaxis_title="Temps total de l'ordonnancement (minutes:secondes)",
             xaxis=dict(tickformat="%M:%S"),
             showlegend=True,
             height=400
         )
         
-        # عرض المخطط فوراً وبثبات كامل
+        # Affichage immédiat du diagramme en toute stabilité
         st.plotly_chart(fig_static, use_container_width=True, key="static_gantt_plotly")
 # ==========================================================
 # 📊 TAUX D'UTILISATION COMPLET DES MACHINES
@@ -948,7 +948,7 @@ if st.session_state.show_machine_utilization:
         setup_time = 0.0
 
         # ------------------------------------------
-        # Temps Processing + TS
+        # Temps de traitement + TS
         # ------------------------------------------
         for i, job_idx in enumerate(static_seq):
 
@@ -990,7 +990,7 @@ if st.session_state.show_machine_utilization:
                     breakdown_time += f_end - f_start
 
         # ------------------------------------------
-        # Idle = temps restant
+        # Inactivité = temps restant
         # ------------------------------------------
         idle_time = Cmax - (
             processing_time
@@ -1035,7 +1035,7 @@ if st.session_state.show_machine_utilization:
 
             labels = [
                 "Machine en marche",
-                "Idle",
+                "Inactif",
                 "TS",
                 "Arrêt"
             ]
@@ -1078,25 +1078,25 @@ if st.session_state.show_machine_utilization:
 
 
 # =========================
-# 8. لوحة متابعة حالة الآلات والمنتجات المنتهية
+# 8. Tableau de suivi de l'état des machines et des produits terminés
 # =========================
 st.divider()
 
-# تأكد أولاً من أن الجداول والتسلسل قد تم إنشاؤهم بنجاح قبل عرض اللوحة
+# S'assurer d'abord que les tables et la séquence ont été créées avec succès avant d'afficher le tableau
 if "Pij" in st.session_state and "sequence" in st.session_state:
     
-    # جلب المتغيرات بشكل آمن ليتعرف عليها بايثون في هذا النطاق
-    sequence = [int(i) - 1 for i in st.session_state.sequence] # تحويل التسلسل لـ index (0-based)
+    # Récupération sûre des variables pour que Python les reconnaisse dans cette portée
+    sequence = [int(i) - 1 for i in st.session_state.sequence] # conversion de la séquence en index (base 0)
     n_machines = st.session_state.n_machines
 
-# 1. تغيير التقسيم إلى 3 أعمدة
+# 1. Passage à 3 colonnes
     col1, col2, col3 = st.columns([1, 1.5, 1.2])
 
     with col1:
         st.subheader("🖥️ état actuel des machines")
         machine_status = []
         for m in range(n_machines):
-            current_job = "arreté (Idle)"
+            current_job = "arrêté (inactif)"
             for j_idx, job_id in enumerate(sequence):
                 if start_times[j_idx, m] <= current_sim_time <= end_times[j_idx, m]:
                     current_job = f"🔨 Job {job_id + 1}"
@@ -1119,9 +1119,9 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
         if completed_jobs:
             st.dataframe(pd.DataFrame(completed_jobs), use_container_width=True)
         else:
-            st.info("لا توجد منتجات مكتملة بالكامل حتى الآن.")
+            st.info("Aucun produit entièrement terminé pour le moment.")
 
-    # 2. العمود الثالث الجديد (يتحكم به زر Gantt Complete)
+    # 2. Nouvelle troisième colonne (contrôlée par le bouton Gantt Complete)
     with col3:
         if st.session_state.get("show_complete_gantt", False):
             st.subheader("📋 Total TS / Machine")
@@ -1153,7 +1153,7 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
 	
 
     # =========================
-    # 9. إحصائيات سريعة
+    # 9. Statistiques rapides
     # =========================
     if completed_jobs:
         progress = len(completed_jobs) / len(sequence)
@@ -1161,5 +1161,5 @@ if "Pij" in st.session_state and "sequence" in st.session_state:
         st.write(f"📊 taux d'avancement global: {progress*100:.1f}%")
 
 else:
-    # رسالة تظهر للمستخدم إذا فتح الصفحة لأول مرة قبل توليد البيانات
+    # Message affiché à l'utilisateur à l'ouverture de la page pour la première fois avant la génération des données
     st.info("⏳ Veuillez d'abord cliquer sur le bouton « Créer des tables » pour générer des données et afficher l'état de la machine.")

@@ -1,7 +1,7 @@
 import streamlit as st
 from auth_pages import sign_in_page, sign_up_page, load_css
 
-# 1. Initialisation de l'état de la session (تمت إضافة الـ username هنا)
+# 1. Initialisation de l'état de la session (le nom d'utilisateur est inclus)
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
@@ -11,7 +11,7 @@ if "username" not in st.session_state:
 def logout():
     st.session_state.logged_in = False
     st.session_state.username = None
-    # ❌ تم حذف st.rerun() لمنع ظهور التحذير السابق نهائياً 🎉
+    # (pas de st.rerun() ici pour éviter l'avertissement)
 
 # ---- 🛡️ Gestion de la navigation conditionnelle et protection des pages ----
 
@@ -37,12 +37,12 @@ else:
     page_5 = st.Page("pages/Contact Us.py" , title="Contact Us", icon=":material/contact_support:")
 
 
-    # 💡 نصيحة ذكية: قمنا بنقل أزرار ومعلومات المستخدم إلى داخل الـ Sidebar هنا
-    # حتى تظهر دائماً في أسفل أو أعلى القائمة الجانبية بشكل أنيق وقبل تشغيل الصفحة
+    # 💡 Les boutons et informations de l'utilisateur sont placés dans la barre latérale
+    # afin qu'ils s'affichent toujours proprement avant l'exécution de la page
     with st.sidebar:
         st.markdown(f"### :material/account_circle: {st.session_state.username}")
         st.button("Se déconnecter", on_click=logout, use_container_width=True, type="secondary")
-        st.markdown("---") # خط فاصل جمالي
+        st.markdown("---") # Séparateur décoratif
 
     # Regroupement des pages du projet dans la liste de navigation
     pg = st.navigation({
