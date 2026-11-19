@@ -818,7 +818,10 @@ with col_gantt_btn2:
 if st.session_state.show_complete_gantt:
     
     # Fonction de calcul de l'ordonnancement complet fixe (sans troncature au temps actuel)
-    def solve_flow_shop_static_plotly(pij, ts, job_sequence):
+    def solve_flow_shop_static_plotly(pij, ts, job_sequence, machine_faults=None, now_sim=0.0):
+        # machine_faults : pannes enregistrées {"Machine k": [{"start":..., "end":...}]}
+        # Même logique que le Gantt en direct : une panne qui chevauche l'exécution d'une tâche la retarde de la durée de la panne.
+        machine_faults = machine_faults or {}
         n_jobs, m_machines = pij.shape
         st_times = np.zeros((n_jobs, m_machines))
         en_times = np.zeros((n_jobs, m_machines))
@@ -839,7 +842,15 @@ if st.session_state.show_complete_gantt:
                 else:
                     st_times[job_idx, m] = max(ready_after_setup, en_times[job_idx, m-1])
                 
-                en_times[job_idx, m] = st_times[job_idx, m] + p_time
+                # Prise en compte des pannes de la machine
+                pointer = st_times[job_idx, m]
+                for fault in sorted(machine_faults.get(f"Machine {m+1}", []), key=lambda x: x["start"]):
+                    f_start = fault["start"]
+                    f_end = fault["end"] if fault["end"] is not None else now_sim
+                    if f_start < pointer + p_time and f_end > pointer:
+                        pointer += (f_end - f_start)
+
+                en_times[job_idx, m] = pointer + p_time
                 machine_free_time[m] = en_times[job_idx, m]
 
         return st_times, en_times, n_jobs, m_machines
@@ -849,7 +860,9 @@ if st.session_state.show_complete_gantt:
     static_ts = st.session_state.Ts.values
     static_seq = [int(x) - 1 for x in st.session_state.sequence]
     
-    s_times, e_times, nj, nm = solve_flow_shop_static_plotly(static_pij, static_ts, static_seq)
+    _faults = st.session_state.get("machine_faults", {})
+    _now_sim = current_sim_time if "current_sim_time" in globals() else 0.0
+    s_times, e_times, nj, nm = solve_flow_shop_static_plotly(static_pij, static_ts, static_seq, _faults, _now_sim)
     
     # Construction du tableau de données officiel pour Plotly
     static_gantt_data = []
@@ -879,11 +892,29 @@ if st.session_state.show_complete_gantt:
                 Type=f"Job {job_idx + 1}"
             ))
             
+    # Ajout des pannes sous forme de rectangles rouges
+    for _m_name, _flist in _faults.items():
+        try:
+            _m_num = int(_m_name.split()[-1])
+        except Exception:
+            continue
+        if _m_num > nm:
+            continue
+        for _f in _flist:
+            _fe = _f["end"] if _f["end"] is not None else _now_sim
+            if _fe > _f["start"]:
+                static_gantt_data.append(dict(
+                    Machine=f"Machine {_m_num}",
+                    Start=pd.to_datetime(_f["start"], unit='s'),
+                    Finish=pd.to_datetime(_fe, unit='s'),
+                    Type="⚠️ Panne de la machine"
+                ))
+
     if static_gantt_data:
         df_static_gantt = pd.DataFrame(static_gantt_data)
         
         # Palette personnalisée : le temps de setup en gris foncé distinctif et les produits avec leurs couleurs habituelles
-        color_map = {"Temps d'opération (Setup)": "#555555"}
+        color_map = {"Temps d'opération (Setup)": "#555555", "⚠️ Panne de la machine": "#ff0000"}
         
         fig_static = px.timeline(
             df_static_gantt,
