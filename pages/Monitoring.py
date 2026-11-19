@@ -613,19 +613,20 @@ with st.expander(":material/add_circle: Ajouter une panne manuellement", expande
     with st.form("manual_fault_form", clear_on_submit=True):
         fc1, fc2 = st.columns(2)
         with fc1:
-            f_machine = st.selectbox("Machine", machines)
+            f_machine = st.selectbox("Machine", machines, key="mf_machine")
             f_type = st.selectbox(
                 "Type de panne",
-                [CAT_TEMP, CAT_HUM, CAT_PRESS, CAT_VIBE, CAT_CURR, "Autre"]
+                [CAT_TEMP, CAT_HUM, CAT_PRESS, CAT_VIBE, CAT_CURR, "Autre"],
+                key="mf_type"
             )
         with fc2:
-            st.caption("Heure de début : temps écoulé depuis le début de la simulation")
+            st.caption(f"Heure de début : temps écoulé depuis le début de la simulation (actuellement {format_sim_time(sim_duration)})")
             s1, s2 = st.columns(2)
-            f_start_min = s1.number_input("Début (minutes)", min_value=0, max_value=1440, value=int(sim_duration // 60), step=1)
-            f_start_sec = s2.number_input("Début (secondes)", min_value=0, max_value=59, value=int(sim_duration % 60), step=1)
+            f_start_min = s1.number_input("Début (minutes)", min_value=0, max_value=1440, value=0, step=1, key="mf_start_min")
+            f_start_sec = s2.number_input("Début (secondes)", min_value=0, max_value=59, value=0, step=1, key="mf_start_sec")
             d1, d2 = st.columns(2)
-            f_min = d1.number_input("Durée (minutes)", min_value=0, max_value=1440, value=5, step=1)
-            f_sec = d2.number_input("Durée (secondes)", min_value=0, max_value=59, value=0, step=1)
+            f_min = d1.number_input("Durée (minutes)", min_value=0, max_value=1440, value=5, step=1, key="mf_dur_min")
+            f_sec = d2.number_input("Durée (secondes)", min_value=0, max_value=59, value=0, step=1, key="mf_dur_sec")
         add_fault = st.form_submit_button("Enregistrer la panne", type="primary")
 
     if add_fault:
